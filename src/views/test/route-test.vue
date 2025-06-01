@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElCard, ElButton, ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { useRouteStore } from '@/stores/route'
+import { useRouteStore } from '@/stores/route-store'
 
 const router = useRouter()
 const routeStore = useRouteStore()
@@ -44,7 +44,7 @@ function showRouteInfo() {
       <template #header>
         <h3>路由测试页面</h3>
       </template>
-      
+
       <div class="test-section">
         <h4>测试没有实际页面的路由</h4>
         <p>以下按钮测试点击没有实际组件的父级路由，应该被阻止跳转：</p>
@@ -91,11 +91,8 @@ function showRouteInfo() {
         <h4>面包屑测试</h4>
         <p>当前面包屑路径：</p>
         <div class="breadcrumb-display">
-          <span 
-            v-for="(breadcrumb, index) in routeStore.breadcrumbs" 
-            :key="breadcrumb.path"
-            :class="{ 'clickable': breadcrumb.clickable, 'non-clickable': !breadcrumb.clickable }"
-          >
+          <span v-for="(breadcrumb, index) in routeStore.breadcrumbs" :key="breadcrumb.path"
+            :class="{ 'clickable': breadcrumb.clickable, 'non-clickable': !breadcrumb.clickable }">
             {{ breadcrumb.title }}
             <span v-if="index < routeStore.breadcrumbs.length - 1"> / </span>
           </span>

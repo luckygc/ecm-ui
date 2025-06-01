@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouteStore } from '@/stores/route'
+import { useRouteStore } from '@/stores/route-store'
 import { useAppStore } from '@/stores/app'
 
 const routeStore = useRouteStore()

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElButton, ElCard, ElCol, ElRow, ElTag, ElIcon } from 'element-plus'
 import { Close, Refresh } from '@element-plus/icons-vue'
-import { useRouteStore } from '@/stores/route'
+import { useRouteStore } from '@/stores/route-store'
 import { useRouter } from 'vue-router'
 
 const routeStore = useRouteStore()
@@ -10,7 +10,7 @@ const router = useRouter()
 // 关闭页面
 function closePage(page: any) {
   routeStore.delVisitedPage(page)
-  
+
   // 如果关闭的是当前页面，跳转到最后一个页面
   if (page.path === router.currentRoute.value.path) {
     const lastPage = routeStore.visitedPages[routeStore.visitedPages.length - 1]
@@ -61,7 +61,9 @@ function goToPage(page: any) {
           <span>页面管理</span>
           <div class="header-actions">
             <ElButton size="small" @click="refreshPageCache">
-              <ElIcon><Refresh /></ElIcon>
+              <ElIcon>
+                <Refresh />
+              </ElIcon>
               刷新缓存
             </ElButton>
             <ElButton size="small" type="danger" @click="closeAllPages">
@@ -75,15 +77,8 @@ function goToPage(page: any) {
       <div class="section">
         <h4>访问过的页面 ({{ routeStore.visitedPages.length }})</h4>
         <div class="page-list">
-          <ElTag
-            v-for="page in routeStore.visitedPages"
-            :key="page.path"
-            :type="page.affix ? 'success' : 'info'"
-            :closable="!page.affix"
-            class="page-tag"
-            @click="goToPage(page)"
-            @close="closePage(page)"
-          >
+          <ElTag v-for="page in routeStore.visitedPages" :key="page.path" :type="page.affix ? 'success' : 'info'"
+            :closable="!page.affix" class="page-tag" @click="goToPage(page)" @close="closePage(page)">
             <ElIcon v-if="page.icon" class="tag-icon">
               <component :is="page.icon" />
             </ElIcon>
@@ -96,12 +91,7 @@ function goToPage(page: any) {
       <div class="section">
         <h4>缓存的页面 ({{ routeStore.cachedPages.length }})</h4>
         <div class="cache-list">
-          <ElTag
-            v-for="cacheName in routeStore.cachedPages"
-            :key="cacheName"
-            type="warning"
-            class="cache-tag"
-          >
+          <ElTag v-for="cacheName in routeStore.cachedPages" :key="cacheName" type="warning" class="cache-tag">
             {{ cacheName }}
           </ElTag>
         </div>
@@ -111,13 +101,8 @@ function goToPage(page: any) {
       <div class="section">
         <h4>固定页面 ({{ routeStore.affixPages.length }})</h4>
         <div class="affix-list">
-          <ElTag
-            v-for="page in routeStore.affixPages"
-            :key="page.path"
-            type="success"
-            class="affix-tag"
-            @click="goToPage(page)"
-          >
+          <ElTag v-for="page in routeStore.affixPages" :key="page.path" type="success" class="affix-tag"
+            @click="goToPage(page)">
             <ElIcon v-if="page.icon" class="tag-icon">
               <component :is="page.icon" />
             </ElIcon>
@@ -130,11 +115,7 @@ function goToPage(page: any) {
       <div class="section">
         <h4>当前面包屑</h4>
         <div class="breadcrumb-preview">
-          <span
-            v-for="(breadcrumb, index) in routeStore.breadcrumbs"
-            :key="breadcrumb.path"
-            class="breadcrumb-item"
-          >
+          <span v-for="(breadcrumb, index) in routeStore.breadcrumbs" :key="breadcrumb.path" class="breadcrumb-item">
             <ElIcon v-if="breadcrumb.icon" class="breadcrumb-icon">
               <component :is="breadcrumb.icon" />
             </ElIcon>
@@ -149,11 +130,7 @@ function goToPage(page: any) {
         <h4>批量操作</h4>
         <ElRow :gutter="10">
           <ElCol :span="8">
-            <ElButton 
-              type="warning" 
-              size="small" 
-              @click="closeOtherPages(routeStore.currentRoute)"
-            >
+            <ElButton type="warning" size="small" @click="closeOtherPages(routeStore.currentRoute)">
               关闭其他页面
             </ElButton>
           </ElCol>

@@ -2,13 +2,13 @@ import Layout from "@/layout/index.vue";
 import type { RouteRecordRaw } from "vue-router";
 
 // 仪表盘路由模块
-export const dashboardRoutes: Array<RouteRecordRaw> = [
+export const dashboard: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Root",
     component: Layout,
-    redirect: "/dashboard",
-    meta: { title: "首页", icon: "HomeFilled", noPage: true },
+    redirect: { name: "Dashboard" },
+    meta: { title: "首页", icon: "HomeFilled" },
     children: [
       {
         path: "dashboard",

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PageInfo } from '@/stores/route'
+import type { PageInfo } from '@/stores/route-store'
 import { ArrowDown, CircleClose, FolderDelete, Refresh } from '@element-plus/icons-vue'
 import {
   ElButton,
@@ -10,9 +10,9 @@ import {
   ElTabPane,
   ElTabs,
 } from 'element-plus'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useRouteStore } from '@/stores/route'
+import { useRouteStore } from '@/stores/route-store'
 import { useAppStore } from '@/stores/app'
 
 const route = useRoute()
@@ -24,14 +24,12 @@ const appStore = useAppStore()
 const visitedViews = computed(() => routeStore.visitedPages)
 
 // 当前激活的标签
-const activeTab = computed({
-  get: () => route.path,
-  set: (val) => {
-    if (val !== route.path) {
-      router.push(val)
-    }
-  },
-})
+const activeTab = ref<string>('Dashboard')
+
+router.beforeEach((to, _from, next) => {
+  activeTab.value = to.name as string
+  next();
+});
 
 // 处理标签点击
 function handleTabClick() {
@@ -40,6 +38,9 @@ function handleTabClick() {
 
 // 处理标签关闭
 function handleTabRemove(targetPath: string | number) {
+  if (targetPath === "/dashboard") {
+    return;
+  }
   const path = String(targetPath)
   const view = visitedViews.value.find(item => item.path === path)
   if (view) {
@@ -112,21 +113,15 @@ function handleCommand(command: string) {
   <div class="tab-bar-container">
     <ElTabs v-model="activeTab" type="card" closable class="tab-bar-tabs" @tab-click="handleTabClick"
       @tab-remove="handleTabRemove">
-      <ElTabPane v-for="item in visitedViews" :key="item.path" :label="item.title" :name="item.path"
-        :closable="!item.meta?.affix">
-        <template #label>
-          <ElIcon v-if="item.icon" class="tab-icon">
-            <component :is="item.icon" />
-          </ElIcon>
-          <span>{{ item.title }}</span>
-        </template>
+      <ElTabPane v-for="item in visitedViews" :key="item.path" :label="item.title" :name="item.name"
+        :closable="item.path !== '/dashboard'">
       </ElTabPane>
     </ElTabs>
 
     <!-- 操作按钮 -->
     <div v-if="visitedViews.length > 0" class="tabs-actions">
       <ElDropdown trigger="click" @command="handleCommand">
-        <ElButton size="small" plain class="action-button">
+        <ElButton size="large" text>
           操作
           <ElIcon class="el-icon--right">
             <ArrowDown />
@@ -175,31 +170,28 @@ function handleCommand(command: string) {
   /* 确保内容可以正确收缩 */
 }
 
-/* 去除 tabs 组件的阴影和边框 */
-/* .tab-bar-tabs :deep(.el-tabs__header) {
-  box-shadow: none;
-  border-bottom: none;
-  margin: 0;
-} */
-
-.tab-bar-tabs :deep(.el-tabs__nav-wrap) {
-  box-shadow: none;
-  border-bottom: none;
+:deep(.el-tabs__nav-wrap) {
+  margin-bottom: 0;
 }
 
-.tab-bar-tabs :deep(.el-tabs__nav-scroll) {
-  box-shadow: none;
+:deep(.el-tabs--card>.el-tabs__header) {
+  border-left: none;
+  border-right: none;
 }
 
 :deep(.el-tabs--card>.el-tabs__header .el-tabs__nav) {
   border-radius: 0;
-  border-left: none;
-  border-top: none;
+  border: none;
+}
+
+:deep(.el-tabs--card>.el-tabs__header .el-tabs__item) {
+  border: none;
 }
 
 :deep(.el-tabs__nav-prev) {
   border-right: 1px solid var(--el-border-color-light)
 }
+
 
 :deep(.el-tabs__nav-next) {
   border-left: 1px solid var(--el-border-color-light)
@@ -209,8 +201,7 @@ function handleCommand(command: string) {
   border-bottom: 2px solid var(--el-color-primary);
 }
 
-:deep(.el-tabs--card>.el-tabs__header) {
-  border-left: none;
-  border-right: none;
+:deep(.el-tabs--card>.el-tabs__header .el-tabs__item:hover) {
+  background-color: var(--el-color-primary-light-9);
 }
 </style>

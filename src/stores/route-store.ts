@@ -1,22 +1,16 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import type { RouteLocationNormalized, RouteRecordRaw } from "vue-router";
-import { allRoutes } from "@/router/modules";
+import { router, routes } from "@/router";
+import {
+  buildFullPath,
+  createRouteInfo,
+  type RouteMeta,
+  type RouteInfo,
+} from "@/utils/routeHelper";
 
-// 路由信息接口
-export interface RouteInfo {
-  path: string;
-  name?: string;
-  title: string;
-  icon?: string;
-  component?: any;
-  children?: RouteInfo[];
-  meta?: any;
-  hidden?: boolean;
-  affix?: boolean;
-  noCache?: boolean;
-  noPage?: boolean;
-}
+// 重新导出类型，保持向后兼容
+export type { RouteMeta, RouteInfo } from "@/utils/routeHelper";
 
 // 面包屑项接口
 export interface BreadcrumbItem {
@@ -35,9 +29,9 @@ export interface PageInfo {
   affix?: boolean;
   noCache?: boolean;
   fullPath?: string;
-  query?: any;
-  params?: any;
-  meta?: any;
+  query?: Record<string, any>;
+  params?: Record<string, any>;
+  meta?: RouteMeta;
 }
 
 export const useRouteStore = defineStore("route", () => {
@@ -45,6 +39,8 @@ export const useRouteStore = defineStore("route", () => {
 
   // 当前路由信息
   const currentRoute = ref<RouteLocationNormalized | null>(null);
+
+  const currentRouteName = ref("/");
 
   // 访问过的页面列表
   const visitedPages = ref<PageInfo[]>([]);
@@ -66,48 +62,31 @@ export const useRouteStore = defineStore("route", () => {
       const result: RouteInfo[] = [];
 
       for (const route of routes) {
-        // 构建完整路径
-        const fullPath = route.path.startsWith("/")
-          ? route.path
-          : `${parentPath}/${route.path}`.replace(/\/+/g, "/");
-
         // 跳过隐藏的路由
         if (route.meta?.hidden) {
           continue;
         }
 
-        const routeInfo: RouteInfo = {
-          path: fullPath,
-          name: route.name as string,
-          title: route.meta?.title || (route.name as string) || "未命名",
-          icon: route.meta?.icon,
-          component: route.component,
-          meta: route.meta,
-          hidden: route.meta?.hidden,
-          affix: route.meta?.affix,
-          noCache: route.meta?.noCache,
-          noPage: route.meta?.noPage,
-        };
+        // 构建完整路径
+        const fullPath = buildFullPath(route.path, parentPath);
 
-        // 处理子路由
+        // 创建路由信息
+        const routeInfo = createRouteInfo(route, fullPath);
+
+        // 添加当前路由
+        result.push(routeInfo);
+
+        // 递归处理子路由（只添加子路由到结果中，不重复添加父路由）
         if (route.children && route.children.length > 0) {
           const children = flatten(route.children, fullPath);
-          if (children.length > 0) {
-            routeInfo.children = children;
-            result.push(routeInfo);
-            result.push(...children);
-          } else {
-            result.push(routeInfo);
-          }
-        } else {
-          result.push(routeInfo);
+          result.push(...children);
         }
       }
 
       return result;
     };
 
-    return flatten(allRoutes);
+    return flatten(routes);
   });
 
   // 侧边栏菜单路由
@@ -122,17 +101,18 @@ export const useRouteStore = defineStore("route", () => {
         // 跳过隐藏的路由
         if (route.meta?.hidden) continue;
 
-        const fullPath = route.path.startsWith("/")
-          ? route.path
-          : `${parentPath}/${route.path}`.replace(/\/+/g, "/");
+        // 构建完整路径
+        const fullPath = buildFullPath(route.path, parentPath);
 
+        // 创建路由信息（侧边栏不需要所有属性）
+        const meta = route.meta as RouteMeta;
         const routeInfo: RouteInfo = {
           path: fullPath,
           name: route.name as string,
-          title: route.meta?.title || (route.name as string) || "未命名",
-          icon: route.meta?.icon,
-          meta: route.meta,
-          noPage: route.meta?.noPage, // 添加 noPage 标识
+          title: meta?.title || (route.name as string) || "未命名",
+          icon: meta?.icon,
+          meta,
+          noPage: meta?.noPage,
         };
 
         // 处理子路由
@@ -149,7 +129,7 @@ export const useRouteStore = defineStore("route", () => {
       return result;
     };
 
-    return buildMenuTree(allRoutes);
+    return buildMenuTree(routes);
   });
 
   // 面包屑导航
@@ -159,12 +139,15 @@ export const useRouteStore = defineStore("route", () => {
     const breadcrumbList: BreadcrumbItem[] = [];
     const currentPath = currentRoute.value.path;
 
-    // 如果不在首页，添加首页作为第一个面包屑
-    if (currentPath !== "/dashboard" && currentPath !== "/") {
+    // 查找首页路由（标记为 affix 的路由通常是首页）
+    const homeRoute = flatRoutes.value.find((route) => route.affix);
+
+    // 如果不在首页且找到了首页路由，添加首页作为第一个面包屑
+    if (homeRoute && currentPath !== homeRoute.path && currentPath !== "/") {
       breadcrumbList.push({
-        title: "首页",
-        path: "/dashboard",
-        icon: "HomeFilled",
+        title: homeRoute.title,
+        path: homeRoute.path,
+        icon: homeRoute.icon,
         clickable: true,
       });
     }
@@ -180,7 +163,7 @@ export const useRouteStore = defineStore("route", () => {
     // 构建面包屑路径
     for (let i = 0; i < matched.length; i++) {
       const routeItem = matched[i];
-      const meta = routeItem.meta;
+      const meta = routeItem.meta as RouteMeta;
 
       if (meta && meta.title) {
         const isLast = i === matched.length - 1;
@@ -206,7 +189,7 @@ export const useRouteStore = defineStore("route", () => {
     const { name, path, meta, fullPath, query, params } = route;
 
     // 跳过隐藏的路由和没有实际页面的路由
-    if (!name || meta?.hidden || meta?.noPage) {
+    if (!name || meta?.hidden) {
       return;
     }
 
@@ -272,8 +255,11 @@ export const useRouteStore = defineStore("route", () => {
     // 保留固定页面
     visitedPages.value = visitedPages.value.filter((p) => p.affix);
 
-    // 清空缓存
-    cachedPages.value = [];
+    // 更新缓存，保留固定页面的缓存
+    const affixCacheNames = visitedPages.value
+      .filter((p) => !p.noCache && p.name)
+      .map((p) => p.name!);
+    cachedPages.value = affixCacheNames;
   };
 
   // 添加缓存页面

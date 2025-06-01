@@ -4,7 +4,7 @@ import { ElButton, ElIcon, ElMenu, ElMenuItem, ElSubMenu } from 'element-plus'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
-import { useRouteStore } from '@/stores/route'
+import { useRouteStore } from '@/stores/route-store'
 
 const route = useRoute()
 const router = useRouter()

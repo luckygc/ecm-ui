@@ -2,7 +2,7 @@
 import { ElBreadcrumb, ElBreadcrumbItem, ElIcon } from 'element-plus'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useRouteStore } from '@/stores/route'
+import { useRouteStore } from '@/stores/route-store'
 
 const router = useRouter()
 const routeStore = useRouteStore()
