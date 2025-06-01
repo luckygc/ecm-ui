@@ -4,10 +4,12 @@ import { ArrowDown, CircleClose, Close, FolderDelete, Refresh } from '@element-p
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTagsViewStore } from '@/stores/tagsView'
+import { useAppStore } from '@/stores/app'
 
 const route = useRoute()
 const router = useRouter()
 const tagsViewStore = useTagsViewStore()
+const appStore = useAppStore()
 const scrollbarRef = ref()
 const activeTagRef = ref()
 
@@ -71,13 +73,15 @@ function closeSelectedTag(view: TagView) {
   }
 }
 
-// 刷新选中的标签
 function refreshSelectedTag(view: TagView) {
   tagsViewStore.delCachedView(view)
-  const { fullPath } = view
-  router.replace({
-    path: `/redirect${fullPath}`,
-  })
+  if (view.path === route.path) {
+    appStore.refreshMainContent()
+  } else {
+    router.push(view.path || '/').then(() => {
+      appStore.refreshMainContent()
+    })
+  }
 }
 
 // 关闭其他标签
@@ -199,28 +203,16 @@ onBeforeUnmount(() => {
   <div class="tags-view-container">
     <el-scrollbar ref="scrollbarRef" class="tags-view-wrapper">
       <div class="tags-view-item-wrapper">
-        <router-link
-          v-for="tag in visitedViews"
-          :key="tag.path"
-          :ref="
-            el => {
-              if (isActive(tag) && el) activeTagRef = el
-            }
-          "
-          :to="{ path: tag.path, query: tag.query }"
-          class="tags-view-item"
-          :class="isActive(tag) ? 'active' : ''"
-          @contextmenu.prevent="openMenu($event, tag)"
-        >
+        <router-link v-for="tag in visitedViews" :key="tag.path" :ref="el => {
+          if (isActive(tag) && el) activeTagRef = el
+        }
+          " :to="{ path: tag.path, query: tag.query }" class="tags-view-item" :class="isActive(tag) ? 'active' : ''"
+          @contextmenu.prevent="openMenu($event, tag)">
           <el-icon v-if="tag.icon" class="tag-icon">
             <component :is="tag.icon" />
           </el-icon>
           <span>{{ tag.title }}</span>
-          <el-icon
-            v-if="!tag.meta?.affix"
-            class="close-icon"
-            @click.prevent.stop="closeSelectedTag(tag)"
-          >
+          <el-icon v-if="!tag.meta?.affix" class="close-icon" @click.prevent.stop="closeSelectedTag(tag)">
             <Close />
           </el-icon>
         </router-link>
@@ -239,11 +231,15 @@ onBeforeUnmount(() => {
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item command="closeOthers">
-              <el-icon><CircleClose /></el-icon>
+              <el-icon>
+                <CircleClose />
+              </el-icon>
               <span>关闭其他</span>
             </el-dropdown-item>
             <el-dropdown-item command="closeAll">
-              <el-icon><FolderDelete /></el-icon>
+              <el-icon>
+                <FolderDelete />
+              </el-icon>
               <span>关闭所有</span>
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -254,19 +250,27 @@ onBeforeUnmount(() => {
     <!-- 右键菜单 -->
     <ul v-show="visible" :style="{ left: `${left}px`, top: `${top}px` }" class="contextmenu">
       <li @click="refreshSelectedTag(selectedTag)">
-        <el-icon><Refresh /></el-icon>
+        <el-icon>
+          <Refresh />
+        </el-icon>
         <span>刷新</span>
       </li>
       <li v-if="!selectedTag.meta?.affix" @click="closeSelectedTag(selectedTag)">
-        <el-icon><Close /></el-icon>
+        <el-icon>
+          <Close />
+        </el-icon>
         <span>关闭</span>
       </li>
       <li @click="closeOthersTags">
-        <el-icon><CircleClose /></el-icon>
+        <el-icon>
+          <CircleClose />
+        </el-icon>
         <span>关闭其他</span>
       </li>
       <li @click="closeAllTags">
-        <el-icon><FolderDelete /></el-icon>
+        <el-icon>
+          <FolderDelete />
+        </el-icon>
         <span>关闭所有</span>
       </li>
     </ul>

@@ -4,10 +4,12 @@ import { ArrowDown, CircleClose, FolderDelete, Refresh } from '@element-plus/ico
 import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTagsViewStore } from '@/stores/tagsView'
+import { useAppStore } from '@/stores/app'
 
 const route = useRoute()
 const router = useRouter()
 const tagsViewStore = useTagsViewStore()
+const appStore = useAppStore()
 
 // 获取已访问的视图
 const visitedViews = computed(() => tagsViewStore.getVisitedViews)
@@ -57,14 +59,11 @@ function closeSelectedTag(view: TagView) {
   }
 }
 
-// 刷新当前标签
 function refreshCurrentTag() {
   const view = visitedViews.value.find(item => item.path === route.path)
   if (view) {
     tagsViewStore.delCachedView(view)
-    router.replace({
-      path: `/redirect${view.fullPath}`,
-    })
+    appStore.refreshMainContent()
   }
 }
 
@@ -129,20 +128,9 @@ onMounted(() => {
 
 <template>
   <div class="el-tabs-container">
-    <el-tabs
-      v-model="activeTab"
-      type="card"
-      closable
-      @tab-click="handleTabClick"
-      @tab-remove="handleTabRemove"
-    >
-      <el-tab-pane
-        v-for="item in visitedViews"
-        :key="item.path"
-        :label="item.title"
-        :name="item.path"
-        :closable="!item.meta?.affix"
-      >
+    <el-tabs v-model="activeTab" type="card" closable @tab-click="handleTabClick" @tab-remove="handleTabRemove">
+      <el-tab-pane v-for="item in visitedViews" :key="item.path" :label="item.title" :name="item.path"
+        :closable="!item.meta?.affix">
         <template #label>
           <el-icon v-if="item.icon" class="tab-icon">
             <component :is="item.icon" />
@@ -164,15 +152,21 @@ onMounted(() => {
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item command="refresh">
-              <el-icon><Refresh /></el-icon>
+              <el-icon>
+                <Refresh />
+              </el-icon>
               <span>刷新当前</span>
             </el-dropdown-item>
             <el-dropdown-item command="closeOthers">
-              <el-icon><CircleClose /></el-icon>
+              <el-icon>
+                <CircleClose />
+              </el-icon>
               <span>关闭其他</span>
             </el-dropdown-item>
             <el-dropdown-item command="closeAll">
-              <el-icon><FolderDelete /></el-icon>
+              <el-icon>
+                <FolderDelete />
+              </el-icon>
               <span>关闭所有</span>
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -191,23 +185,29 @@ onMounted(() => {
   padding: 0 16px;
   height: 40px;
   width: 100%;
-  box-sizing: border-box; /* 确保内边距不会增加元素的实际宽度 */
-  overflow: hidden; /* 防止内容溢出 */
+  box-sizing: border-box;
+  /* 确保内边距不会增加元素的实际宽度 */
+  overflow: hidden;
+  /* 防止内容溢出 */
 }
 
 :deep(.el-tabs) {
   flex: 1;
-  width: 0; /* 确保tabs不会导致父容器溢出 */
-  min-width: 0; /* 确保内容可以正确收缩 */
+  width: 0;
+  /* 确保tabs不会导致父容器溢出 */
+  min-width: 0;
+  /* 确保内容可以正确收缩 */
 }
 
 :deep(.el-tabs__header) {
   margin: 0;
-  overflow: hidden; /* 防止内容溢出 */
+  overflow: hidden;
+  /* 防止内容溢出 */
 }
 
 :deep(.el-tabs__nav-wrap) {
-  overflow: hidden; /* 防止内容溢出 */
+  overflow: hidden;
+  /* 防止内容溢出 */
 }
 
 :deep(.el-tabs__nav) {
@@ -220,7 +220,8 @@ onMounted(() => {
   border: none;
   margin-right: 5px;
   padding: 0 15px;
-  white-space: nowrap; /* 防止文本换行 */
+  white-space: nowrap;
+  /* 防止文本换行 */
 }
 
 :deep(.el-tabs__item.is-active) {
@@ -242,6 +243,7 @@ onMounted(() => {
   margin-left: 10px;
   border-left: 1px solid #dcdfe6;
   padding-left: 10px;
-  flex-shrink: 0; /* 防止操作按钮被压缩 */
+  flex-shrink: 0;
+  /* 防止操作按钮被压缩 */
 }
 </style>

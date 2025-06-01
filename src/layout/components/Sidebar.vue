@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Expand, Fold } from '@element-plus/icons-vue'
 import { ElIcon, ElMenu, ElMenuItem, ElSubMenu } from 'element-plus'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -18,8 +17,8 @@ const routes = computed(() => {
   })
 })
 
-function toggleSidebar() {
-  appStore.toggleSidebar()
+function handleMenuSelect(index: string) {
+  router.push(index)
 }
 
 // 路径解析函数
@@ -39,13 +38,9 @@ function resolvePath(basePath: string, routePath: string) {
 </script>
 
 <template>
-  <div style="height: 100%">
-    <ElMenu
-      :default-active="activeMenu"
-      :collapse="!sidebarOpened"
-      mode="vertical"
-      style="height: calc(100% - 40px)"
-    >
+  <div class="sidebar-wrapper">
+    <ElMenu :default-active="activeMenu" :collapse="!sidebarOpened" mode="vertical" class="sidebar-menu"
+      @select="handleMenuSelect">
       <template v-for="route in routes" :key="route.path">
         <!-- 没有子菜单或子菜单为空的路由 -->
         <ElMenuItem v-if="!route.children || route.children.length === 0" :index="route.path">
@@ -68,15 +63,11 @@ function resolvePath(basePath: string, routePath: string) {
             </template>
 
             <!-- 递归渲染子菜单 -->
-            <template
-              v-for="child in route.children.filter(child => !(child.meta && child.meta.hidden))"
-              :key="child.path"
-            >
+            <template v-for="child in route.children.filter(child => !(child.meta && child.meta.hidden))"
+              :key="child.path">
               <!-- 没有子菜单的子路由 -->
-              <ElMenuItem
-                v-if="!child.children || child.children.length === 0"
-                :index="resolvePath(route.path, child.path)"
-              >
+              <ElMenuItem v-if="!child.children || child.children.length === 0"
+                :index="resolvePath(route.path, child.path)">
                 <ElIcon v-if="child.meta && child.meta.icon">
                   <component :is="child.meta.icon" />
                 </ElIcon>
@@ -95,11 +86,8 @@ function resolvePath(basePath: string, routePath: string) {
                 </template>
 
                 <!-- 渲染三级菜单 -->
-                <ElMenuItem
-                  v-for="grandChild in child.children.filter(gc => !(gc.meta && gc.meta.hidden))"
-                  :key="grandChild.path"
-                  :index="resolvePath(resolvePath(route.path, child.path), grandChild.path)"
-                >
+                <ElMenuItem v-for="grandChild in child.children.filter(gc => !(gc.meta && gc.meta.hidden))"
+                  :key="grandChild.path" :index="resolvePath(resolvePath(route.path, child.path), grandChild.path)">
                   <ElIcon v-if="grandChild.meta && grandChild.meta.icon">
                     <component :is="grandChild.meta.icon" />
                   </ElIcon>
@@ -113,28 +101,43 @@ function resolvePath(basePath: string, routePath: string) {
         </template>
       </template>
     </ElMenu>
-
-    <div class="collapse-btn" @click="toggleSidebar">
-      <ElIcon class="collapse-icon">
-        <Fold v-if="sidebarOpened" />
-        <Expand v-else />
-      </ElIcon>
-      <span v-if="sidebarOpened" class="collapse-text">折叠</span>
-    </div>
   </div>
 </template>
 
 <style scoped>
-.collapse-btn {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-top: 1px solid #e6e6e6;
+.sidebar-wrapper {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  /* 禁止横向滚动 */
+  overflow-y: auto;
+  /* 允许纵向滚动 */
 }
 
-.collapse-icon {
-  margin-right: 5px;
+.sidebar-menu {
+  height: 100%;
+  border-right: none;
+  overflow-x: hidden;
+  /* 确保菜单本身也不会横向滚动 */
+}
+
+/* 确保菜单项文本不会溢出 */
+.sidebar-menu .el-menu-item,
+.sidebar-menu .el-sub-menu__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 折叠状态下的样式优化 */
+.sidebar-menu.el-menu--collapse {
+  width: 64px;
+}
+
+/* 确保图标在折叠状态下居中显示 */
+.sidebar-menu.el-menu--collapse .el-menu-item,
+.sidebar-menu.el-menu--collapse .el-sub-menu__title {
+  text-align: center;
+  padding: 0 20px;
 }
 </style>

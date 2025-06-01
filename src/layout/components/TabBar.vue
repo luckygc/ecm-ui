@@ -13,10 +13,12 @@ import {
 import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTagsViewStore } from '@/stores/tagsView'
+import { useAppStore } from '@/stores/app'
 
 const route = useRoute()
 const router = useRouter()
 const tagsViewStore = useTagsViewStore()
+const appStore = useAppStore()
 
 // 获取已访问的视图
 const visitedViews = computed(() => tagsViewStore.getVisitedViews)
@@ -66,14 +68,11 @@ function closeSelectedTag(view: TagView) {
   }
 }
 
-// 刷新当前标签
 function refreshCurrentTag() {
   const view = visitedViews.value.find(item => item.path === route.path)
   if (view) {
     tagsViewStore.delCachedView(view)
-    router.replace({
-      path: `/redirect${view.fullPath}`,
-    })
+    appStore.refreshMainContent()
   }
 }
 

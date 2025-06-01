@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import { Bell, DataAnalysis, Document, Plus, Setting, Upload, User } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { Bell, DataAnalysis, Document, Plus, Refresh, Setting, Upload, User } from '@element-plus/icons-vue'
+import { onMounted, ref } from 'vue'
+import { useAppStore } from '@/stores/app'
+
+const appStore = useAppStore()
+
+const loadTime = ref('')
+const refreshCount = ref(0)
 
 const activities = ref([
   {
@@ -24,10 +30,42 @@ const activities = ref([
     type: 'warning',
   },
 ])
+
+function handleRefresh() {
+  appStore.refreshMainContent()
+}
+
+onMounted(() => {
+  loadTime.value = new Date().toLocaleString()
+  refreshCount.value = parseInt(localStorage.getItem('dashboard-refresh-count') || '0') + 1
+  localStorage.setItem('dashboard-refresh-count', refreshCount.value.toString())
+})
 </script>
 
 <template>
   <div class="dashboard-container">
+    <!-- 刷新功能测试区域 -->
+    <div class="bg-green-100 p-4 mb-4 rounded-lg shadow-sm">
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="text-xl font-bold text-green-800">
+          刷新功能测试
+        </h2>
+        <el-button type="primary" size="small" @click="handleRefresh">
+          <el-icon>
+            <Refresh />
+          </el-icon>
+          手动刷新
+        </el-button>
+      </div>
+      <div class="text-green-600 space-y-1">
+        <p><strong>页面加载时间:</strong> {{ loadTime }}</p>
+        <p><strong>刷新次数:</strong> {{ refreshCount }}</p>
+        <p class="text-sm text-green-500">
+          点击上方的"手动刷新"按钮或使用Tab栏的刷新功能来测试key刷新机制
+        </p>
+      </div>
+    </div>
+
     <!-- Tailwind测试区域 -->
     <div class="bg-blue-100 p-4 mb-4 rounded-lg shadow-sm">
       <h2 class="text-xl font-bold text-blue-800 mb-2">
@@ -144,12 +182,8 @@ const activities = ref([
             </div>
           </template>
           <el-timeline>
-            <el-timeline-item
-              v-for="(activity, index) in activities"
-              :key="index"
-              :timestamp="activity.timestamp"
-              :type="activity.type"
-            >
+            <el-timeline-item v-for="(activity, index) in activities" :key="index" :timestamp="activity.timestamp"
+              :type="activity.type">
               {{ activity.content }}
             </el-timeline-item>
           </el-timeline>
@@ -164,16 +198,24 @@ const activities = ref([
           </template>
           <div class="quick-actions">
             <el-button type="primary" plain>
-              <el-icon><Plus /></el-icon>新增用户
+              <el-icon>
+                <Plus />
+              </el-icon>新增用户
             </el-button>
             <el-button type="success" plain>
-              <el-icon><Upload /></el-icon>数据导入
+              <el-icon>
+                <Upload />
+              </el-icon>数据导入
             </el-button>
             <el-button type="warning" plain>
-              <el-icon><Setting /></el-icon>系统设置
+              <el-icon>
+                <Setting />
+              </el-icon>系统设置
             </el-button>
             <el-button type="info" plain>
-              <el-icon><Document /></el-icon>查看文档
+              <el-icon>
+                <Document />
+              </el-icon>查看文档
             </el-button>
           </div>
         </el-card>
