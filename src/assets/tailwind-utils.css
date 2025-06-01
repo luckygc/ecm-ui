@@ -117,3 +117,79 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 500ms;
 }
+
+/* 去除布局组件接触处的阴影 */
+
+/* 去除 Element Plus Header 组件的阴影 */
+.el-header {
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+/* 去除 Element Plus Aside 组件的阴影 */
+.el-aside {
+  box-shadow: none !important;
+}
+
+/* 去除 Element Plus Tabs 组件的阴影和边框 */
+.el-tabs {
+  box-shadow: none !important;
+}
+
+.el-tabs__header {
+  box-shadow: none !important;
+  border-bottom: none !important;
+  margin: 0 !important;
+}
+
+.el-tabs__nav-wrap {
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+.el-tabs__nav-scroll {
+  box-shadow: none !important;
+}
+
+/* 去除 TabBar 容器的阴影 */
+.tab-bar-container {
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+/* 去除 Navbar 容器的阴影，但保留底部边框用于分隔 */
+.navbar-container {
+  box-shadow: none !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+/* 去除侧边栏容器的阴影，但保留右侧边框用于分隔 */
+.sidebar-container {
+  box-shadow: none !important;
+  border-right: 1px solid #f0f0f0 !important;
+}
+
+/* 确保主内容区域没有阴影 */
+.el-main {
+  box-shadow: none !important;
+}
+
+/* 去除可能的容器阴影 */
+.el-container {
+  box-shadow: none !important;
+}
+
+/* 优化 Element Plus 菜单动画速度 */
+.el-menu {
+  transition: all 0.15s ease !important;
+}
+
+.el-menu-item,
+.el-sub-menu__title {
+  transition: all 0.15s ease !important;
+}
+
+.el-menu--collapse .el-menu-item,
+.el-menu--collapse .el-sub-menu__title {
+  transition: all 0.15s ease !important;
+}

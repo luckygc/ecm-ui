@@ -1,25 +1,9 @@
 <script setup lang="ts">
-import { Expand, Fold } from '@element-plus/icons-vue'
-import { ElButton, ElIcon, ElMenu, ElMenuItem, ElSubMenu } from 'element-plus'
-import { computed } from 'vue'
-import { useAppStore } from '@/stores/app'
-
-const appStore = useAppStore()
-
-const sidebarOpened = computed(() => appStore.getSidebarStatus)
-
-function toggleSidebar() {
-  appStore.toggleSidebar()
-}
+import { ElIcon, ElMenu, ElMenuItem, ElSubMenu } from 'element-plus'
 </script>
 
 <template>
   <div class="navbar-container">
-    <!-- 折叠按钮 -->
-    <div class="collapse-btn-wrapper">
-      <ElButton :icon="sidebarOpened ? Fold : Expand" @click="toggleSidebar" class="collapse-btn" text size="large" />
-    </div>
-
     <!-- 导航菜单 -->
     <ElMenu class="navbar-menu" mode="horizontal" :ellipsis="false">
       <ElMenuItem index="1">
@@ -63,24 +47,9 @@ function toggleSidebar() {
   align-items: center;
   height: 100%;
   background-color: #fff;
-  border-bottom: 1px solid #e6e6e6;
-}
-
-.collapse-btn-wrapper {
+  border-bottom: 1px solid #f0f0f0;
+  box-shadow: none;
   padding: 0 16px;
-  border-right: 1px solid #e6e6e6;
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.collapse-btn {
-  color: #606266;
-  transition: color 0.3s ease;
-}
-
-.collapse-btn:hover {
-  color: #409eff;
 }
 
 .navbar-menu {
@@ -91,5 +60,13 @@ function toggleSidebar() {
 .navbar-menu .el-menu-item,
 .navbar-menu .el-sub-menu__title {
   border-bottom: none;
+  margin-right: 8px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.navbar-menu .el-menu-item:hover,
+.navbar-menu .el-sub-menu__title:hover {
+  background-color: #f5f7fa;
 }
 </style>

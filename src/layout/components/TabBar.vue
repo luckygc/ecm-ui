@@ -189,11 +189,44 @@ onMounted(() => {
   display: flex;
   width: 100%;
   height: auto;
+  box-shadow: none;
+  border-bottom: none;
+  background-color: #fff;
 }
 
 .tab-bar-tabs {
   flex: 1;
   min-width: 0;
   /* 确保内容可以正确收缩 */
+}
+
+/* 去除 tabs 组件的阴影和边框 */
+.tab-bar-tabs :deep(.el-tabs__header) {
+  box-shadow: none;
+  border-bottom: none;
+  margin: 0;
+}
+
+.tab-bar-tabs :deep(.el-tabs__nav-wrap) {
+  box-shadow: none;
+  border-bottom: none;
+}
+
+.tab-bar-tabs :deep(.el-tabs__nav-scroll) {
+  box-shadow: none;
+}
+
+:deep(.el-tabs--card>.el-tabs__header .el-tabs__nav) {
+  border-radius: 0;
+  border-left: none;
+  border-top: none;
+}
+
+:deep(.el-tabs__nav-prev) {
+  border-right: 1px solid var(--el-border-color-light)
+}
+
+:deep(.el-tabs__nav-next) {
+  border-left: 1px solid var(--el-border-color-light)
 }
 </style>

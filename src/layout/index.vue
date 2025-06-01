@@ -15,25 +15,25 @@ const sidebarWidth = computed(() => sidebarOpened.value ? '200px' : '64px')
 
 <template>
   <ElContainer style="height: 100%">
-    <ElHeader>
-      <!-- 顶部导航栏 -->
-      <Navbar />
-    </ElHeader>
+    <!-- 全高侧边栏 -->
+    <ElAside :width="sidebarWidth" class="sidebar-container">
+      <Sidebar />
+    </ElAside>
+
+    <!-- 右侧主要内容区域 -->
     <ElContainer>
-      <ElAside :width="sidebarWidth" class="sidebar-container">
-        <!-- 侧边栏 -->
-        <Sidebar />
-      </ElAside>
-      <ElContainer>
-        <ElHeader height="auto">
-          <!-- 页签栏 -->
-          <TabBar />
-        </ElHeader>
-        <ElMain>
-          <!-- 主要内容区 -->
-          <MainContent />
-        </ElMain>
-      </ElContainer>
+      <ElHeader>
+        <!-- 顶部导航栏 -->
+        <Navbar />
+      </ElHeader>
+      <ElHeader height="auto">
+        <!-- 页签栏 -->
+        <TabBar />
+      </ElHeader>
+      <ElMain>
+        <!-- 主要内容区 -->
+        <MainContent />
+      </ElMain>
     </ElContainer>
   </ElContainer>
 </template>
@@ -46,12 +46,13 @@ const sidebarWidth = computed(() => sidebarOpened.value ? '200px' : '64px')
 }
 
 .sidebar-container {
-  transition: width 0.3s ease;
+  transition: width 0.15s ease;
   background-color: #fff;
-  border-right: 1px solid #e6e6e6;
+  border-right: 1px solid #f0f0f0;
   overflow-x: hidden;
   /* 禁止横向滚动 */
   overflow-y: auto;
   /* 允许纵向滚动 */
+  box-shadow: none;
 }
 </style>
