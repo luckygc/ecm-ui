@@ -1,0 +1,7 @@
+{
+  "apiBaseUrl": "http://company-a-server.internal/api",
+  "appName": "公司A内部系统",
+  "timeout": 20000,
+  "uploadLimit": 20,
+  "debug": false
+}

@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+/* 导入自定义工具类和组件 */
+@import "./tailwind-utils.css";

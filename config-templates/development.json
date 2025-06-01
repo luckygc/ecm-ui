@@ -1,0 +1,7 @@
+{
+  "apiBaseUrl": "http://localhost:8080/api",
+  "appName": "Repodar Web - 开发环境",
+  "timeout": 15000,
+  "uploadLimit": 50,
+  "debug": true
+}
