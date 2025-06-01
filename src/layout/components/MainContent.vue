@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useTagsViewStore } from '@/stores/tagsView'
+import { useRouteStore } from '@/stores/route'
 import { useAppStore } from '@/stores/app'
 
-const tagsViewStore = useTagsViewStore()
+const routeStore = useRouteStore()
 const appStore = useAppStore()
 
-// 获取缓存的视图列表
-const cachedViews = computed(() => tagsViewStore.getCachedViews)
+// 获取缓存的视图列表 - 优先使用路由 store 的缓存
+const cachedViews = computed(() => routeStore.cachedPages)
 
 // 获取主内容区域的刷新键
 const mainContentRefreshKey = computed(() => appStore.currentMainContentKey)

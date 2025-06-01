@@ -4,6 +4,7 @@ import { ElButton, ElIcon, ElMenu, ElMenuItem, ElSubMenu } from 'element-plus'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
+import { useRouteStore } from '@/stores/route'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,13 +17,19 @@ function toggleSidebar() {
   appStore.toggleSidebar()
 }
 
-const routes = computed(() => {
-  return router.options.routes.filter((route) => {
-    return !(route.meta && route.meta.hidden)
-  })
-})
+// 使用路由 store 获取侧边栏路由
+const routeStore = useRouteStore()
+const routes = routeStore.sidebarRoutes
 
 function handleMenuSelect(index: string) {
+  // 查找对应的路由信息
+  const routeInfo = routeStore.findRouteByPath(index)
+
+  // 如果路由标记为 noPage，则不进行跳转
+  if (routeInfo?.meta?.noPage) {
+    return
+  }
+
   router.push(index)
 }
 

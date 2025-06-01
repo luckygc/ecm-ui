@@ -7,6 +7,12 @@ interface SidebarConfig {
   withoutAnimation: boolean;
 }
 
+// 设备类型
+type DeviceType = "desktop" | "tablet" | "mobile";
+
+// 主题类型
+type ThemeType = "light" | "dark";
+
 // 组件刷新键映射
 interface ComponentKeys {
   [componentName: string]: string;
@@ -49,17 +55,17 @@ export const useAppStore = defineStore("app", () => {
   // 当前主题
   const currentTheme = computed(() => themeType.value);
 
-  // 主内容区域当前刷新键
-  const currentMainContentKey = computed(() => mainContentKey.value);
-
-  // 获取所有组件键
-  const allComponentKeys = computed(() => componentKeys.value);
-
   // 是否为移动设备
   const isMobileDevice = computed(() => deviceType.value === "mobile");
 
   // 是否为暗色主题
   const isDarkTheme = computed(() => themeType.value === "dark");
+
+  // 主内容区域当前刷新键
+  const currentMainContentKey = computed(() => mainContentKey.value);
+
+  // 获取所有组件键
+  const allComponentKeys = computed(() => componentKeys.value);
 
   // ==================== 侧边栏相关方法 ====================
 
@@ -170,29 +176,19 @@ export const useAppStore = defineStore("app", () => {
   return {
     // 状态
     sidebarConfig,
-    deviceType,
-    themeType,
+
     mainContentKey,
     componentKeys,
 
     // 计算属性
     isSidebarOpened,
-    currentDevice,
-    currentTheme,
     currentMainContentKey,
     allComponentKeys,
-    isMobileDevice,
-    isDarkTheme,
 
     // 侧边栏方法
     toggleSidebar,
     closeSidebar,
     openSidebar,
-
-    // 设备和主题方法
-    setDeviceType,
-    setTheme,
-    toggleTheme,
 
     // 组件刷新方法
     refreshMainContent,
@@ -205,9 +201,6 @@ export const useAppStore = defineStore("app", () => {
 
     // 兼容性方法（保持向后兼容）
     getSidebarStatus: isSidebarOpened,
-    getDevice: currentDevice,
-    getTheme: currentTheme,
     getRefreshKey: currentMainContentKey,
-    toggleDevice: setDeviceType,
   };
 });

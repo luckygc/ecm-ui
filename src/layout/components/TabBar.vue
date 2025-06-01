@@ -53,8 +53,9 @@ function handleTabClick() {
 }
 
 // 处理标签关闭
-function handleTabRemove(targetPath: string) {
-  const view = visitedViews.value.find(item => item.path === targetPath)
+function handleTabRemove(targetPath: string | number) {
+  const path = String(targetPath)
+  const view = visitedViews.value.find(item => item.path === path)
   if (view) {
     closeSelectedTag(view)
   }
@@ -64,7 +65,7 @@ function handleTabRemove(targetPath: string) {
 function closeSelectedTag(view: TagView) {
   tagsViewStore.delView(view)
   if (view.path === route.path) {
-    toLastView(visitedViews.value, view)
+    toLastView(visitedViews.value)
   }
 }
 
@@ -91,7 +92,7 @@ function closeAllTags() {
 }
 
 // 跳转到最后一个标签
-function toLastView(visitedViews: TagView[], view: TagView) {
+function toLastView(visitedViews: TagView[]) {
   const latestView = visitedViews.slice(-1)[0]
   if (latestView) {
     router.push(latestView.fullPath || latestView.path || '/')
@@ -132,8 +133,10 @@ onMounted(() => {
 
 <template>
   <div class="tab-bar-container">
-    <ElTabs v-model="activeTab" type="card" closable class="tab-bar-tabs" @tab-click="handleTabClick">
-      <ElTabPane v-for="item in visitedViews" :key="item.path" :label="item.title" :name="item.path">
+    <ElTabs v-model="activeTab" type="card" closable class="tab-bar-tabs" @tab-click="handleTabClick"
+      @tab-remove="handleTabRemove">
+      <ElTabPane v-for="item in visitedViews" :key="item.path" :label="item.title" :name="item.path"
+        :closable="!item.meta?.affix">
         <template #label>
           <ElIcon v-if="item.icon" class="tab-icon">
             <component :is="item.icon" />
