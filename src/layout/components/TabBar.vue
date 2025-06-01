@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TagView } from '@/stores/tagsView'
+import type { PageInfo } from '@/stores/route'
 import { ArrowDown, CircleClose, FolderDelete, Refresh } from '@element-plus/icons-vue'
 import {
   ElButton,
@@ -10,18 +10,18 @@ import {
   ElTabPane,
   ElTabs,
 } from 'element-plus'
-import { computed, onMounted, watch } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useTagsViewStore } from '@/stores/tagsView'
+import { useRouteStore } from '@/stores/route'
 import { useAppStore } from '@/stores/app'
 
 const route = useRoute()
 const router = useRouter()
-const tagsViewStore = useTagsViewStore()
+const routeStore = useRouteStore()
 const appStore = useAppStore()
 
-// 获取已访问的视图
-const visitedViews = computed(() => tagsViewStore.getVisitedViews)
+// 获取已访问的视图 - 使用routeStore而不是tagsViewStore
+const visitedViews = computed(() => routeStore.visitedPages)
 
 // 当前激活的标签
 const activeTab = computed({
@@ -32,20 +32,6 @@ const activeTab = computed({
     }
   },
 })
-
-// 添加标签
-function addTags() {
-  const { name, path, meta, fullPath, query } = route
-  if (name) {
-    tagsViewStore.addView({
-      name,
-      path,
-      meta,
-      fullPath,
-      query,
-    })
-  }
-}
 
 // 处理标签点击
 function handleTabClick() {
@@ -62,8 +48,8 @@ function handleTabRemove(targetPath: string | number) {
 }
 
 // 关闭选中的标签
-function closeSelectedTag(view: TagView) {
-  tagsViewStore.delView(view)
+function closeSelectedTag(view: PageInfo) {
+  routeStore.delVisitedPage(view)
   if (view.path === route.path) {
     toLastView(visitedViews.value)
   }
@@ -71,8 +57,8 @@ function closeSelectedTag(view: TagView) {
 
 function refreshCurrentTag() {
   const view = visitedViews.value.find(item => item.path === route.path)
-  if (view) {
-    tagsViewStore.delCachedView(view)
+  if (view && view.name) {
+    routeStore.delCachedPage(view.name)
     appStore.refreshMainContent()
   }
 }
@@ -81,18 +67,18 @@ function refreshCurrentTag() {
 function closeOthersTags() {
   const currentView = visitedViews.value.find(item => item.path === route.path)
   if (currentView) {
-    tagsViewStore.delOtherViews(currentView)
+    routeStore.delOtherVisitedPages(currentView)
   }
 }
 
 // 关闭所有标签
 function closeAllTags() {
-  tagsViewStore.delAllViews()
+  routeStore.delAllVisitedPages()
   router.push('/')
 }
 
 // 跳转到最后一个标签
-function toLastView(visitedViews: TagView[]) {
+function toLastView(visitedViews: PageInfo[]) {
   const latestView = visitedViews.slice(-1)[0]
   if (latestView) {
     router.push(latestView.fullPath || latestView.path || '/')
@@ -118,17 +104,8 @@ function handleCommand(command: string) {
   }
 }
 
-// 监听路由变化，添加标签
-watch(
-  () => route.path,
-  () => {
-    addTags()
-  },
-)
-
-onMounted(() => {
-  addTags()
-})
+// 注意：路由变化的监听已经在 routeHelper 中统一处理
+// 这里不需要重复监听，避免重复添加页签
 </script>
 
 <template>
@@ -226,5 +203,14 @@ onMounted(() => {
 
 :deep(.el-tabs__nav-next) {
   border-left: 1px solid var(--el-border-color-light)
+}
+
+:deep(.el-tabs--card>.el-tabs__header .el-tabs__item.is-active.is-closable) {
+  border-bottom: 2px solid var(--el-color-primary);
+}
+
+:deep(.el-tabs--card>.el-tabs__header) {
+  border-left: none;
+  border-right: none;
 }
 </style>

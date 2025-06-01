@@ -23,7 +23,7 @@ app.use(ElementPlus, {
 app.use(pinia);
 app.use(router);
 
-// 初始化路由助手
+// 在应用挂载前初始化路由助手，确保路由监听能正确工作
 initRouteHelper(router);
 
 app.mount("#app");

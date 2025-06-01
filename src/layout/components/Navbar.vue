@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ElBreadcrumb, ElBreadcrumbItem, ElIcon } from 'element-plus'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRouteStore } from '@/stores/route'
 
 const router = useRouter()
 const routeStore = useRouteStore()
 
-// 从 store 获取面包屑数据
-const breadcrumbs = routeStore.breadcrumbs
+// 从 store 获取面包屑数据 - 使用computed确保响应性
+const breadcrumbs = computed(() => routeStore.breadcrumbs)
 
 // 处理面包屑点击
 function handleBreadcrumbClick(breadcrumb: any) {

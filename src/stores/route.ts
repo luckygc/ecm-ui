@@ -72,7 +72,9 @@ export const useRouteStore = defineStore("route", () => {
           : `${parentPath}/${route.path}`.replace(/\/+/g, "/");
 
         // 跳过隐藏的路由
-        if (route.meta?.hidden) continue;
+        if (route.meta?.hidden) {
+          continue;
+        }
 
         const routeInfo: RouteInfo = {
           path: fullPath,
@@ -204,15 +206,17 @@ export const useRouteStore = defineStore("route", () => {
     const { name, path, meta, fullPath, query, params } = route;
 
     // 跳过隐藏的路由和没有实际页面的路由
-    if (!name || meta?.hidden || meta?.noPage) return;
+    if (!name || meta?.hidden || meta?.noPage) {
+      return;
+    }
 
     const pageInfo: PageInfo = {
       path,
       name: name as string,
-      title: meta?.title || (name as string),
-      icon: meta?.icon,
-      affix: meta?.affix,
-      noCache: meta?.noCache,
+      title: (meta?.title as string) || (name as string),
+      icon: meta?.icon as string,
+      affix: meta?.affix as boolean,
+      noCache: meta?.noCache as boolean,
       fullPath,
       query: { ...query },
       params: { ...params },

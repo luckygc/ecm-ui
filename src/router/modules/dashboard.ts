@@ -5,9 +5,10 @@ import type { RouteRecordRaw } from "vue-router";
 export const dashboardRoutes: Array<RouteRecordRaw> = [
   {
     path: "/",
+    name: "Root",
     component: Layout,
     redirect: "/dashboard",
-    meta: { title: "首页", icon: "HomeFilled" },
+    meta: { title: "首页", icon: "HomeFilled", noPage: true },
     children: [
       {
         path: "dashboard",

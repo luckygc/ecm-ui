@@ -83,17 +83,17 @@ const keepAliveKey = computed(() => appStore.getComponentKey('dashboard'))
 const refreshKeepAliveComponent = (componentName: string) => {
   // 先刷新组件键
   appStore.refreshComponent(componentName)
-  
-  // 如果需要，也可以配合 TagsView store 来清除缓存
-  // const tagsViewStore = useTagsViewStore()
-  // tagsViewStore.delCachedView({ name: componentName })
+
+  // 如果需要，也可以配合 Route store 来清除缓存
+  // const routeStore = useRouteStore()
+  // routeStore.delCachedPage(componentName)
 }
 </script>
 
 <template>
   <div class="app-store-usage-example">
     <h2>App Store 使用示例</h2>
-    
+
     <!-- 状态显示 -->
     <div class="status-section">
       <h3>当前状态</h3>
@@ -107,7 +107,7 @@ const refreshKeepAliveComponent = (componentName: string) => {
     <!-- 操作按钮 -->
     <div class="actions-section">
       <h3>操作示例</h3>
-      
+
       <div class="button-group">
         <h4>侧边栏操作</h4>
         <el-button @click="handleToggleSidebar">切换侧边栏</el-button>
@@ -140,11 +140,7 @@ const refreshKeepAliveComponent = (componentName: string) => {
     <div class="keepalive-section">
       <h3>KeepAlive 使用示例</h3>
       <keep-alive>
-        <component 
-          :is="'div'" 
-          :key="keepAliveKey"
-          class="demo-component"
-        >
+        <component :is="'div'" :key="keepAliveKey" class="demo-component">
           <p>这是一个使用动态key的组件示例</p>
           <p>组件键: {{ keepAliveKey }}</p>
           <el-button @click="() => refreshKeepAliveComponent('dashboard')">
