@@ -4,39 +4,11 @@ import { ElIcon, ElMenu, ElMenuItem, ElSubMenu } from 'element-plus'
 
 <template>
   <div class="navbar-container">
+    <ElBreadcrumb>
+    </ElBreadcrumb>
     <!-- 导航菜单 -->
     <ElMenu class="navbar-menu" mode="horizontal" :ellipsis="false">
-      <ElMenuItem index="1">
-        Processing Center
-      </ElMenuItem>
-      <ElSubMenu index="2">
-        <template #title>
-          Workspace
-        </template>
-        <ElMenuItem index="2-1">
-          item one
-        </ElMenuItem>
-        <ElMenuItem index="2-2">
-          item two
-        </ElMenuItem>
-        <ElMenuItem index="2-3">
-          item three
-        </ElMenuItem>
-        <ElSubMenu index="2-4">
-          <template #title>
-            item four
-          </template>
-          <ElMenuItem index="2-4-1">
-            item one
-          </ElMenuItem>
-          <ElMenuItem index="2-4-2">
-            item two
-          </ElMenuItem>
-          <ElMenuItem index="2-4-3">
-            item three
-          </ElMenuItem>
-        </ElSubMenu>
-      </ElSubMenu>
+
     </ElMenu>
   </div>
 </template>

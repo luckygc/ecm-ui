@@ -98,12 +98,7 @@ function toLastView(visitedViews: TagView[], view: TagView) {
   }
   else {
     // 如果没有标签，则跳转到首页
-    if (view.name === 'Dashboard') {
-      router.replace({ path: `/redirect${view.path}` })
-    }
-    else {
-      router.push('/')
-    }
+    router.push('/')
   }
 }
 
@@ -201,11 +196,11 @@ onMounted(() => {
 }
 
 /* 去除 tabs 组件的阴影和边框 */
-.tab-bar-tabs :deep(.el-tabs__header) {
+/* .tab-bar-tabs :deep(.el-tabs__header) {
   box-shadow: none;
   border-bottom: none;
   margin: 0;
-}
+} */
 
 .tab-bar-tabs :deep(.el-tabs__nav-wrap) {
   box-shadow: none;

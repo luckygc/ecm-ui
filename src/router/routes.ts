@@ -2,10 +2,12 @@ import Layout from "@/layout/index.vue";
 import type { RouteRecordRaw } from "vue-router";
 
 export const routes: Array<RouteRecordRaw> = [
+  // 仪表盘路由 - 首页
   {
     path: "/",
     component: Layout,
     redirect: "/dashboard",
+    meta: { title: "首页", icon: "HomeFilled" },
     children: [
       {
         path: "dashboard",
@@ -15,6 +17,7 @@ export const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  // 系统管理路由
   {
     path: "/system",
     component: Layout,
@@ -35,6 +38,7 @@ export const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  // 多级菜单路由 - 演示嵌套菜单功能
   {
     path: "/nested",
     component: Layout,
@@ -50,7 +54,7 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: "menu2",
         name: "Menu2",
-        component: () => import("@/views/nested/menu2/index.vue"), // 添加组件
+        component: () => import("@/views/nested/menu2/index.vue"),
         meta: { title: "菜单2", icon: "Folder" },
         children: [
           {
@@ -75,11 +79,13 @@ export const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  // 错误页面路由 - 隐藏在侧边栏中
   {
     path: "/404",
     component: () => import("@/views/error-page/404.vue"),
     meta: { hidden: true },
   },
+  // 通配符路由 - 处理未匹配的路径，重定向到404页面
   {
     path: "/:pathMatch(.*)*",
     redirect: "/404",

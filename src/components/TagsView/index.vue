@@ -106,12 +106,7 @@ function toLastView(visitedViews: TagView[], view: TagView) {
   }
   else {
     // 如果没有标签，则跳转到首页
-    if (view.name === 'Dashboard') {
-      router.replace({ path: `/redirect${view.path}` })
-    }
-    else {
-      router.push('/')
-    }
+    router.push('/')
   }
 }
 
