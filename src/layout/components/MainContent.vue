@@ -6,8 +6,30 @@ import { useAppStore } from '@/stores/app'
 const tagsViewStore = useTagsViewStore()
 const appStore = useAppStore()
 
+// 获取缓存的视图列表
 const cachedViews = computed(() => tagsViewStore.getCachedViews)
-const refreshKey = computed(() => appStore.getRefreshKey)
+
+// 获取主内容区域的刷新键
+const mainContentRefreshKey = computed(() => appStore.currentMainContentKey)
+
+// 生成组件的完整刷新键
+const generateComponentKey = (routeName: string | symbol | undefined): string => {
+  if (!routeName) return mainContentRefreshKey.value
+
+  const routeNameStr = String(routeName)
+
+  // 尝试获取该路由组件的专用刷新键
+  const componentKey = appStore.getComponentKey(routeNameStr)
+
+  // 如果没有专用键，则使用主内容刷新键
+  if (componentKey === routeNameStr) {
+    // 自动为新路由组件添加刷新键
+    appStore.addComponentKey(routeNameStr)
+    return `${routeNameStr}_${mainContentRefreshKey.value}`
+  }
+
+  return `${routeNameStr}_${componentKey}`
+}
 </script>
 
 <template>
@@ -16,7 +38,7 @@ const refreshKey = computed(() => appStore.getRefreshKey)
       <router-view v-slot="{ Component, route }">
         <transition name="fade-transform" mode="out-in">
           <keep-alive :include="cachedViews">
-            <component :is="Component" :key="String(route.name) + refreshKey" />
+            <component :is="Component" :key="generateComponentKey(route.name)" />
           </keep-alive>
         </transition>
       </router-view>
