@@ -1,90 +1,22 @@
 <script setup lang="ts">
-import { ArrowDown, CircleClose, FolderDelete, Refresh } from '@element-plus/icons-vue'
-import {
-  ElButton,
-  ElDropdown,
-  ElDropdownItem,
-  ElDropdownMenu,
-  ElIcon,
-  ElTabPane,
-  ElTabs,
-} from 'element-plus'
-import { computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { usePageStore } from '@/stores/page-store'
+import {ArrowDown, CircleClose, FolderDelete, Refresh} from '@element-plus/icons-vue'
+import {ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs,} from 'element-plus'
+import {useRouteStore} from '@/stores/route-store.ts'
+import router from "@/router";
 
-const route = useRoute()
-const router = useRouter()
-const pageStore = usePageStore()
-
-// 计算属性：从store获取数据
-const visitedViews = computed(() => pageStore.visitedPages)
-const activeTab = computed(() => pageStore.activePageFullPath)
-
-// 监听路由变化
-watch(
-  () => route.fullPath,
-  () => {
-    pageStore.handleRouteChange(route)
-  },
-  { immediate: true }
-)
-
-// 处理标签点击
-function handleTabClick(pane: any) {
-  const fullPath = pane.paneName
-  if (fullPath && fullPath !== route.fullPath) {
-    router.push(fullPath)
-  }
-}
-
-// 处理标签关闭
-function handleTabRemove(targetPath: string | number) {
-  const fullPath = String(targetPath)
-  closeSelectedTag(fullPath)
-}
-
-// 关闭指定标签
-async function closeSelectedTag(fullPath: string) {
-  const redirectPath = await pageStore.closePage(fullPath)
-
-  // 如果需要跳转到其他页面且有有效的重定向路径
-  if (redirectPath && redirectPath !== null) {
-    router.push(redirectPath)
-  }
-}
-
-// 刷新当前标签
-function refreshCurrentTag() {
-  const componentName = pageStore.refreshCurrentPage()
-  if (componentName) {
-    // 简单的刷新逻辑：重新加载当前路由
-    router.go(0)
-  }
-}
-
-// 关闭其他标签
-async function closeOthersTags() {
-  await pageStore.closeOtherPages()
-}
-
-// 关闭所有标签
-async function closeAllTags() {
-  await pageStore.closeAllPages()
-  // 不进行任何重定向，保持当前状态
-}
+const routeStore = useRouteStore()
 
 // 处理下拉菜单命令
 function handleCommand(command: string) {
   switch (command) {
     case 'refresh':
-      refreshCurrentTag()
+      routeStore.refreshCurrentPage();
       break
     case 'closeOthers':
-      closeOthersTags()
+      routeStore.closeOtherPages()
       break
     case 'closeAll':
-      closeAllTags()
+      routeStore.closeAllPages()
       break
   }
 }
@@ -92,39 +24,41 @@ function handleCommand(command: string) {
 
 <template>
   <div class="tab-bar-container">
-    <ElTabs :model-value="activeTab" type="card" closable class="tab-bar-tabs" @tab-click="handleTabClick"
-      @tab-remove="handleTabRemove">
-      <ElTabPane v-for="page in visitedViews" :key="page.fullPath"
-        :label="(page.meta?.title as string) || (page.name as string) || page.fullPath" :name="page.fullPath" closable>
+    <ElTabs :model-value="routeStore.activeRouteFullPath" type="card" closable class="tab-bar-tabs"
+            @tab-click="({paneName})=>router.push(paneName as string)"
+            @tab-remove="(name) => routeStore.closePage(name as string)">
+      <ElTabPane v-for="page in routeStore.visitedRoutes" :key="page.fullPath"
+                 :label="page.meta?.title as string" :name="page.fullPath"
+                 closable>
       </ElTabPane>
     </ElTabs>
 
     <!-- 操作按钮 -->
-    <div v-if="visitedViews.length > 0" class="tabs-actions">
+    <div v-if="routeStore.visitedRoutes.length > 0" class="tabs-actions">
       <ElDropdown trigger="click" @command="handleCommand">
         <ElButton size="large" text>
           操作
           <ElIcon class="el-icon--right">
-            <ArrowDown />
+            <ArrowDown/>
           </ElIcon>
         </ElButton>
         <template #dropdown>
           <ElDropdownMenu>
             <ElDropdownItem command="refresh">
               <ElIcon>
-                <Refresh />
+                <Refresh/>
               </ElIcon>
               <span>刷新当前</span>
             </ElDropdownItem>
             <ElDropdownItem command="closeOthers">
               <ElIcon>
-                <CircleClose />
+                <CircleClose/>
               </ElIcon>
               <span>关闭其他</span>
             </ElDropdownItem>
             <ElDropdownItem command="closeAll">
               <ElIcon>
-                <FolderDelete />
+                <FolderDelete/>
               </ElIcon>
               <span>关闭所有</span>
             </ElDropdownItem>

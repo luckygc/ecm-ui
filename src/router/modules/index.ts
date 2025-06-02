@@ -1,15 +1,15 @@
 import type { RouteRecordRaw } from "vue-router";
-import { dashboard } from "./dashboard";
-import { systemRoutes } from "./system";
-import { nestedRoutes } from "./nested";
-import { testRoutes } from "./test";
-import { errorRoutes } from "./error";
-import { authRoutes } from "./auth";
+import { dashboardRoutes } from "./dashboard-routes.ts";
+import { systemRoutes } from "./system-routes.ts";
+import { nestedRoutes } from "./nested-routes.ts";
+import { testRoutes } from "./test-routes.ts";
+import { errorRoutes } from "./error-routes.ts";
+import { authRoutes } from "./auth-routes.ts";
 
 // 导出所有路由模块
 export const routes: Array<RouteRecordRaw> = [
   ...authRoutes,
-  ...dashboard,
+  ...dashboardRoutes,
   ...systemRoutes,
   ...nestedRoutes,
   ...testRoutes,
@@ -18,7 +18,7 @@ export const routes: Array<RouteRecordRaw> = [
 
 // 按模块导出，方便按需引入
 export {
-  dashboard,
+  dashboardRoutes,
   systemRoutes,
   nestedRoutes,
   testRoutes,

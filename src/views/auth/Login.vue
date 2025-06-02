@@ -4,7 +4,7 @@
       <!-- Logo和标题 -->
       <div class="login-header">
         <div class="logo">
-          <img src="/logo.svg" alt="Logo" class="logo-img" />
+          <img src="/logo.svg" alt="Logo" class="logo-img"/>
         </div>
         <h1 class="login-title">Repodar 管理系统</h1>
         <p class="login-subtitle">欢迎登录</p>
@@ -12,14 +12,15 @@
 
       <!-- 登录表单 -->
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form" size="large"
-        @keyup.enter="handleLogin">
+               @keyup.enter="handleLogin">
         <el-form-item prop="username">
-          <el-input v-model="loginForm.username" placeholder="请输入用户名" prefix-icon="User" clearable />
+          <el-input v-model="loginForm.username" placeholder="请输入用户名" prefix-icon="User" clearable/>
         </el-form-item>
 
         <el-form-item prop="password">
-          <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" show-password
-            clearable />
+          <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock"
+                    show-password
+                    clearable/>
         </el-form-item>
 
         <el-form-item>
@@ -33,12 +34,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { useUserStore } from '@/stores/user'
-import { login } from '@/api/modules/auth-api'
-import type { LoginForm } from '@/types/utils/requests-type'
+import {reactive, ref} from 'vue'
+import {useRouter} from 'vue-router'
+import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
+import {useUserStore} from '@/stores/user'
+import {authApi} from "@/api";
+import type {LoginForm} from "@/types/api/modules/auth-api-types.ts";
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -58,12 +59,12 @@ const loginForm = reactive<LoginForm>({
 // 表单验证规则
 const loginRules: FormRules = {
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 2, max: 20, message: '用户名长度在 2 到 20 个字符', trigger: 'blur' }
+    {required: true, message: '请输入用户名', trigger: 'blur'},
+    {min: 2, max: 20, message: '用户名长度在 2 到 20 个字符', trigger: 'blur'}
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur' }
+    {required: true, message: '请输入密码', trigger: 'blur'},
+    {min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur'}
   ]
 }
 
@@ -80,7 +81,7 @@ async function handleLogin() {
     loading.value = true
 
     // 调用登录API，启用skipErrorHandler来自定义错误处理
-    const response = await login(loginForm, true)
+    const response = await authApi.login(loginForm, true)
 
     // 登录成功，token已经在响应拦截器中自动处理
     userStore.setUserInfo(response.user)
@@ -128,10 +129,9 @@ async function handleLogin() {
   max-width: 400px;
   background: white;
   border-radius: 12px;
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  0 10px 10px -5px rgba(0, 0, 0, 0.04),
+  0 0 0 1px rgba(0, 0, 0, 0.05);
   padding: 40px;
 }
 

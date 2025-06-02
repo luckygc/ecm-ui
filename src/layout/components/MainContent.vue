@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import { usePageStore } from '@/stores/page-store';
-import { storeToRefs } from 'pinia';
-import { defineComponent, h, type Component } from 'vue';
+import {useRouteStore} from '@/stores/route-store.ts';
+import {storeToRefs} from 'pinia';
+import {defineComponent, h, type Component} from 'vue';
+import type {RouteLocationNormalizedLoadedGeneric} from "vue-router";
 
-const pageStore = usePageStore();
-const { keepAliveInclude } = storeToRefs(pageStore);
+const pageStore = useRouteStore();
+const {computeComponentKey} = pageStore;
+const {keepAliveInclude} = storeToRefs(pageStore);
 
 function createDynamicNamedComponent(
-  route: any,
-  wrappedComponent: Component
+    route: RouteLocationNormalizedLoadedGeneric,
+    wrappedComponent: Component
 ) {
   return defineComponent({
-    name: pageStore.generateComponentName(route),
-    setup(props, { attrs, slots }) {
-      return () => h(wrappedComponent, { ...attrs, ...props }, slots);
+    name: pageStore.computeDynamicPageComponentName(route.fullPath),
+    setup(props, {attrs, slots}) {
+      return () => h(wrappedComponent, {...attrs, ...props}, slots);
     },
   });
 }
@@ -24,7 +26,7 @@ function createDynamicNamedComponent(
   <router-view v-slot="{ Component, route }">
     <transition name="fade-transform" mode="out-in">
       <keep-alive :include="keepAliveInclude" :max="15">
-        <component :is="createDynamicNamedComponent(route, Component)" :key="route.fullPath" />
+        <component :is="createDynamicNamedComponent(route, Component)" :key="computeComponentKey(route.fullPath)"/>
       </keep-alive>
     </transition>
   </router-view>

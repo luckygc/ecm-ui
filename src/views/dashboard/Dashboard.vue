@@ -51,7 +51,7 @@ function openTestWithQuery() {
   router.push({
     path: `/test/${id}`,
     query: {
-      type: 'dashboard-test',
+      type: 'dashboardRoutes-test',
       timestamp: Date.now().toString()
     }
   })
@@ -59,8 +59,8 @@ function openTestWithQuery() {
 
 onMounted(() => {
   loadTime.value = new Date().toLocaleString()
-  refreshCount.value = parseInt(localStorage.getItem('dashboard-refresh-count') || '0') + 1
-  localStorage.setItem('dashboard-refresh-count', refreshCount.value.toString())
+  refreshCount.value = parseInt(localStorage.getItem('dashboardRoutes-refresh-count') || '0') + 1
+  localStorage.setItem('dashboardRoutes-refresh-count', refreshCount.value.toString())
 })
 </script>
 
