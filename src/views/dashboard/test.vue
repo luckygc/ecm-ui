@@ -29,7 +29,7 @@
               </el-descriptions>
             </el-card>
           </el-col>
-          
+
           <el-col :span="12">
             <el-card shadow="never">
               <h3>页面状态</h3>
@@ -90,12 +90,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, getCurrentInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { useRouteStore } from '@/stores/route-store'
 
 const route = useRoute()
 const router = useRouter()
+const routeStore = useRouteStore()
+const instance = getCurrentInstance()
 
 // 路由ID
 const routeId = computed(() => route.params.id as string)
@@ -118,7 +121,7 @@ function initPageData() {
   createTime.value = new Date().toLocaleString()
   randomData.value = Math.random().toString(36).substring(7)
   componentInstanceId.value = `test_${routeId.value}_${Date.now()}`
-  
+
   // 根据路由ID设置不同的默认数据
   formData.value = {
     text: `测试页面 ${routeId.value} 的数据`,
@@ -182,11 +185,27 @@ function resetData() {
 // 组件挂载时初始化
 onMounted(() => {
   initPageData()
+
+  // 设置组件的动态名称，用于keep-alive识别
+  const currentPage = routeStore.findPageByFullPath(route.fullPath)
+  if (instance && currentPage?.componentName) {
+    // 动态设置组件名称
+    if (instance.type) {
+      instance.type.name = currentPage.componentName
+    }
+    console.log(`组件实例 ${currentPage.componentName} 已初始化，路由参数:`, route.params)
+  }
 })
 
 // 监听路由变化，重新初始化数据
-// 注意：由于使用了keepAlive，这个组件实例会被复用
-// 但是由于我们使用了唯一的组件名，每个参数实例都会有独立的组件实例
+// 注意：由于我们使用了唯一的组件名和key，每个参数实例都会有独立的组件实例
+</script>
+
+<script lang="ts">
+// 设置默认组件名
+export default {
+  name: 'Test'
+}
 </script>
 
 <style scoped>

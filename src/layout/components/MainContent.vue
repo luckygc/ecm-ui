@@ -9,12 +9,17 @@ const routeStore = useRouteStore()
 const appStore = useAppStore()
 
 // 获取缓存的视图列表 - 使用新的组件名机制
-const cachedViews = computed(() => routeStore.cachedPages)
+// 注意：我们暂时移除include机制，让keep-alive缓存所有组件
+// const cachedViews = computed(() => {
+//   const cached = routeStore.cachedPages
+//   console.log('当前缓存的组件列表:', cached)
+//   return cached
+// })
 
 // 获取主内容区域的刷新键
 const mainContentRefreshKey = computed(() => appStore.currentMainContentKey)
 
-// 生成组件的完整刷新键 - 基于fullPath而不是routeName
+// 生成组件的完整刷新键 - 基于fullPath确保每个实例都有唯一的key
 const generateComponentKey = (routeName: string | symbol | undefined): string => {
   if (!routeName) return mainContentRefreshKey.value
 
@@ -22,7 +27,8 @@ const generateComponentKey = (routeName: string | symbol | undefined): string =>
   const currentPage = routeStore.findPageByFullPath(route.fullPath)
 
   if (currentPage && currentPage.componentName) {
-    // 使用页面的唯一组件名作为key
+    // 使用页面的唯一组件名作为key，这样每个参数实例都有独立的key
+    console.log(`为路由 ${route.fullPath} 生成组件key: ${currentPage.componentName}`)
     return currentPage.componentName
   }
 
@@ -32,9 +38,12 @@ const generateComponentKey = (routeName: string | symbol | undefined): string =>
 
   if (componentKey === routeNameStr) {
     appStore.addComponentKey(routeNameStr)
-    return `${routeNameStr}_${mainContentRefreshKey.value}`
+    const key = `${routeNameStr}_${mainContentRefreshKey.value}`
+    console.log(`为路由 ${route.fullPath} 生成降级key: ${key}`)
+    return key
   }
 
+  console.log(`为路由 ${route.fullPath} 生成组件key: ${routeNameStr}_${componentKey}`)
   return `${routeNameStr}_${componentKey}`
 }
 </script>
@@ -44,7 +53,7 @@ const generateComponentKey = (routeName: string | symbol | undefined): string =>
     <div class="content-wrapper">
       <router-view v-slot="{ Component, route }">
         <transition name="fade-transform" mode="out-in">
-          <keep-alive :include="cachedViews">
+          <keep-alive :max="20">
             <component :is="Component" :key="generateComponentKey(route.name)" />
           </keep-alive>
         </transition>

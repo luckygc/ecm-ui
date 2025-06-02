@@ -1,16 +1,16 @@
-import { defineStore } from "pinia";
-import { computed, ref } from "vue";
-import type { RouteLocationNormalized, RouteRecordRaw } from "vue-router";
-import { router, routes } from "@/router";
+import { routes } from "@/router";
 import {
   buildFullPath,
   createRouteInfo,
-  type RouteMeta,
   type RouteInfo,
+  type RouteMeta,
 } from "@/utils/routeHelper";
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+import type { RouteLocationNormalized, RouteRecordRaw } from "vue-router";
 
 // 重新导出类型，保持向后兼容
-export type { RouteMeta, RouteInfo } from "@/utils/routeHelper";
+export type { RouteInfo, RouteMeta } from "@/utils/routeHelper";
 
 // 面包屑项接口
 export interface BreadcrumbItem {
@@ -362,27 +362,6 @@ export const useRouteStore = defineStore("route", () => {
     return visitedPages.value.find((page) => page.fullPath === fullPath);
   };
 
-  // 初始化固定页面
-  const initAffixPages = () => {
-    const affixRoutes = flatRoutes.value.filter((route) => route.affix);
-    affixPages.value = affixRoutes.map((route) => ({
-      path: route.path,
-      name: route.name,
-      title: route.title,
-      icon: route.icon,
-      affix: route.affix,
-      noCache: route.noCache,
-      meta: route.meta,
-    }));
-
-    // 将固定页面添加到访问列表
-    affixPages.value.forEach((page) => {
-      if (!visitedPages.value.find((p) => p.path === page.path)) {
-        visitedPages.value.push(page);
-      }
-    });
-  };
-
   // ==================== 返回接口 ====================
 
   return {
@@ -411,6 +390,5 @@ export const useRouteStore = defineStore("route", () => {
     findRouteByPath,
     findRouteByName,
     findPageByFullPath,
-    initAffixPages,
   };
 });

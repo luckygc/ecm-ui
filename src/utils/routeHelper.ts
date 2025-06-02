@@ -90,9 +90,6 @@ export function createRouteInfo(
 export function initRouteHelper(router: Router) {
   const routeStore = useRouteStore();
 
-  // 初始化固定页面
-  routeStore.initAffixPages();
-
   // 路由前置守卫 - 确保路由变化被正确处理
   router.beforeEach((_to, _from, next) => {
     // 继续路由导航

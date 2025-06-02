@@ -1,8 +1,8 @@
 import Layout from "@/layout/index.vue";
-import type { RouteRecordRaw } from "vue-router";
+import type { CustomRouterRecordRaw } from "@/types/router/router-types";
 
 // 仪表盘路由模块
-export const dashboard: Array<RouteRecordRaw> = [
+export const dashboard: Array<CustomRouterRecordRaw> = [
   {
     path: "/",
     name: "Root",
