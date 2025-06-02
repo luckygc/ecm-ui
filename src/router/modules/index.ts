@@ -4,9 +4,11 @@ import { systemRoutes } from "./system";
 import { nestedRoutes } from "./nested";
 import { testRoutes } from "./test";
 import { errorRoutes } from "./error";
+import { authRoutes } from "./auth";
 
 // 导出所有路由模块
 export const routes: Array<RouteRecordRaw> = [
+  ...authRoutes,
   ...dashboard,
   ...systemRoutes,
   ...nestedRoutes,
@@ -15,4 +17,11 @@ export const routes: Array<RouteRecordRaw> = [
 ];
 
 // 按模块导出，方便按需引入
-export { dashboard, systemRoutes, nestedRoutes, testRoutes, errorRoutes };
+export {
+  dashboard,
+  systemRoutes,
+  nestedRoutes,
+  testRoutes,
+  errorRoutes,
+  authRoutes,
+};

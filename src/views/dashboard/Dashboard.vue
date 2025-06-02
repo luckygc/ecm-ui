@@ -3,9 +3,13 @@ import { Bell, DataAnalysis, Document, Plus, Refresh, Setting, Upload, User } fr
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
+import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 const appStore = useAppStore()
+const userStore = useUserStore()
+const { userInfo, isLoggedIn } = storeToRefs(userStore)
 
 const loadTime = ref('')
 const refreshCount = ref(0)
