@@ -4,10 +4,6 @@ import {type RouteLocationNormalizedLoadedGeneric, useRoute} from "vue-router";
 import type {VisitedRoute} from "@/types/store/route-store-types.ts";
 import router from "@/router";
 
-// 处理路由列表
-// 处理激活路由
-// 处理keepAlive
-
 // 判断路由是否需要缓存
 function needKeepAlive(route: VisitedRoute): boolean {
     // 默认缓存，除非明确设置为false
