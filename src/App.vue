@@ -17,11 +17,3 @@ watch(() => route.fullPath, () => {
   <router-view/>
 </template>
 
-<style>
-html,
-body,
-#app {
-  height: 100vh;
-  width: 100vw;
-}
-</style>

@@ -166,29 +166,9 @@ async function handleLogin() {
   width: 100%;
 }
 
-.login-options {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .login-button {
   width: 100%;
   height: 44px;
   font-size: 16px;
-}
-
-:deep(.el-input__inner) {
-  height: 44px;
-  line-height: 44px;
-}
-
-:deep(.el-form-item) {
-  margin-bottom: 24px;
-}
-
-:deep(.el-form-item:last-child) {
-  margin-bottom: 0;
 }
 </style>

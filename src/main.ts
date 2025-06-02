@@ -8,6 +8,7 @@ import "element-plus/dist/index.css";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
 import "normalize.css";
 import { createApp } from "vue";
+import "@/assets/transition.css";
 
 const app = createApp(App);
 

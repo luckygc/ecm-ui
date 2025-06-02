@@ -1,15 +1,11 @@
-<script setup lang="ts" name="Dashboard">
-import { Bell, DataAnalysis, Document, Plus, Refresh, Setting, Upload, User } from '@element-plus/icons-vue'
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAppStore } from '@/stores/app'
-import { useUserStore } from '@/stores/user'
-import { storeToRefs } from 'pinia'
+<script setup lang="ts">
+import {Bell, DataAnalysis, Document, Plus, Refresh, Setting, Upload, User} from '@element-plus/icons-vue'
+import {onMounted, ref} from 'vue'
+import {useRouter} from 'vue-router'
+import {useAppStore} from '@/stores/app'
 
 const router = useRouter()
 const appStore = useAppStore()
-const userStore = useUserStore()
-const { userInfo, isLoggedIn } = storeToRefs(userStore)
 
 const loadTime = ref('')
 const refreshCount = ref(0)

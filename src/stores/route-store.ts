@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import type {RouteLocationNormalizedLoadedGeneric} from "vue-router";
 import type {VisitedRoute} from "@/types/store/route-store-types.ts";
 import router from "@/router";
@@ -20,7 +20,9 @@ function computeDynamicPageComponentName(routeFullPath: string): string {
 }
 
 // 创建路由对象的副本，避免响应式引用问题
-function createVisitedRoute(route: RouteLocationNormalizedLoadedGeneric): VisitedRoute {
+function createVisitedRoute(
+    route: RouteLocationNormalizedLoadedGeneric
+): VisitedRoute {
     return {
         fullPath: route.fullPath,
         path: route.path,
@@ -31,9 +33,7 @@ function createVisitedRoute(route: RouteLocationNormalizedLoadedGeneric): Visite
 
 export const useRouteStore = defineStore("page", () => {
     // 访问过的路由映射
-    const visitedRouteMap = ref<Map<string, VisitedRoute>>(
-        new Map()
-    );
+    const visitedRouteMap = ref<Map<string, VisitedRoute>>(new Map());
 
     // 获取当前激活的页面对象
     const activeRoute = ref<VisitedRoute>();
@@ -41,14 +41,23 @@ export const useRouteStore = defineStore("page", () => {
     // KeepAlive include列表 - 统一管理缓存
     const keepAliveInclude = ref<string[]>([]);
 
-    const refreshKey = ref<'' | '_'>('');
+    // 修改 refreshKey 的数据结构，从单一字符串变为 Map
+    const refreshKeyMap = ref<Map<string, "" | "_">>(new Map());
 
     // 访问过的路由列表
-    const visitedRoutes = computed(() => Array.from(visitedRouteMap.value.values()));
+    const visitedRoutes = computed(() =>
+        Array.from(visitedRouteMap.value.values())
+    );
     // 当前激活的路由fullPath
     const activeRouteFullPath = computed(() => activeRoute.value?.fullPath);
     // 当前激活的路由名称
     const activeRouteName = computed(() => activeRoute.value?.name);
+
+    watch(activeRoute, (_, oldVal) => {
+        if (oldVal) {
+            refreshKeyMap.value.delete(oldVal.fullPath);
+        }
+    })
 
     // 添加到KeepAlive缓存
     function _addToKeepAlive(componentName: string) {
@@ -58,7 +67,9 @@ export const useRouteStore = defineStore("page", () => {
     }
 
     function _batchRemoveFromKeepAlive(componentNames: string[]) {
-        keepAliveInclude.value = keepAliveInclude.value.filter(name => !componentNames.includes(name));
+        keepAliveInclude.value = keepAliveInclude.value.filter(
+            (name) => !componentNames.includes(name)
+        );
     }
 
     function handleRouteChange(route: RouteLocationNormalizedLoadedGeneric) {
@@ -98,7 +109,9 @@ export const useRouteStore = defineStore("page", () => {
 
         // 如果页面需要缓存，添加到KeepAlive
         if (needKeepAlive(visitedRoute)) {
-            const componentName = computeDynamicPageComponentName(visitedRoute.fullPath);
+            const componentName = computeDynamicPageComponentName(
+                visitedRoute.fullPath
+            );
             _addToKeepAlive(componentName);
         }
     }
@@ -115,7 +128,7 @@ export const useRouteStore = defineStore("page", () => {
                 continue;
             }
 
-            waitRemoveVisitedRouteFullPaths.push(routeFullPath)
+            waitRemoveVisitedRouteFullPaths.push(routeFullPath);
         }
 
         if (waitRemoveVisitedRouteFullPaths.length === 0) {
@@ -136,7 +149,9 @@ export const useRouteStore = defineStore("page", () => {
             }
         }
 
-        _batchRemoveFromKeepAlive(waitRemoveVisitedRouteFullPaths.map(computeDynamicPageComponentName));
+        _batchRemoveFromKeepAlive(
+            waitRemoveVisitedRouteFullPaths.map(computeDynamicPageComponentName)
+        );
     }
 
     // 获取最后一个路由
@@ -149,18 +164,26 @@ export const useRouteStore = defineStore("page", () => {
     }
 
     function computeComponentKey(routeFullPath: string): string {
-        return `${routeFullPath}${refreshKey.value}`;
+        const key = refreshKeyMap.value.get(routeFullPath) || "";
+        return `${routeFullPath}${key}`;
     }
 
     // 刷新当前页面
     function refreshCurrentPage() {
-        refreshKey.value = refreshKey.value === '' ? '_' : '';
+        if (!activeRouteFullPath.value) {
+            return;
+        }
+
+        const currentPath = activeRouteFullPath.value;
+        const currentKey = refreshKeyMap.value.get(currentPath) || "";
+        refreshKeyMap.value.set(currentPath, currentKey === "" ? "_" : "");
     }
 
     // 关闭其他页面
     async function closeOtherPages() {
-        const waitRemoveRoutePaths = Array.from(visitedRouteMap.value.keys())
-            .filter(routeFullPath => routeFullPath !== activeRouteFullPath.value);
+        const waitRemoveRoutePaths = Array.from(
+            visitedRouteMap.value.keys()
+        ).filter((routeFullPath) => routeFullPath !== activeRouteFullPath.value);
         _batchRemoveVisitedRoute(waitRemoveRoutePaths);
     }
 
@@ -181,6 +204,6 @@ export const useRouteStore = defineStore("page", () => {
         closePage: _removeVisitedRoute,
         refreshCurrentPage,
         closeOtherPages,
-        closeAllPages
+        closeAllPages,
     };
 });
