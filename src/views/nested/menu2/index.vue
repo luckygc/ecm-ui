@@ -16,7 +16,7 @@
         <p>这是一个二级菜单示例页面，包含多个子菜单</p>
         <el-alert
           title="二级菜单示例"
-          type="primary"
+          type="success"
           description="这是一个二级菜单页面，用于展示多级菜单的效果。请点击左侧的子菜单查看更多内容。"
           show-icon
         />

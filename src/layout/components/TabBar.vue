@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {ArrowDown, CircleClose, FolderDelete, Refresh} from '@element-plus/icons-vue'
 import {ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs,} from 'element-plus'
-import {useRouteStore} from '@/stores/route-store.ts'
+import {usePageStore} from '@/stores/route-store.ts'
 import router from "@/router";
 import {useRoute} from "vue-router";
 
-const routeStore = useRouteStore();
+const routeStore = usePageStore();
 
 const route = useRoute();
 
@@ -30,14 +30,14 @@ function handleCommand(command: string) {
     <ElTabs :model-value="route.fullPath" type="card" closable class="tab-bar-tabs"
             @tab-click="({paneName})=> router.push(paneName as string)"
             @tab-remove="(name) => routeStore.closePage(name as string)">
-      <ElTabPane v-for="r in routeStore.visitedRoutes" :key="r.fullPath"
-                 :label="r.meta?.title as string" :name="r.fullPath"
-                 closable>
+      <ElTabPane v-for="page in routeStore.visitedPages" :key="page.fullPath"
+                 :label="page.meta?.title as string" :name="page.fullPath"
+      >
       </ElTabPane>
     </ElTabs>
 
     <!-- 操作按钮 -->
-    <div v-if="routeStore.visitedRoutes.length > 0" class="tabs-actions">
+    <div v-if="routeStore.visitedPages.length > 0" class="tabs-actions">
       <ElDropdown trigger="click" @command="handleCommand">
         <ElButton size="large" text>
           操作
