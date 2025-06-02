@@ -1,10 +1,23 @@
 <script setup lang="ts">
-import { defineComponent, h, type Component } from 'vue';
+import { defineComponent, h, ref, nextTick, type Component } from 'vue';
 import { usePageStore } from '@/stores/page-store';
 import { storeToRefs } from 'pinia';
 
 const pageStore = usePageStore();
 const { keepAliveInclude } = storeToRefs(pageStore);
+
+// KeepAlive组件引用
+const keepAliveRef = ref();
+
+// 强制刷新KeepAlive组件
+function forceRefreshKeepAlive() {
+  if (keepAliveRef.value) {
+    // 强制更新KeepAlive组件
+    nextTick(() => {
+      keepAliveRef.value.$forceUpdate?.();
+    });
+  }
+}
 
 function createDynamicNamedComponent(
   route: any,
@@ -25,13 +38,11 @@ function createDynamicNamedComponent(
 
 <template>
   <router-view v-slot="{ Component, route }">
-
     <transition name="fade-transform" mode="out-in">
       <keep-alive ref="keepAliveRef" :include="keepAliveInclude" :max="15">
         <component :is="createDynamicNamedComponent(route, Component)" :key="route.fullPath" />
       </keep-alive>
     </transition>
-
   </router-view>
 </template>
 

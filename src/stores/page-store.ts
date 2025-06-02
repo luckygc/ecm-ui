@@ -42,10 +42,8 @@ export const usePageStore = defineStore("page", () => {
 
   // 判断路由是否需要缓存
   function shouldCache(route: RouteLocationNormalizedLoadedGeneric): boolean {
-    // 默认缓存，除非明确设置不缓存
-    if (route.meta?.noCache === true) return false;
-    if (route.meta?.keepalive === false) return false;
-    return true;
+    // 默认缓存，除非明确设置为false
+    return route.meta?.keepAlive !== false;
   }
 
   // 添加到KeepAlive缓存
@@ -63,6 +61,18 @@ export const usePageStore = defineStore("page", () => {
       keepAliveInclude.value.splice(index, 1);
       console.log("从KeepAlive缓存中移除:", componentName);
     }
+  }
+
+  // 延迟移除KeepAlive缓存（避免DOM操作冲突）
+  function removeFromKeepAliveDelayed(componentName: string) {
+    // 使用nextTick确保DOM更新完成后再移除缓存
+    return new Promise<void>((resolve) => {
+      // 使用更短的延迟，只是为了让当前的DOM操作完成
+      setTimeout(() => {
+        removeFromKeepAlive(componentName);
+        resolve();
+      }, 10); // 减少延迟时间
+    });
   }
 
   // 创建路由对象的副本，避免响应式引用问题
@@ -99,6 +109,9 @@ export const usePageStore = defineStore("page", () => {
     if (shouldCache(routeSnapshot)) {
       const componentName = generateComponentName(routeSnapshot);
       addToKeepAlive(componentName);
+      console.log("页面需要缓存，组件名:", componentName);
+    } else {
+      console.log("页面不需要缓存:", fullPath);
     }
 
     console.log(
@@ -146,23 +159,26 @@ export const usePageStore = defineStore("page", () => {
   }
 
   // 关闭指定页面
-  function closePage(fullPath: string) {
+  async function closePage(fullPath: string) {
     const page = pages.value.get(fullPath);
 
-    // 如果页面被缓存，从KeepAlive中移除
-    if (page && shouldCache(page)) {
-      const componentName = generateComponentName(page);
-      removeFromKeepAlive(componentName);
-    }
-
+    // 先从页面列表中移除
     pages.value.delete(fullPath);
 
-    // 如果关闭的是当前激活的页面
+    // 如果关闭的是当前激活的页面，先跳转到其他页面
+    let redirectPath = null;
     if (activePageFullPath.value === fullPath) {
-      const lastPagePath = toLastPage();
-      return lastPagePath; // 返回需要跳转的路径
+      redirectPath = toLastPage();
     }
-    return null;
+
+    // 延迟移除KeepAlive缓存，避免DOM操作冲突
+    if (page && shouldCache(page)) {
+      const componentName = generateComponentName(page);
+      // 异步移除缓存，不阻塞页面跳转
+      removeFromKeepAliveDelayed(componentName);
+    }
+
+    return redirectPath;
   }
 
   // 跳转到最后一个页面
@@ -190,15 +206,16 @@ export const usePageStore = defineStore("page", () => {
   }
 
   // 关闭其他页面
-  function closeOtherPages() {
+  async function closeOtherPages() {
     const currentFullPath = activePageFullPath.value;
     const currentPage = pages.value.get(currentFullPath);
 
-    // 从KeepAlive中移除其他页面
+    // 收集需要移除的组件名称
+    const componentsToRemove: string[] = [];
     pages.value.forEach((page, fullPath) => {
       if (fullPath !== currentFullPath && shouldCache(page)) {
         const componentName = generateComponentName(page);
-        removeFromKeepAlive(componentName);
+        componentsToRemove.push(componentName);
       }
     });
 
@@ -207,20 +224,31 @@ export const usePageStore = defineStore("page", () => {
     if (currentPage) {
       pages.value.set(currentFullPath, currentPage);
     }
+
+    // 延迟移除KeepAlive缓存
+    componentsToRemove.forEach((componentName) => {
+      removeFromKeepAliveDelayed(componentName);
+    });
   }
 
   // 关闭所有页面
-  function closeAllPages() {
-    // 从KeepAlive中移除所有缓存页面
+  async function closeAllPages() {
+    // 收集需要移除的组件名称
+    const componentsToRemove: string[] = [];
     pages.value.forEach((page) => {
       if (shouldCache(page)) {
         const componentName = generateComponentName(page);
-        removeFromKeepAlive(componentName);
+        componentsToRemove.push(componentName);
       }
     });
 
     pages.value.clear();
     activePageFullPath.value = "";
+
+    // 延迟移除KeepAlive缓存
+    componentsToRemove.forEach((componentName) => {
+      removeFromKeepAliveDelayed(componentName);
+    });
   }
 
   // 根据fullPath获取页面
@@ -260,6 +288,7 @@ export const usePageStore = defineStore("page", () => {
     generateComponentName,
     addToKeepAlive,
     removeFromKeepAlive,
+    removeFromKeepAliveDelayed,
 
     // 兼容性方法
     removePage: closePage,

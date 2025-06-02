@@ -45,8 +45,8 @@ function handleTabRemove(targetPath: string | number) {
 }
 
 // 关闭指定标签
-function closeSelectedTag(fullPath: string) {
-  const redirectPath = pageStore.closePage(fullPath)
+async function closeSelectedTag(fullPath: string) {
+  const redirectPath = await pageStore.closePage(fullPath)
 
   // 如果需要跳转到其他页面
   if (redirectPath) {
@@ -64,13 +64,13 @@ function refreshCurrentTag() {
 }
 
 // 关闭其他标签
-function closeOthersTags() {
-  pageStore.closeOtherPages()
+async function closeOthersTags() {
+  await pageStore.closeOtherPages()
 }
 
 // 关闭所有标签
-function closeAllTags() {
-  pageStore.closeAllPages()
+async function closeAllTags() {
+  await pageStore.closeAllPages()
   router.push('/')
 }
 
