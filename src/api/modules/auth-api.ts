@@ -1,7 +1,7 @@
-import { post } from "@/utils/request";
+import {post} from "@/utils/request";
 import type {
-  LoginForm,
-  LoginResponse,
+    LoginForm,
+    LoginResponse,
 } from "@/types/api/modules/auth-api-types";
 
 /**
@@ -10,24 +10,15 @@ import type {
  * @param skipErrorHandler 是否跳过错误处理
  * @returns Promise<LoginResponse>
  */
-function login(
-  data: LoginForm,
-  skipErrorHandler = false
-): Promise<LoginResponse> {
-  // 创建URL编码的表单数据
-  const params = new URLSearchParams();
-  params.append("username", data.username);
-  params.append("password", data.password);
-  if (data.rememberMe !== undefined) {
-    params.append("remember-me", data.rememberMe.toString());
-  }
+function login(data: LoginForm, skipErrorHandler = false): Promise<LoginResponse> {
+    // 创建URL编码的表单数据
+    const params = new URLSearchParams();
+    params.append("username", data.username);
+    params.append("password", data.password);
 
-  return post<LoginResponse>("/login", params, {
-    skipErrorHandler,
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  });
+    return post<LoginResponse>("/login", params, {
+        skipErrorHandler
+    });
 }
 
 /**
@@ -35,7 +26,7 @@ function login(
  * @returns Promise<void>
  */
 function logout(): Promise<void> {
-  return post<void>("/logout");
+    return post<void>("/logout");
 }
 
 /**
@@ -43,11 +34,11 @@ function logout(): Promise<void> {
  * @returns Promise<UserInfo>
  */
 function getCurrentUser(): Promise<any> {
-  return post<any>("/auth/me");
+    return post<any>("/auth/me");
 }
 
 export const authApi = {
-  login,
-  logout,
-  getCurrentUser,
+    login,
+    logout,
+    getCurrentUser,
 };

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { UserInfo } from "@/types/utils/requests-type";
+import type {UserInfo} from "@/types/api/modules/auth-api-types.ts";
 
 export const useUserStore = defineStore("user", () => {
   // 状态
