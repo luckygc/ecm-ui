@@ -21,12 +21,6 @@ export const systemRoutes: Array<RouteRecordRaw> = [
         component: () => import("@/views/system/role/RoleManagement.vue"),
         meta: { title: "角色管理", icon: "UserFilled", sideBar: true },
       },
-      {
-        path: "page-manager",
-        name: "PageManager",
-        component: () => import("@/views/system/page-manager/PageManager.vue"),
-        meta: { title: "页面管理", icon: "Document", sideBar: true },
-      },
     ],
   },
 ];
