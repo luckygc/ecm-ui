@@ -1,15 +1,20 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type { PageObject } from "@/types/page-types";
+import type { RouteLocationNormalizedLoadedGeneric } from "vue-router";
 
 export const usePageStore = defineStore("page", () => {
   // ==================== 状态定义 ====================
 
   // 页面管理数据 - 使用fullPath作为key
-  const pages = ref<Map<string, PageObject>>(new Map());
+  const pages = ref<Map<string, RouteLocationNormalizedLoadedGeneric>>(
+    new Map()
+  );
 
   // 当前激活的页面fullPath
   const activePageFullPath = ref<string>("");
+
+  // KeepAlive include列表 - 统一管理缓存
+  const keepAliveInclude = ref<string[]>([]);
 
   // ==================== 计算属性 ====================
 
@@ -28,21 +33,57 @@ export const usePageStore = defineStore("page", () => {
 
   // ==================== 页面管理方法 ====================
 
-  // 创建页面对象
-  function createPageObject(route: any): PageObject {
+  // 生成组件名称（用于KeepAlive）
+  function generateComponentName(route: any): string {
+    // 使用fullPath作为组件名称，支持带参数的路由多开
+    // 将特殊字符替换为下划线，确保是有效的组件名称
+    return route.fullPath.replace(/[^a-zA-Z0-9]/g, "_");
+  }
+
+  // 判断路由是否需要缓存
+  function shouldCache(route: RouteLocationNormalizedLoadedGeneric): boolean {
+    // 默认缓存，除非明确设置不缓存
+    if (route.meta?.noCache === true) return false;
+    if (route.meta?.keepalive === false) return false;
+    return true;
+  }
+
+  // 添加到KeepAlive缓存
+  function addToKeepAlive(componentName: string) {
+    if (!keepAliveInclude.value.includes(componentName)) {
+      keepAliveInclude.value.push(componentName);
+      console.log("添加到KeepAlive缓存:", componentName);
+    }
+  }
+
+  // 从KeepAlive缓存中移除
+  function removeFromKeepAlive(componentName: string) {
+    const index = keepAliveInclude.value.indexOf(componentName);
+    if (index > -1) {
+      keepAliveInclude.value.splice(index, 1);
+      console.log("从KeepAlive缓存中移除:", componentName);
+    }
+  }
+
+  // 创建路由对象的副本，避免响应式引用问题
+  function createRouteSnapshot(
+    route: RouteLocationNormalizedLoadedGeneric
+  ): RouteLocationNormalizedLoadedGeneric {
     return {
-      name: route.name || "Unknown",
-      title: route.meta?.title || route.name || "未知页面",
-      path: route.path,
       fullPath: route.fullPath,
-      icon: route.meta?.icon,
-      hidden: route.meta?.hidden || false,
-      cached: route.meta?.keepAlive !== false,
-    };
+      path: route.path,
+      name: route.name,
+      params: { ...route.params },
+      query: { ...route.query },
+      hash: route.hash,
+      meta: { ...route.meta },
+      matched: route.matched.map((record) => ({ ...record })),
+      redirectedFrom: route.redirectedFrom,
+    } as RouteLocationNormalizedLoadedGeneric;
   }
 
   // 添加页面
-  function addPage(route: any) {
+  function addPage(route: RouteLocationNormalizedLoadedGeneric) {
     const fullPath = route.fullPath;
 
     // 如果页面已存在，不重复添加
@@ -50,9 +91,21 @@ export const usePageStore = defineStore("page", () => {
       return;
     }
 
-    const pageObject = createPageObject(route);
-    pages.value.set(fullPath, pageObject);
-    console.log("添加页面:", pageObject.title, fullPath);
+    // 创建路由对象的副本并存储
+    const routeSnapshot = createRouteSnapshot(route);
+    pages.value.set(fullPath, routeSnapshot);
+
+    // 如果页面需要缓存，添加到KeepAlive
+    if (shouldCache(routeSnapshot)) {
+      const componentName = generateComponentName(routeSnapshot);
+      addToKeepAlive(componentName);
+    }
+
+    console.log(
+      "添加页面:",
+      routeSnapshot.meta?.title || routeSnapshot.name,
+      fullPath
+    );
   }
 
   // 切换到指定页面
@@ -63,8 +116,18 @@ export const usePageStore = defineStore("page", () => {
 
   // 处理路由变化
   function handleRouteChange(route: any) {
-    // 跳过隐藏的路由
+    // 跳过隐藏的路由或没有实际页面的路由
     if (route.meta?.hidden) {
+      return;
+    }
+
+    // 跳过重定向路由（通常是父级路由）
+    if (route.redirectedFrom) {
+      return;
+    }
+
+    // 如果路由路径是根路径"/"，跳过（这通常是重定向路由）
+    if (route.path === "/") {
       return;
     }
 
@@ -84,6 +147,14 @@ export const usePageStore = defineStore("page", () => {
 
   // 关闭指定页面
   function closePage(fullPath: string) {
+    const page = pages.value.get(fullPath);
+
+    // 如果页面被缓存，从KeepAlive中移除
+    if (page && shouldCache(page)) {
+      const componentName = generateComponentName(page);
+      removeFromKeepAlive(componentName);
+    }
+
     pages.value.delete(fullPath);
 
     // 如果关闭的是当前激活的页面
@@ -123,6 +194,14 @@ export const usePageStore = defineStore("page", () => {
     const currentFullPath = activePageFullPath.value;
     const currentPage = pages.value.get(currentFullPath);
 
+    // 从KeepAlive中移除其他页面
+    pages.value.forEach((page, fullPath) => {
+      if (fullPath !== currentFullPath && shouldCache(page)) {
+        const componentName = generateComponentName(page);
+        removeFromKeepAlive(componentName);
+      }
+    });
+
     // 清空所有页面，只保留当前页面
     pages.value.clear();
     if (currentPage) {
@@ -132,12 +211,22 @@ export const usePageStore = defineStore("page", () => {
 
   // 关闭所有页面
   function closeAllPages() {
+    // 从KeepAlive中移除所有缓存页面
+    pages.value.forEach((page) => {
+      if (shouldCache(page)) {
+        const componentName = generateComponentName(page);
+        removeFromKeepAlive(componentName);
+      }
+    });
+
     pages.value.clear();
     activePageFullPath.value = "";
   }
 
   // 根据fullPath获取页面
-  function getPageByFullPath(fullPath: string): PageObject | undefined {
+  function getPageByFullPath(
+    fullPath: string
+  ): RouteLocationNormalizedLoadedGeneric | undefined {
     return pages.value.get(fullPath);
   }
 
@@ -150,6 +239,7 @@ export const usePageStore = defineStore("page", () => {
     // 状态
     pages: pageMap,
     activePageFullPath,
+    keepAliveInclude,
 
     // 计算属性
     visitedPages,
@@ -167,6 +257,9 @@ export const usePageStore = defineStore("page", () => {
     closeAllPages,
     getPageByFullPath,
     hasPage,
+    generateComponentName,
+    addToKeepAlive,
+    removeFromKeepAlive,
 
     // 兼容性方法
     removePage: closePage,

@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import { defineComponent, h, ref, type Component } from 'vue';
+import { defineComponent, h, type Component } from 'vue';
+import { usePageStore } from '@/stores/page-store';
+import { storeToRefs } from 'pinia';
 
-const keepAliveInclude = ref<string[]>([]);
+const pageStore = usePageStore();
+const { keepAliveInclude } = storeToRefs(pageStore);
 
 function createDynamicNamedComponent(
-  dynamicName: string,
+  route: any,
   wrappedComponent: Component
 ) {
-
-  if (!keepAliveInclude.value.includes(dynamicName)) {
-    keepAliveInclude.value.push(dynamicName);
-  }
+  // 使用路由名称作为组件名称，确保与KeepAlive include匹配
+  const componentName = pageStore.generateComponentName(route);
 
   return defineComponent({
-    name: dynamicName,
+    name: componentName,
     setup(props, { attrs, slots }) {
       return () => h(wrappedComponent, { ...attrs, ...props }, slots);
     },
@@ -24,11 +25,13 @@ function createDynamicNamedComponent(
 
 <template>
   <router-view v-slot="{ Component, route }">
-    <keep-alive ref="keepAliveRef" :include="keepAliveInclude" :max="15">
-      <transition name="fade-transform" mode="out-in">
-        <component :is="createDynamicNamedComponent(route.fullPath, Component)" :key="route.fullPath" />
-      </transition>
-    </keep-alive>
+
+    <transition name="fade-transform" mode="out-in">
+      <keep-alive ref="keepAliveRef" :include="keepAliveInclude" :max="15">
+        <component :is="createDynamicNamedComponent(route, Component)" :key="route.fullPath" />
+      </keep-alive>
+    </transition>
+
   </router-view>
 </template>
 

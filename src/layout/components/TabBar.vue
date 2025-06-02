@@ -94,7 +94,8 @@ function handleCommand(command: string) {
   <div class="tab-bar-container">
     <ElTabs :model-value="activeTab" type="card" closable class="tab-bar-tabs" @tab-click="handleTabClick"
       @tab-remove="handleTabRemove">
-      <ElTabPane v-for="page in visitedViews" :key="page.fullPath" :label="page.title" :name="page.fullPath" closable>
+      <ElTabPane v-for="page in visitedViews" :key="page.fullPath"
+        :label="(page.meta?.title as string) || (page.name as string) || page.fullPath" :name="page.fullPath" closable>
       </ElTabPane>
     </ElTabs>
 

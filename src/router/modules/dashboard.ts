@@ -8,13 +8,18 @@ export const dashboard: Array<CustomRouterRecordRaw> = [
     name: "Root",
     component: Layout,
     redirect: { name: "Dashboard" },
-    meta: { title: "首页", icon: "HomeFilled", sideBar: true },
+    meta: { title: "首页", icon: "HomeFilled", sidebar: true },
     children: [
       {
         path: "dashboard",
         name: "Dashboard",
         component: () => import("@/views/dashboard/Dashboard.vue"),
-        meta: { title: "仪表盘", icon: "Odometer", sideBar: true },
+        meta: {
+          title: "仪表盘",
+          icon: "Odometer",
+          sidebar: true,
+          keepAlive: true,
+        },
       },
     ],
   },

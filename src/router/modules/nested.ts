@@ -7,37 +7,57 @@ export const nestedRoutes: Array<RouteRecordRaw> = [
     path: "/nested",
     component: Layout,
     name: "Nested",
-    meta: { title: "多级菜单", icon: "Menu", sideBar: true },
+    meta: { title: "多级菜单", icon: "Menu", sidebar: true },
     children: [
       {
         path: "menu1",
         name: "Menu1",
         component: () => import("@/views/nested/menu1/index.vue"),
-        meta: { title: "菜单1", icon: "Document", sideBar: true },
+        meta: {
+          title: "菜单1",
+          icon: "Document",
+          sidebar: true,
+          keepAlive: true,
+        },
       },
       {
         path: "menu2",
         name: "Menu2",
         component: () => import("@/views/nested/menu2/index.vue"),
-        meta: { title: "菜单2", icon: "Folder", sideBar: true },
+        meta: { title: "菜单2", icon: "Folder", sidebar: true },
         children: [
           {
             path: "menu2-1",
             name: "Menu2-1",
             component: () => import("@/views/nested/menu2/menu2-1/index.vue"),
-            meta: { title: "菜单2-1", icon: "Document", sideBar: true },
+            meta: {
+              title: "菜单2-1",
+              icon: "Document",
+              sidebar: true,
+              keepAlive: true,
+            },
           },
           {
             path: "menu2-2",
             name: "Menu2-2",
             component: () => import("@/views/nested/menu2/menu2-2/index.vue"),
-            meta: { title: "菜单2-2", icon: "Document", sideBar: true },
+            meta: {
+              title: "菜单2-2",
+              icon: "Document",
+              sidebar: true,
+              keepAlive: true,
+            },
           },
           {
             path: "menu2-3",
             name: "Menu2-3",
             component: () => import("@/views/nested/menu2/menu2-3/index.vue"),
-            meta: { title: "菜单2-3", icon: "Document", sideBar: true },
+            meta: {
+              title: "菜单2-3",
+              icon: "Document",
+              sidebar: true,
+              keepAlive: true,
+            },
           },
         ],
       },

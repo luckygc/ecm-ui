@@ -36,10 +36,10 @@ interface Props {
 defineProps<Props>()
 
 const shouldRenderMenuItem = (route: RouteRecordRaw) => {
-  return route.meta?.sideBar === true && (!route.children || route.children.length === 0)
+  return route.meta?.sidebar === true && (!route.children || route.children.length === 0)
 }
 
 const shouldRenderSubMenu = (route: RouteRecordRaw) => {
-  return route.meta?.sideBar === true && route.children && route.children.length > 0;
+  return route.meta?.sidebar === true && route.children && route.children.length > 0;
 }
 </script>
