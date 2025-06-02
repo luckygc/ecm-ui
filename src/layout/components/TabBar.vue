@@ -48,8 +48,8 @@ function handleTabRemove(targetPath: string | number) {
 async function closeSelectedTag(fullPath: string) {
   const redirectPath = await pageStore.closePage(fullPath)
 
-  // 如果需要跳转到其他页面
-  if (redirectPath) {
+  // 如果需要跳转到其他页面且有有效的重定向路径
+  if (redirectPath && redirectPath !== null) {
     router.push(redirectPath)
   }
 }
@@ -71,7 +71,7 @@ async function closeOthersTags() {
 // 关闭所有标签
 async function closeAllTags() {
   await pageStore.closeAllPages()
-  router.push('/')
+  // 不进行任何重定向，保持当前状态
 }
 
 // 处理下拉菜单命令

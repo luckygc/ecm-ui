@@ -145,7 +145,7 @@ export const usePageStore = defineStore("page", () => {
   }
 
   // 关闭指定页面
-  async function closePage(fullPath: string) {
+  async function closePage(fullPath: string): Promise<string | null> {
     const page = pages.value.get(fullPath);
 
     // 先从页面列表中移除
@@ -168,16 +168,16 @@ export const usePageStore = defineStore("page", () => {
   }
 
   // 跳转到最后一个页面
-  function toLastPage() {
+  function toLastPage(): string | null {
     const allPages = Array.from(pages.value.values());
     const latestPage = allPages[allPages.length - 1];
     if (latestPage) {
       activePageFullPath.value = latestPage.fullPath;
       return latestPage.fullPath;
     } else {
-      // 如果没有页面，清空当前激活页面
+      // 如果没有页面，清空当前激活页面，不返回重定向路径
       activePageFullPath.value = "";
-      return "/";
+      return null;
     }
   }
 

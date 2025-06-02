@@ -34,16 +34,16 @@ function createDynamicNamedComponent(
 /* 过渡动画 */
 .fade-transform-enter-active,
 .fade-transform-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .fade-transform-enter-from {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translateX(20px);
 }
 
 .fade-transform-leave-to {
   opacity: 0;
-  transform: translateX(-30px);
+  transform: translateX(-20px);
 }
 </style>
