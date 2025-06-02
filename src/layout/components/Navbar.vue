@@ -1,37 +1,23 @@
 <script setup lang="ts">
-import { ElBreadcrumb, ElBreadcrumbItem, ElIcon } from 'element-plus'
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { usePageStore } from '@/stores/page-store'
-import { buildBreadcrumbs } from '@/utils/breadcrumb-utils'
+import { ElBreadcrumb, ElBreadcrumbItem, ElIcon } from 'element-plus';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 
-const router = useRouter()
-const pageStore = usePageStore()
 
-// 使用面包屑工具构建面包屑数据
-const breadcrumbs = computed(() =>
-  buildBreadcrumbs(pageStore.activePage, pageStore.findPageByPath)
-)
+const route = useRoute();
 
-// 处理面包屑点击
-function handleBreadcrumbClick(breadcrumb: any) {
-  if (breadcrumb.clickable) {
-    router.push(breadcrumb.path)
-  }
-}
 </script>
 
 <template>
   <div class="navbar-container">
     <!-- 面包屑导航 -->
     <ElBreadcrumb class="breadcrumb" separator="/">
-      <ElBreadcrumbItem v-for="breadcrumb in breadcrumbs" :key="breadcrumb.path"
-        :class="{ 'breadcrumb-clickable': breadcrumb.clickable }" @click="handleBreadcrumbClick(breadcrumb)">
+      <ElBreadcrumbItem v-for="breadcrumb in route.matched" :key="breadcrumb.name">
         <div class="breadcrumb-content">
-          <ElIcon v-if="breadcrumb.icon" class="breadcrumb-icon">
-            <component :is="breadcrumb.icon" />
+          <ElIcon v-if="breadcrumb.meta.icon" class="breadcrumb-icon">
+            <component :is="breadcrumb.meta.icon" />
           </ElIcon>
-          <span class="breadcrumb-title">{{ breadcrumb.title }}</span>
+          <span class="breadcrumb-title">{{ breadcrumb.meta.title }}</span>
         </div>
       </ElBreadcrumbItem>
     </ElBreadcrumb>

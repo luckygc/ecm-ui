@@ -1,59 +1,41 @@
 <script setup lang="ts">
 import { routes } from '@/router'
-import { buildFullPath } from '@/utils/routeHelper'
 import { Expand, Fold } from '@element-plus/icons-vue'
 import { ElButton, ElIcon, ElMenu } from 'element-plus'
 import { computed, ref } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import MenuItems from './MenuItems.vue'
 
 const route = useRoute()
+const router = useRouter()
 
 const sidebarOpened = ref(true);
-const activeMenu = computed(() => route.fullPath)
+// 使用路由名称作为activeMenu
+const activeMenu = computed(() => route.name as string)
 
-// 递归过滤路由，只显示meta.menu=true的路由，并计算完整路径
-function filterMenuRoutes(routeList: RouteRecordRaw[], parentPath = ''): RouteRecordRaw[] {
-  const result: RouteRecordRaw[] = []
 
-  for (const route of routeList) {
-    const meta = route.meta || {}
-
-    // 跳过隐藏的路由
-    if (meta.hidden) continue
-
-    // 只显示meta.menu=true的路由
-    if (meta.menu === true) {
-      console.debug(route.path);
-      // 计算完整路径
-      const fullPath = buildFullPath(route.path, parentPath)
-
-      const newRoute = {
-        ...route,
-        // 将完整路径存储在path中，这样MenuItems组件就可以直接使用
-        path: fullPath
+// 处理菜单点击事件
+function handleMenuSelect(routeName: string) {
+  // 根据路由名称查找对应的路由信息
+  const findRouteByName = (routes: RouteRecordRaw[], name: string): RouteRecordRaw | null => {
+    for (const route of routes) {
+      if (route.name === name) {
+        return route
       }
-
-      // 处理子路由
-      if (route.children && route.children.length > 0) {
-        const children = filterMenuRoutes(route.children, fullPath)
-        if (children.length > 0) {
-          newRoute.children = children
-        } else {
-          newRoute.children = []
-        }
+      if (route.children) {
+        const found = findRouteByName(route.children, name)
+        if (found) return found
       }
-
-      result.push(newRoute)
     }
+    return null
   }
 
-  return result
+  const targetRoute = findRouteByName(menuRoutes, routeName)
+  if (targetRoute && targetRoute.path) {
+    router.push(targetRoute.path)
+  }
 }
-
-// 获取菜单路由
-const menuRoutes = filterMenuRoutes(routes);
 </script>
 
 <template>
@@ -83,8 +65,9 @@ const menuRoutes = filterMenuRoutes(routes);
 
     <!-- 菜单区域 -->
     <div class="menu-container">
-      <ElMenu :default-active="activeMenu" :collapse="!sidebarOpened" mode="vertical" class="sidebar-menu" router>
-        <MenuItems :routes="menuRoutes" />
+      <ElMenu :default-active="activeMenu" :collapse="!sidebarOpened" mode="vertical" class="sidebar-menu"
+        @select="handleMenuSelect">
+        <MenuItems :routes="routes" />
       </ElMenu>
     </div>
   </div>
