@@ -7,6 +7,8 @@ export type RouterMeta = {
   icon?: string;
   // 是否隐藏在菜单中
   hidden?: boolean;
+  // 是否在菜单中显示
+  menu?: boolean;
   // 是否缓存页面,默认缓存 (兼容旧版本)
   keepalive?: boolean;
   // 是否不缓存页面 (兼容旧版本)

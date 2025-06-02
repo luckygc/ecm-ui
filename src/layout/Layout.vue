@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElAside, ElContainer, ElHeader, ElMain } from 'element-plus'
 import { computed, onMounted } from 'vue'
-import UnifiedMainContent from '@/layout/components/UnifiedMainContent.vue'
+import MainContent from '@/layout/components/MainContent.vue'
 import Navbar from '@/layout/components/Navbar.vue'
 import Sidebar from '@/layout/components/Sidebar.vue'
 import TabBar from '@/layout/components/TabBar.vue'
@@ -41,7 +41,7 @@ onMounted(() => {
       </ElHeader>
       <ElMain>
         <!-- 主要内容区 - 统一的KeepAlive布局 -->
-        <UnifiedMainContent />
+        <MainContent />
       </ElMain>
     </ElContainer>
   </ElContainer>

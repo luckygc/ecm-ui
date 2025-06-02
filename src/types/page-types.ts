@@ -14,8 +14,7 @@ export interface PageObject {
   hidden?: boolean; // 是否隐藏
 
   // 页面状态
-  cached: boolean; // 当前是否已缓存
-  active: boolean; // 是否当前激活
+  cached: boolean; // 是否缓存
 }
 
 /**

@@ -1,37 +1,59 @@
 <script setup lang="ts">
-import { Expand, Fold } from '@element-plus/icons-vue'
-import { ElButton, ElIcon, ElMenu, ElMenuItem, ElSubMenu } from 'element-plus'
-import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useAppStore } from '@/stores/app'
 import { routes } from '@/router'
-import { buildNestedMenuFromRoutes, findMenuItemByPath } from '@/utils/menu-utils'
+import { buildFullPath } from '@/utils/routeHelper'
+import { Expand, Fold } from '@element-plus/icons-vue'
+import { ElButton, ElIcon, ElMenu } from 'element-plus'
+import { computed, ref } from 'vue'
+import type { RouteRecordRaw } from 'vue-router'
+import { useRoute } from 'vue-router'
+import MenuItems from './MenuItems.vue'
 
 const route = useRoute()
-const router = useRouter()
-const appStore = useAppStore()
 
-const sidebarOpened = computed(() => appStore.getSidebarStatus)
-const activeMenu = computed(() => route.path)
+const sidebarOpened = ref(true);
+const activeMenu = computed(() => route.fullPath)
 
-function toggleSidebar() {
-  appStore.toggleSidebar()
-}
+// 递归过滤路由，只显示meta.menu=true的路由，并计算完整路径
+function filterMenuRoutes(routeList: RouteRecordRaw[], parentPath = ''): RouteRecordRaw[] {
+  const result: RouteRecordRaw[] = []
 
-// 从路由配置构建菜单
-const menuItems = computed(() => buildNestedMenuFromRoutes(routes))
+  for (const route of routeList) {
+    const meta = route.meta || {}
 
-function handleMenuSelect(index: string) {
-  // 查找对应的菜单项信息
-  const menuItem = findMenuItemByPath(index, menuItems.value)
+    // 跳过隐藏的路由
+    if (meta.hidden) continue
 
-  // 如果菜单项标记为不可点击，则不进行跳转
-  if (!menuItem?.clickable) {
-    return
+    // 只显示meta.menu=true的路由
+    if (meta.menu === true) {
+      console.debug(route.path);
+      // 计算完整路径
+      const fullPath = buildFullPath(route.path, parentPath)
+
+      const newRoute = {
+        ...route,
+        // 将完整路径存储在path中，这样MenuItems组件就可以直接使用
+        path: fullPath
+      }
+
+      // 处理子路由
+      if (route.children && route.children.length > 0) {
+        const children = filterMenuRoutes(route.children, fullPath)
+        if (children.length > 0) {
+          newRoute.children = children
+        } else {
+          newRoute.children = []
+        }
+      }
+
+      result.push(newRoute)
+    }
   }
 
-  router.push(index)
+  return result
 }
+
+// 获取菜单路由
+const menuRoutes = filterMenuRoutes(routes);
 </script>
 
 <template>
@@ -40,18 +62,18 @@ function handleMenuSelect(index: string) {
     <div class="logo-container" :class="{ 'collapsed': !sidebarOpened }">
       <div class="logo-content">
         <!-- Logo图片 -->
-        <div class="logo-image" @click="!sidebarOpened && toggleSidebar()">
+        <div class="logo-image" @click="!sidebarOpened && (sidebarOpened = !sidebarOpened)">
           <img src="/logo.svg" alt="Logo" class="logo-img" />
         </div>
 
         <!-- 展开状态：Logo文字和折叠按钮 -->
         <div v-if="sidebarOpened" class="logo-text-wrapper">
           <span class="logo-text">Repodar</span>
-          <ElButton :icon="Fold" @click="toggleSidebar" class="collapse-btn" text size="small" />
+          <ElButton :icon="Fold" @click="sidebarOpened = !sidebarOpened" class="collapse-btn" text size="small" />
         </div>
 
         <!-- 折叠状态：展开提示 -->
-        <div v-else class="expand-hint" @click="toggleSidebar">
+        <div v-else class="expand-hint" @click="sidebarOpened = !sidebarOpened">
           <ElIcon class="expand-icon">
             <Expand />
           </ElIcon>
@@ -61,65 +83,8 @@ function handleMenuSelect(index: string) {
 
     <!-- 菜单区域 -->
     <div class="menu-container">
-      <ElMenu :default-active="activeMenu" :collapse="!sidebarOpened" mode="vertical" class="sidebar-menu"
-        @select="handleMenuSelect">
-        <template v-for="menuItem in menuItems" :key="menuItem.path">
-          <!-- 没有子菜单或子菜单为空的菜单项 -->
-          <ElMenuItem v-if="!menuItem.children || menuItem.children.length === 0" :index="menuItem.path">
-            <ElIcon v-if="menuItem.icon">
-              <component :is="menuItem.icon" />
-            </ElIcon>
-            <template #title>
-              <span>{{ menuItem.title }}</span>
-            </template>
-          </ElMenuItem>
-
-          <!-- 有子菜单的菜单项 -->
-          <template v-else>
-            <ElSubMenu :index="menuItem.path">
-              <template #title>
-                <ElIcon v-if="menuItem.icon">
-                  <component :is="menuItem.icon" />
-                </ElIcon>
-                <span>{{ menuItem.title }}</span>
-              </template>
-
-              <!-- 递归渲染子菜单 -->
-              <template v-for="child in menuItem.children?.filter((child: any) => !child.hidden)" :key="child.path">
-                <!-- 没有子菜单的子菜单项 -->
-                <ElMenuItem v-if="!child.children || child.children.length === 0" :index="child.path">
-                  <ElIcon v-if="child.icon">
-                    <component :is="child.icon" />
-                  </ElIcon>
-                  <template #title>
-                    <span>{{ child.title }}</span>
-                  </template>
-                </ElMenuItem>
-
-                <!-- 有子菜单的子菜单项 -->
-                <ElSubMenu v-else :index="child.path">
-                  <template #title>
-                    <ElIcon v-if="child.icon">
-                      <component :is="child.icon" />
-                    </ElIcon>
-                    <span>{{ child.title }}</span>
-                  </template>
-
-                  <!-- 渲染三级菜单 -->
-                  <ElMenuItem v-for="grandChild in child.children?.filter((gc: any) => !gc.hidden)"
-                    :key="grandChild.path" :index="grandChild.path">
-                    <ElIcon v-if="grandChild.icon">
-                      <component :is="grandChild.icon" />
-                    </ElIcon>
-                    <template #title>
-                      <span>{{ grandChild.title }}</span>
-                    </template>
-                  </ElMenuItem>
-                </ElSubMenu>
-              </template>
-            </ElSubMenu>
-          </template>
-        </template>
+      <ElMenu :default-active="activeMenu" :collapse="!sidebarOpened" mode="vertical" class="sidebar-menu" router>
+        <MenuItems :routes="menuRoutes" />
       </ElMenu>
     </div>
   </div>
@@ -132,10 +97,8 @@ function handleMenuSelect(index: string) {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
-  /* 禁止横向滚动 */
 }
 
-/* Logo区域样式 */
 .logo-container {
   height: 60px;
   background-color: #fff;
@@ -144,7 +107,6 @@ function handleMenuSelect(index: string) {
   transition: all 0.3s ease;
 }
 
-/* 折叠状态下的logo容器样式 */
 .logo-container.collapsed {
   cursor: pointer;
 }
@@ -165,7 +127,6 @@ function handleMenuSelect(index: string) {
   flex-shrink: 0;
 }
 
-/* 折叠状态下logo图片可点击 */
 .logo-container.collapsed .logo-image {
   cursor: pointer;
   border-radius: 4px;
@@ -209,7 +170,6 @@ function handleMenuSelect(index: string) {
   background-color: #f5f7fa;
 }
 
-/* 展开提示样式 */
 .expand-hint {
   flex: 1;
   display: flex;
@@ -232,41 +192,6 @@ function handleMenuSelect(index: string) {
   transform: scale(1.1);
 }
 
-/* 工具提示样式 */
-.tooltip {
-  position: absolute;
-  left: 70px;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #303133;
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  z-index: 1000;
-}
-
-.tooltip::before {
-  content: '';
-  position: absolute;
-  left: -4px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 4px solid transparent;
-  border-right-color: #303133;
-}
-
-/* 当悬停整个logo容器时显示工具提示 */
-.logo-container.collapsed:hover .tooltip {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* 菜单容器样式 */
 .menu-container {
   flex: 1;
   overflow-y: auto;
@@ -276,27 +201,5 @@ function handleMenuSelect(index: string) {
 .sidebar-menu {
   height: 100%;
   border-right: none;
-  overflow-x: hidden;
-  /* 确保菜单本身也不会横向滚动 */
-}
-
-/* 确保菜单项文本不会溢出 */
-.sidebar-menu .el-menu-item,
-.sidebar-menu .el-sub-menu__title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 折叠状态下的样式优化 */
-.sidebar-menu.el-menu--collapse {
-  width: 64px;
-}
-
-/* 确保图标在折叠状态下居中显示 */
-.sidebar-menu.el-menu--collapse .el-menu-item,
-.sidebar-menu.el-menu--collapse .el-sub-menu__title {
-  text-align: center;
-  padding: 0 20px;
 }
 </style>

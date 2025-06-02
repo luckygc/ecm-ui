@@ -20,9 +20,9 @@ export const buildFlatMenuFromPages = (
       path: page.path,
       icon: page.icon,
       hidden: page.hidden,
-      meta: page.meta,
-      // 页面对象本身就表示有实际页面，所以都是可点击的（除非明确设置noPage）
-      clickable: !page.meta?.noPage,
+      meta: {}, // 页面对象没有meta信息，使用空对象
+      // 页面对象本身就表示有实际页面，所以都是可点击的
+      clickable: true,
     }));
 };
 

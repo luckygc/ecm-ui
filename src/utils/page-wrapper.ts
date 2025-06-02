@@ -13,11 +13,11 @@ export const wrapperComponent = (
   const pageStore = usePageStore();
 
   // 获取或创建页面对象
-  let page = pageStore.pages.get(route.fullPath);
+  let page = pageStore.pageMap[route.fullPath];
   if (!page) {
     // 如果页面不存在，触发路由变化处理
     pageStore.handleRouteChange(route);
-    page = pageStore.pages.get(route.fullPath);
+    page = pageStore.pageMap[route.fullPath];
   }
 
   if (!page) {
@@ -25,8 +25,8 @@ export const wrapperComponent = (
     return component;
   }
 
-  const componentName = page.componentName;
-  const fullPath = route.fullPath;
+  // 使用页面名称作为组件名称
+  const componentName = page.name;
 
   // 创建包裹组件，动态设置name
   const Wrapper = defineComponent({
@@ -35,17 +35,17 @@ export const wrapperComponent = (
       return () =>
         h(component, {
           ...attrs,
-          key: fullPath,
+          key: page!.key, // 使用页面的key属性
           // 传递页面信息给被包裹的组件
           pageInfo: {
-            id: page!.id,
             name: page!.name,
             title: page!.title,
+            path: page!.path,
             fullPath: page!.fullPath,
-            params: page!.params,
-            query: page!.query,
-            meta: page!.meta,
-            componentName: page!.componentName,
+            key: page!.key,
+            icon: page!.icon,
+            hidden: page!.hidden,
+            cached: page!.cached,
           },
           // 兼容旧版本的routeInfo
           routeInfo: {
@@ -70,13 +70,13 @@ export const computeComponentName = (
 ): string => {
   const pageStore = usePageStore();
 
-  let page = pageStore.pages.get(route.fullPath);
+  let page = pageStore.pageMap[route.fullPath];
   if (!page) {
     pageStore.handleRouteChange(route);
-    page = pageStore.pages.get(route.fullPath);
+    page = pageStore.pageMap[route.fullPath];
   }
 
-  return page?.componentName || "Anonymous";
+  return page?.name || "Anonymous";
 };
 
 /**
@@ -89,13 +89,9 @@ export const page = {
   add: (route: RouteLocationNormalizedLoaded) => {
     const pageStore = usePageStore();
     pageStore.handleRouteChange(route);
-    const pageObj = pageStore.pages.get(route.fullPath);
+    const pageObj = pageStore.pageMap[route.fullPath];
 
-    if (pageObj && pageObj.keepalive) {
-      pageStore.addToCache(pageObj);
-    }
-
-    return pageObj?.componentName || "";
+    return pageObj?.name || "";
   },
 
   /**
@@ -106,21 +102,21 @@ export const page = {
 
     if (typeof route === "string") {
       // 如果传入的是组件名或路径，查找对应页面
-      const pageObj = Array.from(pageStore.pages.values()).find(
-        (p) => p.componentName === route || p.fullPath === route
+      const pageObj = pageStore.pages.find(
+        (p) => p.name === route || p.fullPath === route
       );
 
       if (pageObj) {
         pageStore.removePageByFullPath(pageObj.fullPath);
-        return pageObj.componentName;
+        return pageObj.name;
       }
       return route;
     } else {
       // 如果传入的是路由对象
-      const pageObj = pageStore.pages.get(route.fullPath);
+      const pageObj = pageStore.pageMap[route.fullPath];
       if (pageObj) {
         pageStore.removePageByFullPath(pageObj.fullPath);
-        return pageObj.componentName;
+        return pageObj.name;
       }
       return "";
     }
@@ -131,11 +127,9 @@ export const page = {
    */
   clear: () => {
     const pageStore = usePageStore();
-    Array.from(pageStore.pages.values()).forEach((page) => {
-      if (!page.affix) {
-        // 保留固定页面
-        pageStore.removePageByFullPath(page.fullPath);
-      }
+    pageStore.pages.forEach((page) => {
+      // 移除所有非固定页面（这里假设没有affix属性，移除所有页面）
+      pageStore.removePageByFullPath(page.fullPath);
     });
     console.log("[PageWrapper] 清理所有页面缓存");
   },
@@ -150,11 +144,11 @@ export const page = {
     const multiComponentNumberMap: Record<string, number> = {};
 
     pageStore.pages.forEach((page) => {
-      componentNameMap.set(page.fullPath, page.componentName);
-      routeFullPathMap[page.componentName] = page.fullPath;
+      componentNameMap.set(page.fullPath, page.name);
+      routeFullPathMap[page.name] = page.fullPath;
 
       // 提取实例序号
-      const match = page.componentName.match(/^(.+)_(\d+)$/);
+      const match = page.name.match(/^(.+)_(\d+)$/);
       if (match) {
         const baseName = match[1];
         const instanceNumber = parseInt(match[2]);
@@ -180,14 +174,12 @@ export const page = {
 
     if (typeof route === "string") {
       return (
-        pageStore.pages.has(route) ||
-        Array.from(pageStore.pages.values()).some(
-          (p) => p.componentName === route
-        )
+        route in pageStore.pageMap ||
+        pageStore.pages.some((p) => p.name === route)
       );
     }
 
-    const pageObj = pageStore.pages.get(route.fullPath);
+    const pageObj = pageStore.pageMap[route.fullPath];
     return pageObj?.cached || false;
   },
 };
