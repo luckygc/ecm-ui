@@ -27,7 +27,7 @@ function createVisitedRoute(
     };
 }
 
-export const useRouteStore = defineStore("page", () => {
+export const useRouteStore = defineStore("route", () => {
     // 访问过的路由映射
     const visitedRouteMap = ref<Map<string, VisitedRoute>>(new Map());
     // 访问过的路由列表
