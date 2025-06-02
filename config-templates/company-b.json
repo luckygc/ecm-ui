@@ -1,7 +1,0 @@
-{
-  "apiBaseUrl": "http://192.168.1.100:8080/api",
-  "appName": "公司B业务系统",
-  "timeout": 30000,
-  "uploadLimit": 50,
-  "debug": false
-}

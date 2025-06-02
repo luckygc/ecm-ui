@@ -1,7 +1,0 @@
-{
-  "apiBaseUrl": "https://api.example.com/api",
-  "appName": "Repodar Web",
-  "timeout": 15000,
-  "uploadLimit": 10,
-  "debug": false
-}
