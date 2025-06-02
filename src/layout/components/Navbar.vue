@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { ElBreadcrumb, ElBreadcrumbItem, ElIcon } from 'element-plus';
-import { computed } from 'vue';
+import { ElBreadcrumb, ElBreadcrumbItem } from 'element-plus';
 import { useRoute } from 'vue-router';
-
 
 const route = useRoute();
 
@@ -14,9 +12,9 @@ const route = useRoute();
     <ElBreadcrumb class="breadcrumb" separator="/">
       <ElBreadcrumbItem v-for="breadcrumb in route.matched" :key="breadcrumb.name">
         <div class="breadcrumb-content">
-          <ElIcon v-if="breadcrumb.meta.icon" class="breadcrumb-icon">
+          <!-- <ElIcon v-if="breadcrumb.meta.icon" class="breadcrumb-icon">
             <component :is="breadcrumb.meta.icon" />
-          </ElIcon>
+          </ElIcon> -->
           <span class="breadcrumb-title">{{ breadcrumb.meta.title }}</span>
         </div>
       </ElBreadcrumbItem>

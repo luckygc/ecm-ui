@@ -3,7 +3,6 @@ import { routes } from '@/router'
 import { Expand, Fold } from '@element-plus/icons-vue'
 import { ElButton, ElIcon, ElMenu } from 'element-plus'
 import { computed, ref } from 'vue'
-import type { RouteRecordRaw } from 'vue-router'
 import { useRoute, useRouter } from 'vue-router'
 import MenuItems from './MenuItems.vue'
 
@@ -14,27 +13,9 @@ const sidebarOpened = ref(true);
 // 使用路由名称作为activeMenu
 const activeMenu = computed(() => route.name as string)
 
-
 // 处理菜单点击事件
 function handleMenuSelect(routeName: string) {
-  // 根据路由名称查找对应的路由信息
-  const findRouteByName = (routes: RouteRecordRaw[], name: string): RouteRecordRaw | null => {
-    for (const route of routes) {
-      if (route.name === name) {
-        return route
-      }
-      if (route.children) {
-        const found = findRouteByName(route.children, name)
-        if (found) return found
-      }
-    }
-    return null
-  }
-
-  const targetRoute = findRouteByName(menuRoutes, routeName)
-  if (targetRoute && targetRoute.path) {
-    router.push(targetRoute.path)
-  }
+  router.push({ name: routeName })
 }
 </script>
 
