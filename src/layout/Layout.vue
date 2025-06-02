@@ -6,20 +6,14 @@ import Navbar from '@/layout/components/Navbar.vue'
 import Sidebar from '@/layout/components/Sidebar.vue'
 import TabBar from '@/layout/components/TabBar.vue'
 import { useAppStore } from '@/stores/app'
-import { usePageStore } from '@/stores/page-store'
 import { useRouter } from 'vue-router'
 
 const appStore = useAppStore()
-const pageStore = usePageStore()
 const router = useRouter()
 
 const sidebarOpened = computed(() => appStore.getSidebarStatus)
 const sidebarWidth = computed(() => sidebarOpened.value ? '200px' : '64px')
 
-// 初始化页面管理系统
-onMounted(() => {
-  pageStore.initializePageSystem(router)
-})
 </script>
 
 <template>

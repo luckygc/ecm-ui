@@ -24,7 +24,7 @@ export const systemRoutes: Array<RouteRecordRaw> = [
       {
         path: "page-manager",
         name: "PageManager",
-        component: () => import("@/components/PageManager/PageManager.vue"),
+        component: () => import("@/views/system/page-manager/PageManager.vue"),
         meta: { title: "页面管理", icon: "Document", sideBar: true },
       },
     ],

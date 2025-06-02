@@ -1,10 +1,8 @@
 <script setup lang="ts" name="PageManager">
-import { computed } from 'vue'
 import { ElButton, ElCard, ElCol, ElRow, ElTag, ElIcon } from 'element-plus'
-import { Close, Refresh } from '@element-plus/icons-vue'
+import { Refresh } from '@element-plus/icons-vue'
 import { usePageStore } from '@/stores/page-store'
 import { useRouter } from 'vue-router'
-import { computePageStats } from '@/utils/page-stats-utils'
 
 const pageStore = usePageStore()
 const router = useRouter()

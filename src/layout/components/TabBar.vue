@@ -10,93 +10,141 @@ import {
   ElTabPane,
   ElTabs,
 } from 'element-plus'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { usePageStore } from '@/stores/page-store'
 import { useAppStore } from '@/stores/app'
 
 const route = useRoute()
 const router = useRouter()
-const pageStore = usePageStore()
 const appStore = useAppStore()
 
-// 计算属性：获取所有页面
-const pages = computed(() => Array.from(pageStore.pages.values()))
-const visitedViews = computed(() => pages.value)
+// 页面管理数据
+const pages = ref<Map<string, PageObject>>(new Map())
+const activeTab = ref<string>('')
 
-// 当前激活的标签 - 使用fullPath作为标识
-const activeTab = ref<string>()
+// 计算属性：获取页面列表
+const visitedViews = computed(() => Array.from(pages.value.values()))
 
-router.beforeEach((to, _from, next) => {
-  activeTab.value = to.fullPath
-  next();
-});
+// 创建页面对象
+function createPageObject(route: any): PageObject {
+  return {
+    name: route.name || 'Unknown',
+    title: route.meta?.title || route.name || '未知页面',
+    path: route.path,
+    fullPath: route.fullPath,
+    key: route.name || route.fullPath,
+    icon: route.meta?.icon,
+    hidden: route.meta?.hidden || false,
+    cached: route.meta?.keepAlive !== false
+  }
+}
+
+// 添加页面
+function addPage(route: any) {
+  const fullPath = route.fullPath
+
+  // 如果页面已存在，不重复添加
+  if (pages.value.has(fullPath)) {
+    return
+  }
+
+  const pageObject = createPageObject(route)
+  pages.value.set(fullPath, pageObject)
+  console.log('添加页面:', pageObject.title, fullPath)
+}
+
+// 切换到指定页面
+function switchToPage(fullPath: string) {
+  activeTab.value = fullPath
+  console.log('切换到页面:', fullPath)
+}
+
+// 监听路由变化
+watch(
+  () => route.fullPath,
+  (newFullPath) => {
+    // 跳过隐藏的路由
+    if (route.meta?.hidden) {
+      return
+    }
+
+    console.log('路由变化:', newFullPath)
+
+    // 检查页面是否已存在
+    if (pages.value.has(newFullPath)) {
+      // 存在则切换到该页面
+      switchToPage(newFullPath)
+    } else {
+      // 不存在则添加新页面
+      addPage(route)
+      switchToPage(newFullPath)
+    }
+  },
+  { immediate: true }
+)
 
 // 处理标签点击
 function handleTabClick(pane: any) {
   const fullPath = pane.paneName
-  // 根据fullPath查找对应的页面信息
-  const targetPage = visitedViews.value.find((page: PageObject) => page.fullPath === fullPath)
-  if (targetPage && targetPage.fullPath) {
-    // 跳转到目标路由
-    router.push(targetPage.fullPath)
+  if (fullPath && fullPath !== route.fullPath) {
+    router.push(fullPath)
   }
 }
 
 // 处理标签关闭
 function handleTabRemove(targetPath: string | number) {
   const fullPath = String(targetPath)
-  const view = visitedViews.value.find((item: PageObject) => item.fullPath === fullPath)
-  if (view) {
-    closeSelectedTag(view)
+  closeSelectedTag(fullPath)
+}
+
+// 关闭指定标签
+function closeSelectedTag(fullPath: string) {
+  pages.value.delete(fullPath)
+
+  // 如果关闭的是当前激活的标签
+  if (activeTab.value === fullPath) {
+    toLastView()
   }
 }
 
-// 关闭选中的标签
-function closeSelectedTag(view: PageObject) {
-  pageStore.removePageByFullPath(view.fullPath)
-  if (view.fullPath === route.fullPath) {
-    toLastView(visitedViews.value)
+// 跳转到最后一个标签
+function toLastView() {
+  const allPages = Array.from(pages.value.values())
+  const latestView = allPages[allPages.length - 1]
+  if (latestView) {
+    router.push(latestView.fullPath)
+  } else {
+    // 如果没有标签，则跳转到首页
+    router.push('/')
   }
 }
 
+// 刷新当前标签
 function refreshCurrentTag() {
-  pageStore.refreshActivePage()
-  appStore.refreshMainContent()
+  const currentPage = pages.value.get(activeTab.value)
+  if (currentPage) {
+    // 更新页面的key来强制刷新
+    currentPage.key = `${currentPage.name}-${Date.now()}`
+    appStore.refreshComponent(currentPage.name)
+  }
 }
 
 // 关闭其他标签
 function closeOthersTags() {
-  const currentView = visitedViews.value.find((item: PageObject) => item.fullPath === route.fullPath)
-  if (currentView) {
-    // 关闭其他页面：保留当前页面
-    visitedViews.value.forEach((page: PageObject) => {
-      if (page.fullPath !== currentView.fullPath) {
-        pageStore.removePageByFullPath(page.fullPath)
-      }
-    })
+  const currentFullPath = activeTab.value
+  const currentPage = pages.value.get(currentFullPath)
+
+  // 清空所有页面，只保留当前页面
+  pages.value.clear()
+  if (currentPage) {
+    pages.value.set(currentFullPath, currentPage)
   }
 }
 
 // 关闭所有标签
 function closeAllTags() {
-  // 关闭所有页面
-  visitedViews.value.forEach((page: PageObject) => {
-    pageStore.removePageByFullPath(page.fullPath)
-  })
+  pages.value.clear()
   router.push('/')
-}
-
-// 跳转到最后一个标签
-function toLastView(visitedViews: PageObject[]) {
-  const latestView = visitedViews.slice(-1)[0]
-  if (latestView) {
-    router.push(latestView.fullPath || latestView.path || '/')
-  }
-  else {
-    // 如果没有标签，则跳转到首页
-    router.push('/')
-  }
 }
 
 // 处理下拉菜单命令
@@ -113,16 +161,13 @@ function handleCommand(command: string) {
       break
   }
 }
-
-// 注意：路由变化的监听已经在 routeHelper 中统一处理
-// 这里不需要重复监听，避免重复添加页签
 </script>
 
 <template>
   <div class="tab-bar-container">
     <ElTabs v-model="activeTab" type="card" closable class="tab-bar-tabs" @tab-click="handleTabClick"
       @tab-remove="handleTabRemove">
-      <ElTabPane v-for="page in pages" :key="page.key" :label="page.title" :name="page.fullPath" closable>
+      <ElTabPane v-for="page in visitedViews" :key="page.key" :label="page.title" :name="page.fullPath" closable>
       </ElTabPane>
     </ElTabs>
 
