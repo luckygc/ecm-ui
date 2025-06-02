@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { defineComponent, h, ref, nextTick, type Component } from 'vue';
 import { usePageStore } from '@/stores/page-store';
 import { storeToRefs } from 'pinia';
+import { defineComponent, h, type Component } from 'vue';
 
 const pageStore = usePageStore();
 const { keepAliveInclude } = storeToRefs(pageStore);
