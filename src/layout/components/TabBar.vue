@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { PageObject } from '@/types/page-types'
 import { ArrowDown, CircleClose, FolderDelete, Refresh } from '@element-plus/icons-vue'
 import {
   ElButton,
@@ -10,75 +9,23 @@ import {
   ElTabPane,
   ElTabs,
 } from 'element-plus'
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAppStore } from '@/stores/app'
+import { usePageStore } from '@/stores/page-store'
 
 const route = useRoute()
 const router = useRouter()
-const appStore = useAppStore()
+const pageStore = usePageStore()
 
-// 页面管理数据
-const pages = ref<Map<string, PageObject>>(new Map())
-const activeTab = ref<string>('')
-
-// 计算属性：获取页面列表
-const visitedViews = computed(() => Array.from(pages.value.values()))
-
-// 创建页面对象
-function createPageObject(route: any): PageObject {
-  return {
-    name: route.name || 'Unknown',
-    title: route.meta?.title || route.name || '未知页面',
-    path: route.path,
-    fullPath: route.fullPath,
-    key: route.name || route.fullPath,
-    icon: route.meta?.icon,
-    hidden: route.meta?.hidden || false,
-    cached: route.meta?.keepAlive !== false
-  }
-}
-
-// 添加页面
-function addPage(route: any) {
-  const fullPath = route.fullPath
-
-  // 如果页面已存在，不重复添加
-  if (pages.value.has(fullPath)) {
-    return
-  }
-
-  const pageObject = createPageObject(route)
-  pages.value.set(fullPath, pageObject)
-  console.log('添加页面:', pageObject.title, fullPath)
-}
-
-// 切换到指定页面
-function switchToPage(fullPath: string) {
-  activeTab.value = fullPath
-  console.log('切换到页面:', fullPath)
-}
+// 计算属性：从store获取数据
+const visitedViews = computed(() => pageStore.visitedPages)
+const activeTab = computed(() => pageStore.activePageFullPath)
 
 // 监听路由变化
 watch(
   () => route.fullPath,
-  (newFullPath) => {
-    // 跳过隐藏的路由
-    if (route.meta?.hidden) {
-      return
-    }
-
-    console.log('路由变化:', newFullPath)
-
-    // 检查页面是否已存在
-    if (pages.value.has(newFullPath)) {
-      // 存在则切换到该页面
-      switchToPage(newFullPath)
-    } else {
-      // 不存在则添加新页面
-      addPage(route)
-      switchToPage(newFullPath)
-    }
+  () => {
+    pageStore.handleRouteChange(route)
   },
   { immediate: true }
 )
@@ -99,51 +46,31 @@ function handleTabRemove(targetPath: string | number) {
 
 // 关闭指定标签
 function closeSelectedTag(fullPath: string) {
-  pages.value.delete(fullPath)
+  const redirectPath = pageStore.closePage(fullPath)
 
-  // 如果关闭的是当前激活的标签
-  if (activeTab.value === fullPath) {
-    toLastView()
-  }
-}
-
-// 跳转到最后一个标签
-function toLastView() {
-  const allPages = Array.from(pages.value.values())
-  const latestView = allPages[allPages.length - 1]
-  if (latestView) {
-    router.push(latestView.fullPath)
-  } else {
-    // 如果没有标签，则跳转到首页
-    router.push('/')
+  // 如果需要跳转到其他页面
+  if (redirectPath) {
+    router.push(redirectPath)
   }
 }
 
 // 刷新当前标签
 function refreshCurrentTag() {
-  const currentPage = pages.value.get(activeTab.value)
-  if (currentPage) {
-    // 更新页面的key来强制刷新
-    currentPage.key = `${currentPage.name}-${Date.now()}`
-    appStore.refreshComponent(currentPage.name)
+  const componentName = pageStore.refreshCurrentPage()
+  if (componentName) {
+    // 简单的刷新逻辑：重新加载当前路由
+    router.go(0)
   }
 }
 
 // 关闭其他标签
 function closeOthersTags() {
-  const currentFullPath = activeTab.value
-  const currentPage = pages.value.get(currentFullPath)
-
-  // 清空所有页面，只保留当前页面
-  pages.value.clear()
-  if (currentPage) {
-    pages.value.set(currentFullPath, currentPage)
-  }
+  pageStore.closeOtherPages()
 }
 
 // 关闭所有标签
 function closeAllTags() {
-  pages.value.clear()
+  pageStore.closeAllPages()
   router.push('/')
 }
 
@@ -165,9 +92,9 @@ function handleCommand(command: string) {
 
 <template>
   <div class="tab-bar-container">
-    <ElTabs v-model="activeTab" type="card" closable class="tab-bar-tabs" @tab-click="handleTabClick"
+    <ElTabs :model-value="activeTab" type="card" closable class="tab-bar-tabs" @tab-click="handleTabClick"
       @tab-remove="handleTabRemove">
-      <ElTabPane v-for="page in visitedViews" :key="page.key" :label="page.title" :name="page.fullPath" closable>
+      <ElTabPane v-for="page in visitedViews" :key="page.fullPath" :label="page.title" :name="page.fullPath" closable>
       </ElTabPane>
     </ElTabs>
 

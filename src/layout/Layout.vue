@@ -1,18 +1,14 @@
 <script setup lang="ts">
-import { ElAside, ElContainer, ElHeader, ElMain } from 'element-plus'
-import { computed, onMounted } from 'vue'
 import MainContent from '@/layout/components/MainContent.vue'
 import Navbar from '@/layout/components/Navbar.vue'
 import Sidebar from '@/layout/components/Sidebar.vue'
 import TabBar from '@/layout/components/TabBar.vue'
 import { useAppStore } from '@/stores/app'
-import { useRouter } from 'vue-router'
+import { ElAside, ElContainer, ElHeader, ElMain } from 'element-plus'
+import { storeToRefs } from 'pinia'
 
 const appStore = useAppStore()
-const router = useRouter()
-
-const sidebarOpened = computed(() => appStore.getSidebarStatus)
-const sidebarWidth = computed(() => sidebarOpened.value ? '200px' : '64px')
+const { sidebarWidth } = storeToRefs(appStore)
 
 </script>
 

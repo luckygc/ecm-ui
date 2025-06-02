@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { routes } from '@/router'
+import { useAppStore } from '@/stores/app'
 import { Expand, Fold } from '@element-plus/icons-vue'
 import { ElButton, ElIcon, ElMenu } from 'element-plus'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import MenuItems from './MenuItems.vue'
 
 const route = useRoute()
 const router = useRouter()
 
-const sidebarOpened = ref(true);
+const appStore = useAppStore()
+const { isSidebarOpened } = storeToRefs(appStore)
+
 // 使用路由名称作为activeMenu
 const activeMenu = computed(() => route.name as string)
 
@@ -22,21 +26,21 @@ function handleMenuSelect(routeName: string) {
 <template>
   <div class="sidebar-wrapper">
     <!-- Logo区域 -->
-    <div class="logo-container" :class="{ 'collapsed': !sidebarOpened }">
+    <div class="logo-container" :class="{ 'collapsed': !isSidebarOpened }">
       <div class="logo-content">
         <!-- Logo图片 -->
-        <div class="logo-image" @click="!sidebarOpened && (sidebarOpened = !sidebarOpened)">
+        <div class="logo-image" @click="!isSidebarOpened && appStore.toggleSidebar()">
           <img src="/logo.svg" alt="Logo" class="logo-img" />
         </div>
 
         <!-- 展开状态：Logo文字和折叠按钮 -->
-        <div v-if="sidebarOpened" class="logo-text-wrapper">
+        <div v-if="isSidebarOpened" class="logo-text-wrapper">
           <span class="logo-text">Repodar</span>
-          <ElButton :icon="Fold" @click="sidebarOpened = !sidebarOpened" class="collapse-btn" text size="small" />
+          <ElButton :icon="Fold" @click="appStore.toggleSidebar()" class="collapse-btn" text size="small" />
         </div>
 
         <!-- 折叠状态：展开提示 -->
-        <div v-else class="expand-hint" @click="sidebarOpened = !sidebarOpened">
+        <div v-else class="expand-hint" @click="appStore.toggleSidebar()">
           <ElIcon class="expand-icon">
             <Expand />
           </ElIcon>
@@ -46,7 +50,7 @@ function handleMenuSelect(routeName: string) {
 
     <!-- 菜单区域 -->
     <div class="menu-container">
-      <ElMenu :default-active="activeMenu" :collapse="!sidebarOpened" mode="vertical" class="sidebar-menu"
+      <ElMenu :default-active="activeMenu" :collapse="!isSidebarOpened" mode="vertical" class="sidebar-menu"
         @select="handleMenuSelect">
         <MenuItems :routes="routes" />
       </ElMenu>

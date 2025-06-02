@@ -1,13 +1,12 @@
 /**
- * 页面对象接口 - 统一的页面信息管理
+ * 页面对象接口 - 精简的页面信息管理
  */
 export interface PageObject {
   // 基础信息
   name: string; // 路由名称
   title: string; // 页面标题
   path: string; // 路由路径
-  fullPath: string; // 完整路径（包含参数）
-  key: string; // 组件key，用于强制刷新
+  fullPath: string; // 完整路径（包含参数），作为唯一标识
 
   // 显示信息
   icon?: string; // 图标
