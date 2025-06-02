@@ -124,6 +124,52 @@ export function shouldCache(route: any): boolean {
 }
 
 /**
+ * 基于fullPath生成组件名
+ * 将路径转换为有效的组件名格式
+ */
+export function generateComponentNameFromFullPath(fullPath: string): string {
+  // 移除查询参数和hash
+  const pathOnly = fullPath.split("?")[0].split("#")[0];
+
+  // 将路径转换为组件名格式
+  // 例如: /system/user/123 -> SystemUser123
+  // /dashboard -> Dashboard
+  return pathOnly
+    .split("/")
+    .filter((segment) => segment) // 移除空字符串
+    .map((segment) => {
+      // 处理参数部分，将数字和特殊字符转换为有效标识符
+      return segment
+        .replace(/[^a-zA-Z0-9]/g, "_")
+        .split("_")
+        .map(
+          (part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+        )
+        .join("");
+    })
+    .join("");
+}
+
+/**
+ * 检查路由是否应该被keepalive缓存
+ * 默认缓存所有路由，除非明确设置 meta.keepalive = false
+ */
+export function shouldKeepAlive(route: any): boolean {
+  // 如果明确设置了 keepalive: false，则不缓存
+  if (route.meta?.keepalive === false) {
+    return false;
+  }
+
+  // 如果是隐藏路由或没有实际页面的路由，不缓存
+  if (route.meta?.hidden || route.meta?.noPage) {
+    return false;
+  }
+
+  // 默认缓存
+  return true;
+}
+
+/**
  * 检查路由是否为固定页面
  */
 export function isAffixRoute(route: any): boolean {

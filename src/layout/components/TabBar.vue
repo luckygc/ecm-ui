@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PageInfo } from '@/stores/route-store'
+import type { PageObject } from '@/types/page-types'
 import { ArrowDown, CircleClose, FolderDelete, Refresh } from '@element-plus/icons-vue'
 import {
   ElButton,
@@ -12,19 +12,20 @@ import {
 } from 'element-plus'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useRouteStore } from '@/stores/route-store'
+import { usePageStore } from '@/stores/page-store'
 import { useAppStore } from '@/stores/app'
 
 const route = useRoute()
 const router = useRouter()
-const routeStore = useRouteStore()
+const pageStore = usePageStore()
 const appStore = useAppStore()
 
-// 获取已访问的视图 - 使用routeStore而不是tagsViewStore
-const visitedViews = computed(() => routeStore.visitedPages)
+// 计算属性：获取所有页面
+const pages = computed(() => Array.from(pageStore.pages.values()))
+const visitedViews = computed(() => pages.value)
 
 // 当前激活的标签 - 使用fullPath作为标识
-const activeTab = ref<string>('/dashboard')
+const activeTab = ref<string>()
 
 router.beforeEach((to, _from, next) => {
   activeTab.value = to.fullPath
@@ -35,7 +36,7 @@ router.beforeEach((to, _from, next) => {
 function handleTabClick(pane: any) {
   const fullPath = pane.paneName
   // 根据fullPath查找对应的页面信息
-  const targetPage = visitedViews.value.find(page => page.fullPath === fullPath)
+  const targetPage = visitedViews.value.find((page: PageObject) => page.fullPath === fullPath)
   if (targetPage && targetPage.fullPath) {
     // 跳转到目标路由
     router.push(targetPage.fullPath)
@@ -44,48 +45,50 @@ function handleTabClick(pane: any) {
 
 // 处理标签关闭
 function handleTabRemove(targetPath: string | number) {
-  if (targetPath === "/dashboard") {
-    return;
-  }
   const fullPath = String(targetPath)
-  const view = visitedViews.value.find(item => item.fullPath === fullPath)
+  const view = visitedViews.value.find((item: PageObject) => item.fullPath === fullPath)
   if (view) {
     closeSelectedTag(view)
   }
 }
 
 // 关闭选中的标签
-function closeSelectedTag(view: PageInfo) {
-  routeStore.delVisitedPage(view)
+function closeSelectedTag(view: PageObject) {
+  pageStore.removePageByFullPath(view.fullPath)
   if (view.fullPath === route.fullPath) {
     toLastView(visitedViews.value)
   }
 }
 
 function refreshCurrentTag() {
-  const view = visitedViews.value.find(item => item.fullPath === route.fullPath)
-  if (view && view.componentName) {
-    routeStore.delCachedPage(view.componentName)
-    appStore.refreshMainContent()
-  }
+  pageStore.refreshActivePage()
+  appStore.refreshMainContent()
 }
 
 // 关闭其他标签
 function closeOthersTags() {
-  const currentView = visitedViews.value.find(item => item.fullPath === route.fullPath)
+  const currentView = visitedViews.value.find((item: PageObject) => item.fullPath === route.fullPath)
   if (currentView) {
-    routeStore.delOtherVisitedPages(currentView)
+    // 关闭其他页面：保留当前页面
+    visitedViews.value.forEach((page: PageObject) => {
+      if (page.fullPath !== currentView.fullPath) {
+        pageStore.removePageByFullPath(page.fullPath)
+      }
+    })
   }
 }
 
 // 关闭所有标签
 function closeAllTags() {
-  routeStore.delAllVisitedPages()
+  // 关闭所有页面
+  visitedViews.value.forEach((page: PageObject) => {
+    pageStore.removePageByFullPath(page.fullPath)
+  })
   router.push('/')
 }
 
 // 跳转到最后一个标签
-function toLastView(visitedViews: PageInfo[]) {
+function toLastView(visitedViews: PageObject[]) {
   const latestView = visitedViews.slice(-1)[0]
   if (latestView) {
     router.push(latestView.fullPath || latestView.path || '/')
@@ -119,8 +122,7 @@ function handleCommand(command: string) {
   <div class="tab-bar-container">
     <ElTabs v-model="activeTab" type="card" closable class="tab-bar-tabs" @tab-click="handleTabClick"
       @tab-remove="handleTabRemove">
-      <ElTabPane v-for="item in visitedViews" :key="item.fullPath" :label="item.title" :name="item.fullPath"
-        :closable="item.fullPath !== '/dashboard'">
+      <ElTabPane v-for="page in pages" :key="page.key" :label="page.title" :name="page.fullPath" closable>
       </ElTabPane>
     </ElTabs>
 

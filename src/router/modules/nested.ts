@@ -1,4 +1,4 @@
-import Layout from "@/layout/index.vue";
+import Layout from "@/layout/Layout.vue";
 import type { RouteRecordRaw } from "vue-router";
 
 // 多级菜单路由模块
@@ -7,7 +7,7 @@ export const nestedRoutes: Array<RouteRecordRaw> = [
     path: "/nested",
     component: Layout,
     name: "Nested",
-    meta: { title: "多级菜单", icon: "Menu", noPage: true },
+    meta: { title: "多级菜单", icon: "Menu" },
     children: [
       {
         path: "menu1",

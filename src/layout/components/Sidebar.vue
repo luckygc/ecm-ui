@@ -4,7 +4,8 @@ import { ElButton, ElIcon, ElMenu, ElMenuItem, ElSubMenu } from 'element-plus'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
-import { useRouteStore } from '@/stores/route-store'
+import { routes } from '@/router'
+import { buildNestedMenuFromRoutes, findMenuItemByPath } from '@/utils/menu-utils'
 
 const route = useRoute()
 const router = useRouter()
@@ -17,35 +18,19 @@ function toggleSidebar() {
   appStore.toggleSidebar()
 }
 
-// 使用路由 store 获取侧边栏路由
-const routeStore = useRouteStore()
-const routes = routeStore.sidebarRoutes
+// 从路由配置构建菜单
+const menuItems = computed(() => buildNestedMenuFromRoutes(routes))
 
 function handleMenuSelect(index: string) {
-  // 查找对应的路由信息
-  const routeInfo = routeStore.findRouteByPath(index)
+  // 查找对应的菜单项信息
+  const menuItem = findMenuItemByPath(index, menuItems.value)
 
-  // 如果路由标记为 noPage，则不进行跳转
-  if (routeInfo?.meta?.noPage) {
+  // 如果菜单项标记为不可点击，则不进行跳转
+  if (!menuItem?.clickable) {
     return
   }
 
   router.push(index)
-}
-
-// 路径解析函数
-function resolvePath(basePath: string, routePath: string) {
-  // 如果是绝对路径，直接返回
-  if (routePath.startsWith('/')) {
-    return routePath
-  }
-
-  // 简单的路径合并逻辑
-  const base = basePath.endsWith('/') ? basePath.slice(0, -1) : basePath
-  const path = routePath.startsWith('/') ? routePath : `/${routePath}`
-
-  // 确保路径格式正确
-  return `${base}${path}`
 }
 </script>
 
@@ -78,58 +63,56 @@ function resolvePath(basePath: string, routePath: string) {
     <div class="menu-container">
       <ElMenu :default-active="activeMenu" :collapse="!sidebarOpened" mode="vertical" class="sidebar-menu"
         @select="handleMenuSelect">
-        <template v-for="route in routes" :key="route.path">
-          <!-- 没有子菜单或子菜单为空的路由 -->
-          <ElMenuItem v-if="!route.children || route.children.length === 0" :index="route.path">
-            <ElIcon v-if="route.meta && route.meta.icon">
-              <component :is="route.meta.icon" />
+        <template v-for="menuItem in menuItems" :key="menuItem.path">
+          <!-- 没有子菜单或子菜单为空的菜单项 -->
+          <ElMenuItem v-if="!menuItem.children || menuItem.children.length === 0" :index="menuItem.path">
+            <ElIcon v-if="menuItem.icon">
+              <component :is="menuItem.icon" />
             </ElIcon>
             <template #title>
-              <span v-if="route.meta">{{ route.meta.title }}</span>
+              <span>{{ menuItem.title }}</span>
             </template>
           </ElMenuItem>
 
-          <!-- 有子菜单的路由 -->
+          <!-- 有子菜单的菜单项 -->
           <template v-else>
-            <ElSubMenu :index="route.path">
+            <ElSubMenu :index="menuItem.path">
               <template #title>
-                <ElIcon v-if="route.meta && route.meta.icon">
-                  <component :is="route.meta.icon" />
+                <ElIcon v-if="menuItem.icon">
+                  <component :is="menuItem.icon" />
                 </ElIcon>
-                <span v-if="route.meta">{{ route.meta.title }}</span>
+                <span>{{ menuItem.title }}</span>
               </template>
 
               <!-- 递归渲染子菜单 -->
-              <template v-for="child in route.children.filter(child => !(child.meta && child.meta.hidden))"
-                :key="child.path">
-                <!-- 没有子菜单的子路由 -->
-                <ElMenuItem v-if="!child.children || child.children.length === 0"
-                  :index="resolvePath(route.path, child.path)">
-                  <ElIcon v-if="child.meta && child.meta.icon">
-                    <component :is="child.meta.icon" />
+              <template v-for="child in menuItem.children?.filter((child: any) => !child.hidden)" :key="child.path">
+                <!-- 没有子菜单的子菜单项 -->
+                <ElMenuItem v-if="!child.children || child.children.length === 0" :index="child.path">
+                  <ElIcon v-if="child.icon">
+                    <component :is="child.icon" />
                   </ElIcon>
                   <template #title>
-                    <span v-if="child.meta">{{ child.meta.title }}</span>
+                    <span>{{ child.title }}</span>
                   </template>
                 </ElMenuItem>
 
-                <!-- 有子菜单的子路由 -->
-                <ElSubMenu v-else :index="resolvePath(route.path, child.path)">
+                <!-- 有子菜单的子菜单项 -->
+                <ElSubMenu v-else :index="child.path">
                   <template #title>
-                    <ElIcon v-if="child.meta && child.meta.icon">
-                      <component :is="child.meta.icon" />
+                    <ElIcon v-if="child.icon">
+                      <component :is="child.icon" />
                     </ElIcon>
-                    <span v-if="child.meta">{{ child.meta.title }}</span>
+                    <span>{{ child.title }}</span>
                   </template>
 
                   <!-- 渲染三级菜单 -->
-                  <ElMenuItem v-for="grandChild in child.children.filter(gc => !(gc.meta && gc.meta.hidden))"
-                    :key="grandChild.path" :index="resolvePath(resolvePath(route.path, child.path), grandChild.path)">
-                    <ElIcon v-if="grandChild.meta && grandChild.meta.icon">
-                      <component :is="grandChild.meta.icon" />
+                  <ElMenuItem v-for="grandChild in child.children?.filter((gc: any) => !gc.hidden)"
+                    :key="grandChild.path" :index="grandChild.path">
+                    <ElIcon v-if="grandChild.icon">
+                      <component :is="grandChild.icon" />
                     </ElIcon>
                     <template #title>
-                      <span v-if="grandChild.meta">{{ grandChild.meta.title }}</span>
+                      <span>{{ grandChild.title }}</span>
                     </template>
                   </ElMenuItem>
                 </ElSubMenu>

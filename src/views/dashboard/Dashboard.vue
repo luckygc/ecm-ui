@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" name="Dashboard">
 import { Bell, DataAnalysis, Document, Plus, Refresh, Setting, Upload, User } from '@element-plus/icons-vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'

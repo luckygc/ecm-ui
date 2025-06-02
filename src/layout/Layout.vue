@@ -1,16 +1,25 @@
 <script setup lang="ts">
 import { ElAside, ElContainer, ElHeader, ElMain } from 'element-plus'
-import { computed } from 'vue'
-import MainContent from '@/layout/components/MainContent.vue'
+import { computed, onMounted } from 'vue'
+import UnifiedMainContent from '@/layout/components/UnifiedMainContent.vue'
 import Navbar from '@/layout/components/Navbar.vue'
 import Sidebar from '@/layout/components/Sidebar.vue'
 import TabBar from '@/layout/components/TabBar.vue'
 import { useAppStore } from '@/stores/app'
+import { usePageStore } from '@/stores/page-store'
+import { useRouter } from 'vue-router'
 
 const appStore = useAppStore()
+const pageStore = usePageStore()
+const router = useRouter()
 
 const sidebarOpened = computed(() => appStore.getSidebarStatus)
 const sidebarWidth = computed(() => sidebarOpened.value ? '200px' : '64px')
+
+// 初始化页面管理系统
+onMounted(() => {
+  pageStore.initializePageSystem(router)
+})
 </script>
 
 <template>
@@ -31,8 +40,8 @@ const sidebarWidth = computed(() => sidebarOpened.value ? '200px' : '64px')
         <TabBar />
       </ElHeader>
       <ElMain>
-        <!-- 主要内容区 -->
-        <MainContent />
+        <!-- 主要内容区 - 统一的KeepAlive布局 -->
+        <UnifiedMainContent />
       </ElMain>
     </ElContainer>
   </ElContainer>

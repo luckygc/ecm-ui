@@ -2,13 +2,16 @@
 import { ElBreadcrumb, ElBreadcrumbItem, ElIcon } from 'element-plus'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useRouteStore } from '@/stores/route-store'
+import { usePageStore } from '@/stores/page-store'
+import { buildBreadcrumbs } from '@/utils/breadcrumb-utils'
 
 const router = useRouter()
-const routeStore = useRouteStore()
+const pageStore = usePageStore()
 
-// 从 store 获取面包屑数据 - 使用computed确保响应性
-const breadcrumbs = computed(() => routeStore.breadcrumbs)
+// 使用面包屑工具构建面包屑数据
+const breadcrumbs = computed(() =>
+  buildBreadcrumbs(pageStore.activePage, pageStore.findPageByPath)
+)
 
 // 处理面包屑点击
 function handleBreadcrumbClick(breadcrumb: any) {
