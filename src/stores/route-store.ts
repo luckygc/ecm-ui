@@ -32,6 +32,56 @@ export interface PageInfo {
   query?: Record<string, any>;
   params?: Record<string, any>;
   meta?: RouteMeta;
+  // 新增：用于keepAlive的唯一组件名
+  componentName?: string;
+  // 新增：用于区分同一路由的不同实例
+  instanceId?: string;
+}
+
+// ==================== 工具函数 ====================
+
+/**
+ * 生成路由实例的唯一ID
+ * 基于路由路径和参数生成，确保同一路由的不同参数实例有不同的ID
+ */
+function generateInstanceId(route: RouteLocationNormalized): string {
+  const { path, query, params } = route;
+
+  // 将查询参数和路径参数序列化
+  const queryStr = Object.keys(query).length > 0 ? JSON.stringify(query) : "";
+  const paramsStr =
+    Object.keys(params).length > 0 ? JSON.stringify(params) : "";
+
+  // 生成基于路径和参数的哈希
+  const content = `${path}${queryStr}${paramsStr}`;
+  return btoa(encodeURIComponent(content))
+    .replace(/[+/=]/g, "")
+    .substring(0, 8);
+}
+
+/**
+ * 生成用于keepAlive的唯一组件名
+ * 格式：原组件名_实例ID
+ */
+function generateComponentName(routeName: string, instanceId: string): string {
+  return `${routeName}_${instanceId}`;
+}
+
+/**
+ * 生成页面标题，支持参数化显示
+ */
+function generatePageTitle(route: RouteLocationNormalized): string {
+  const baseTitle = (route.meta?.title as string) || (route.name as string);
+
+  // 如果有路径参数，添加到标题中
+  if (route.params && Object.keys(route.params).length > 0) {
+    const paramStr = Object.entries(route.params)
+      .map(([key, value]) => `${key}:${value}`)
+      .join(",");
+    return `${baseTitle}(${paramStr})`;
+  }
+
+  return baseTitle;
 }
 
 export const useRouteStore = defineStore("route", () => {
@@ -39,8 +89,6 @@ export const useRouteStore = defineStore("route", () => {
 
   // 当前路由信息
   const currentRoute = ref<RouteLocationNormalized | null>(null);
-
-  const currentRouteName = ref("/");
 
   // 访问过的页面列表
   const visitedPages = ref<PageInfo[]>([]);
@@ -193,10 +241,15 @@ export const useRouteStore = defineStore("route", () => {
       return;
     }
 
+    // 生成实例ID和组件名
+    const instanceId = generateInstanceId(route);
+    const componentName = generateComponentName(name as string, instanceId);
+    const title = generatePageTitle(route);
+
     const pageInfo: PageInfo = {
       path,
       name: name as string,
-      title: (meta?.title as string) || (name as string),
+      title,
       icon: meta?.icon as string,
       affix: meta?.affix as boolean,
       noCache: meta?.noCache as boolean,
@@ -204,11 +257,13 @@ export const useRouteStore = defineStore("route", () => {
       query: { ...query },
       params: { ...params },
       meta: { ...meta },
+      componentName,
+      instanceId,
     };
 
-    // 检查是否已存在
+    // 检查是否已存在相同的fullPath（支持参数化路由的多实例）
     const existingIndex = visitedPages.value.findIndex(
-      (page) => page.path === path
+      (page) => page.fullPath === fullPath
     );
     if (existingIndex > -1) {
       // 更新现有页面信息
@@ -219,34 +274,36 @@ export const useRouteStore = defineStore("route", () => {
     }
 
     // 添加到缓存（如果不是 noCache）
-    if (!pageInfo.noCache && pageInfo.name) {
-      addCachedPage(pageInfo.name);
+    if (!pageInfo.noCache && pageInfo.componentName) {
+      addCachedPage(pageInfo.componentName);
     }
   };
 
   // 删除访问的页面
   const delVisitedPage = (page: PageInfo) => {
-    const index = visitedPages.value.findIndex((p) => p.path === page.path);
+    const index = visitedPages.value.findIndex(
+      (p) => p.fullPath === page.fullPath
+    );
     if (index > -1) {
       visitedPages.value.splice(index, 1);
     }
 
     // 从缓存中删除
-    if (page.name) {
-      delCachedPage(page.name);
+    if (page.componentName) {
+      delCachedPage(page.componentName);
     }
   };
 
   // 删除其他页面
   const delOtherVisitedPages = (page: PageInfo) => {
     visitedPages.value = visitedPages.value.filter(
-      (p) => p.affix || p.path === page.path
+      (p) => p.affix || p.fullPath === page.fullPath
     );
 
     // 更新缓存
     const cacheNames = visitedPages.value
-      .filter((p) => !p.noCache && p.name)
-      .map((p) => p.name!);
+      .filter((p) => !p.noCache && p.componentName)
+      .map((p) => p.componentName!);
     cachedPages.value = cacheNames;
   };
 
@@ -257,8 +314,8 @@ export const useRouteStore = defineStore("route", () => {
 
     // 更新缓存，保留固定页面的缓存
     const affixCacheNames = visitedPages.value
-      .filter((p) => !p.noCache && p.name)
-      .map((p) => p.name!);
+      .filter((p) => !p.noCache && p.componentName)
+      .map((p) => p.componentName!);
     cachedPages.value = affixCacheNames;
   };
 
@@ -298,6 +355,11 @@ export const useRouteStore = defineStore("route", () => {
   // 根据名称查找路由信息
   const findRouteByName = (name: string): RouteInfo | undefined => {
     return flatRoutes.value.find((route) => route.name === name);
+  };
+
+  // 根据fullPath查找页面信息
+  const findPageByFullPath = (fullPath: string): PageInfo | undefined => {
+    return visitedPages.value.find((page) => page.fullPath === fullPath);
   };
 
   // 初始化固定页面
@@ -348,6 +410,7 @@ export const useRouteStore = defineStore("route", () => {
     setCurrentRoute,
     findRouteByPath,
     findRouteByName,
+    findPageByFullPath,
     initAffixPages,
   };
 });

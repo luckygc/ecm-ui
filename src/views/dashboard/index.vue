@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { Bell, DataAnalysis, Document, Plus, Refresh, Setting, Upload, User } from '@element-plus/icons-vue'
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 
+const router = useRouter()
 const appStore = useAppStore()
 
 const loadTime = ref('')
@@ -12,27 +14,43 @@ const activities = ref([
   {
     content: '系统更新至 v1.2.0 版本',
     timestamp: '2023-05-15',
-    type: 'primary',
+    type: 'primary' as const,
   },
   {
     content: '新增数据导出功能',
     timestamp: '2023-05-10',
-    type: 'success',
+    type: 'success' as const,
   },
   {
     content: '修复用户管理模块的已知问题',
     timestamp: '2023-05-05',
-    type: 'info',
+    type: 'info' as const,
   },
   {
     content: '系统将于 2023-06-01 进行维护',
     timestamp: '2023-05-01',
-    type: 'warning',
+    type: 'warning' as const,
   },
 ])
 
 function handleRefresh() {
   appStore.refreshMainContent()
+}
+
+// 测试多开功能
+function openTestPage(id: number) {
+  router.push(`/test/${id}`)
+}
+
+function openTestWithQuery() {
+  const id = Math.floor(Math.random() * 100)
+  router.push({
+    path: `/test/${id}`,
+    query: {
+      type: 'dashboard-test',
+      timestamp: Date.now().toString()
+    }
+  })
 }
 
 onMounted(() => {
@@ -62,6 +80,29 @@ onMounted(() => {
         <p><strong>刷新次数:</strong> {{ refreshCount }}</p>
         <p class="text-sm text-green-500">
           点击上方的"手动刷新"按钮或使用Tab栏的刷新功能来测试key刷新机制
+        </p>
+      </div>
+    </div>
+
+    <!-- 多开页面测试区域 -->
+    <div class="bg-purple-100 p-4 mb-4 rounded-lg shadow-sm">
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="text-xl font-bold text-purple-800">
+          多开页面测试
+        </h2>
+      </div>
+      <div class="text-purple-600 space-y-2">
+        <p class="text-sm">
+          测试带参数路由的多开功能，每个不同参数的页面都会独立缓存
+        </p>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <el-button size="small" @click="openTestPage(1)">打开测试页面1</el-button>
+          <el-button size="small" @click="openTestPage(2)">打开测试页面2</el-button>
+          <el-button size="small" @click="openTestPage(3)">打开测试页面3</el-button>
+          <el-button size="small" type="warning" @click="openTestWithQuery">打开带查询参数的页面</el-button>
+        </div>
+        <p class="text-sm text-purple-500">
+          每个页面都会保持独立的状态，支持多开并缓存
         </p>
       </div>
     </div>

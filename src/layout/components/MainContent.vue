@@ -1,29 +1,36 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useRouteStore } from '@/stores/route-store'
 import { useAppStore } from '@/stores/app'
 
+const route = useRoute()
 const routeStore = useRouteStore()
 const appStore = useAppStore()
 
-// 获取缓存的视图列表 - 优先使用路由 store 的缓存
+// 获取缓存的视图列表 - 使用新的组件名机制
 const cachedViews = computed(() => routeStore.cachedPages)
 
 // 获取主内容区域的刷新键
 const mainContentRefreshKey = computed(() => appStore.currentMainContentKey)
 
-// 生成组件的完整刷新键
+// 生成组件的完整刷新键 - 基于fullPath而不是routeName
 const generateComponentKey = (routeName: string | symbol | undefined): string => {
   if (!routeName) return mainContentRefreshKey.value
 
-  const routeNameStr = String(routeName)
+  // 查找当前路由对应的页面信息
+  const currentPage = routeStore.findPageByFullPath(route.fullPath)
 
-  // 尝试获取该路由组件的专用刷新键
+  if (currentPage && currentPage.componentName) {
+    // 使用页面的唯一组件名作为key
+    return currentPage.componentName
+  }
+
+  // 降级处理：如果找不到页面信息，使用原有逻辑
+  const routeNameStr = String(routeName)
   const componentKey = appStore.getComponentKey(routeNameStr)
 
-  // 如果没有专用键，则使用主内容刷新键
   if (componentKey === routeNameStr) {
-    // 自动为新路由组件添加刷新键
     appStore.addComponentKey(routeNameStr)
     return `${routeNameStr}_${mainContentRefreshKey.value}`
   }

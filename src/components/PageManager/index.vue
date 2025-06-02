@@ -12,10 +12,10 @@ function closePage(page: any) {
   routeStore.delVisitedPage(page)
 
   // 如果关闭的是当前页面，跳转到最后一个页面
-  if (page.path === router.currentRoute.value.path) {
+  if (page.fullPath === router.currentRoute.value.fullPath) {
     const lastPage = routeStore.visitedPages[routeStore.visitedPages.length - 1]
     if (lastPage) {
-      router.push(lastPage.path)
+      router.push(lastPage.fullPath || lastPage.path)
     } else {
       router.push('/dashboard')
     }
@@ -25,8 +25,8 @@ function closePage(page: any) {
 // 关闭其他页面
 function closeOtherPages(page: any) {
   routeStore.delOtherVisitedPages(page)
-  if (page.path !== router.currentRoute.value.path) {
-    router.push(page.path)
+  if (page.fullPath !== router.currentRoute.value.fullPath) {
+    router.push(page.fullPath || page.path)
   }
 }
 
@@ -41,8 +41,8 @@ function refreshPageCache() {
   routeStore.delAllCachedPages()
   // 重新添加当前访问的页面到缓存
   routeStore.visitedPages.forEach(page => {
-    if (!page.noCache && page.name) {
-      routeStore.addCachedPage(page.name)
+    if (!page.noCache && page.componentName) {
+      routeStore.addCachedPage(page.componentName)
     }
   })
 }
@@ -77,12 +77,15 @@ function goToPage(page: any) {
       <div class="section">
         <h4>访问过的页面 ({{ routeStore.visitedPages.length }})</h4>
         <div class="page-list">
-          <ElTag v-for="page in routeStore.visitedPages" :key="page.path" :type="page.affix ? 'success' : 'info'"
+          <ElTag v-for="page in routeStore.visitedPages" :key="page.fullPath" :type="page.affix ? 'success' : 'info'"
             :closable="!page.affix" class="page-tag" @click="goToPage(page)" @close="closePage(page)">
             <ElIcon v-if="page.icon" class="tag-icon">
               <component :is="page.icon" />
             </ElIcon>
             {{ page.title }}
+            <span v-if="page.params && Object.keys(page.params).length > 0" class="page-params">
+              ({{Object.entries(page.params).map(([k, v]) => `${k}:${v}`).join(',')}})
+            </span>
           </ElTag>
         </div>
       </div>
@@ -201,6 +204,12 @@ function goToPage(page: any) {
 .tag-icon {
   margin-right: 4px;
   font-size: 12px;
+}
+
+.page-params {
+  font-size: 12px;
+  color: #909399;
+  margin-left: 4px;
 }
 
 .breadcrumb-preview {

@@ -16,6 +16,12 @@ export const dashboard: Array<RouteRecordRaw> = [
         component: () => import("@/views/dashboard/index.vue"),
         meta: { title: "仪表盘", icon: "Odometer", affix: true },
       },
+      {
+        path: "test/:id",
+        name: "Test",
+        component: () => import("@/views/dashboard/test.vue"),
+        meta: { title: "测试页面", icon: "Document" },
+      },
     ],
   },
 ];

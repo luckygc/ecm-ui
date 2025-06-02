@@ -155,7 +155,6 @@ function resolvePath(basePath: string, routePath: string) {
 /* Logo区域样式 */
 .logo-container {
   height: 60px;
-  border-bottom: 1px solid #f0f0f0;
   background-color: #fff;
   flex-shrink: 0;
   position: relative;

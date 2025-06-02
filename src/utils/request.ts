@@ -28,9 +28,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse<ApiResult<any>>) => {
     const { success, error, data } = response.data as ApiResult<any>;
-    
-    response.config.
-  
+
     // 根据自定义错误码判断请求是否成功
     if (!success) {
       // 处理错误

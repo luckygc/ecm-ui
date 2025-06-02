@@ -23,17 +23,23 @@ const appStore = useAppStore()
 // 获取已访问的视图 - 使用routeStore而不是tagsViewStore
 const visitedViews = computed(() => routeStore.visitedPages)
 
-// 当前激活的标签
-const activeTab = ref<string>('Dashboard')
+// 当前激活的标签 - 使用fullPath作为标识
+const activeTab = ref<string>('/dashboard')
 
 router.beforeEach((to, _from, next) => {
-  activeTab.value = to.name as string
+  activeTab.value = to.fullPath
   next();
 });
 
 // 处理标签点击
-function handleTabClick() {
-  // 标签点击时，路由已经通过activeTab的set方法处理了
+function handleTabClick(pane: any) {
+  const fullPath = pane.paneName
+  // 根据fullPath查找对应的页面信息
+  const targetPage = visitedViews.value.find(page => page.fullPath === fullPath)
+  if (targetPage && targetPage.fullPath) {
+    // 跳转到目标路由
+    router.push(targetPage.fullPath)
+  }
 }
 
 // 处理标签关闭
@@ -41,8 +47,8 @@ function handleTabRemove(targetPath: string | number) {
   if (targetPath === "/dashboard") {
     return;
   }
-  const path = String(targetPath)
-  const view = visitedViews.value.find(item => item.path === path)
+  const fullPath = String(targetPath)
+  const view = visitedViews.value.find(item => item.fullPath === fullPath)
   if (view) {
     closeSelectedTag(view)
   }
@@ -51,22 +57,22 @@ function handleTabRemove(targetPath: string | number) {
 // 关闭选中的标签
 function closeSelectedTag(view: PageInfo) {
   routeStore.delVisitedPage(view)
-  if (view.path === route.path) {
+  if (view.fullPath === route.fullPath) {
     toLastView(visitedViews.value)
   }
 }
 
 function refreshCurrentTag() {
-  const view = visitedViews.value.find(item => item.path === route.path)
-  if (view && view.name) {
-    routeStore.delCachedPage(view.name)
+  const view = visitedViews.value.find(item => item.fullPath === route.fullPath)
+  if (view && view.componentName) {
+    routeStore.delCachedPage(view.componentName)
     appStore.refreshMainContent()
   }
 }
 
 // 关闭其他标签
 function closeOthersTags() {
-  const currentView = visitedViews.value.find(item => item.path === route.path)
+  const currentView = visitedViews.value.find(item => item.fullPath === route.fullPath)
   if (currentView) {
     routeStore.delOtherVisitedPages(currentView)
   }
@@ -113,8 +119,8 @@ function handleCommand(command: string) {
   <div class="tab-bar-container">
     <ElTabs v-model="activeTab" type="card" closable class="tab-bar-tabs" @tab-click="handleTabClick"
       @tab-remove="handleTabRemove">
-      <ElTabPane v-for="item in visitedViews" :key="item.path" :label="item.title" :name="item.name"
-        :closable="item.path !== '/dashboard'">
+      <ElTabPane v-for="item in visitedViews" :key="item.fullPath" :label="item.title" :name="item.fullPath"
+        :closable="item.fullPath !== '/dashboard'">
       </ElTabPane>
     </ElTabs>
 
