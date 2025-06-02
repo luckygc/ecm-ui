@@ -33,10 +33,7 @@ export const usePageStore = defineStore("page", () => {
 
   // ==================== 页面管理方法 ====================
 
-  // 生成组件名称（用于KeepAlive）
   function generateComponentName(route: any): string {
-    // 使用fullPath作为组件名称，支持带参数的路由多开
-    // 将特殊字符替换为下划线，确保是有效的组件名称
     return route.fullPath.replace(/[^a-zA-Z0-9]/g, "_");
   }
 
@@ -109,25 +106,14 @@ export const usePageStore = defineStore("page", () => {
     if (shouldCache(routeSnapshot)) {
       const componentName = generateComponentName(routeSnapshot);
       addToKeepAlive(componentName);
-      console.log("页面需要缓存，组件名:", componentName);
-    } else {
-      console.log("页面不需要缓存:", fullPath);
     }
-
-    console.log(
-      "添加页面:",
-      routeSnapshot.meta?.title || routeSnapshot.name,
-      fullPath
-    );
   }
 
   // 切换到指定页面
   function switchToPage(fullPath: string) {
     activePageFullPath.value = fullPath;
-    console.log("切换到页面:", fullPath);
   }
 
-  // 处理路由变化
   function handleRouteChange(route: any) {
     // 跳过隐藏的路由或没有实际页面的路由
     if (route.meta?.hidden) {

@@ -6,28 +6,12 @@ import { storeToRefs } from 'pinia';
 const pageStore = usePageStore();
 const { keepAliveInclude } = storeToRefs(pageStore);
 
-// KeepAlive组件引用
-const keepAliveRef = ref();
-
-// 强制刷新KeepAlive组件
-function forceRefreshKeepAlive() {
-  if (keepAliveRef.value) {
-    // 强制更新KeepAlive组件
-    nextTick(() => {
-      keepAliveRef.value.$forceUpdate?.();
-    });
-  }
-}
-
 function createDynamicNamedComponent(
   route: any,
   wrappedComponent: Component
 ) {
-  // 使用路由名称作为组件名称，确保与KeepAlive include匹配
-  const componentName = pageStore.generateComponentName(route);
-
   return defineComponent({
-    name: componentName,
+    name: pageStore.generateComponentName(route),
     setup(props, { attrs, slots }) {
       return () => h(wrappedComponent, { ...attrs, ...props }, slots);
     },
@@ -39,7 +23,7 @@ function createDynamicNamedComponent(
 <template>
   <router-view v-slot="{ Component, route }">
     <transition name="fade-transform" mode="out-in">
-      <keep-alive ref="keepAliveRef" :include="keepAliveInclude" :max="15">
+      <keep-alive :include="keepAliveInclude" :max="15">
         <component :is="createDynamicNamedComponent(route, Component)" :key="route.fullPath" />
       </keep-alive>
     </transition>
