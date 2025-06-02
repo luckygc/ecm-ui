@@ -3,8 +3,11 @@ import {ArrowDown, CircleClose, FolderDelete, Refresh} from '@element-plus/icons
 import {ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs,} from 'element-plus'
 import {useRouteStore} from '@/stores/route-store.ts'
 import router from "@/router";
+import {useRoute} from "vue-router";
 
-const routeStore = useRouteStore()
+const routeStore = useRouteStore();
+
+const route = useRoute();
 
 // 处理下拉菜单命令
 function handleCommand(command: string) {
@@ -24,11 +27,11 @@ function handleCommand(command: string) {
 
 <template>
   <div class="tab-bar-container">
-    <ElTabs :model-value="routeStore.activeRouteFullPath" type="card" closable class="tab-bar-tabs"
-            @tab-click="({paneName})=>router.push(paneName as string)"
+    <ElTabs :model-value="route.fullPath" type="card" closable class="tab-bar-tabs"
+            @tab-click="({paneName})=> router.push(paneName as string)"
             @tab-remove="(name) => routeStore.closePage(name as string)">
-      <ElTabPane v-for="page in routeStore.visitedRoutes" :key="page.fullPath"
-                 :label="page.meta?.title as string" :name="page.fullPath"
+      <ElTabPane v-for="r in routeStore.visitedRoutes" :key="r.fullPath"
+                 :label="r.meta?.title as string" :name="r.fullPath"
                  closable>
       </ElTabPane>
     </ElTabs>

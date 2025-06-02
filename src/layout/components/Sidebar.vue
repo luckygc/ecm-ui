@@ -3,17 +3,17 @@ import {routes} from '@/router'
 import {useAppStore} from '@/stores/app'
 import {Expand, Fold} from '@element-plus/icons-vue'
 import {ElButton, ElIcon, ElMenu} from 'element-plus'
-import {useRouter} from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 import {storeToRefs} from 'pinia'
 import MenuItems from './MenuItems.vue'
-import {useRouteStore} from "@/stores/route-store.ts";
 
 const router = useRouter()
 
 const appStore = useAppStore()
 const {toggleSidebar} = appStore;
 const {isSidebarOpened} = storeToRefs(appStore)
-const {activeRouteName} = storeToRefs(useRouteStore());
+
+const route = useRoute();
 
 // 处理菜单点击事件
 function handleMenuSelect(routeName: string) {
@@ -48,7 +48,7 @@ function handleMenuSelect(routeName: string) {
 
     <!-- 菜单区域 -->
     <div class="menu-container">
-      <ElMenu :default-active="activeRouteName as string" :collapse="!isSidebarOpened" mode="vertical"
+      <ElMenu :default-active="route.name as string" :collapse="!isSidebarOpened" mode="vertical"
               class="sidebar-menu"
               @select="handleMenuSelect">
         <MenuItems :routes="routes"/>
