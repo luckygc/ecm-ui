@@ -16,8 +16,6 @@ export const usePageStore = defineStore("page", () => {
   // KeepAlive include列表 - 统一管理缓存
   const keepAliveInclude = ref<string[]>([]);
 
-  // ==================== 计算属性 ====================
-
   // 获取页面列表
   const visitedPages = computed(() => Array.from(pages.value.values()));
 
@@ -238,18 +236,8 @@ export const usePageStore = defineStore("page", () => {
   }
 
   // 根据fullPath获取页面
-  function getPageByFullPath(
-    fullPath: string
-  ): RouteLocationNormalizedLoadedGeneric | undefined {
-    return pages.value.get(fullPath);
-  }
-
-  // 检查页面是否存在
-  function hasPage(fullPath: string): boolean {
-    return pages.value.has(fullPath);
-  }
-
-  return {
+// 检查页面是否存在
+    return {
     // 状态
     pages: pageMap,
     activePageFullPath,
@@ -261,22 +249,11 @@ export const usePageStore = defineStore("page", () => {
     pageMap,
 
     // 方法
-    addPage,
-    switchToPage,
     handleRouteChange,
     closePage,
-    toLastPage,
     refreshCurrentPage,
     closeOtherPages,
     closeAllPages,
-    getPageByFullPath,
-    hasPage,
     generateComponentName,
-    addToKeepAlive,
-    removeFromKeepAlive,
-    removeFromKeepAliveDelayed,
-
-    // 兼容性方法
-    removePage: closePage,
   };
 });

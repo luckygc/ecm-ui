@@ -1,14 +1,14 @@
+import type { ApiResult } from "@/types/utils/requests-type";
+import { getConfigSync } from "@/utils/config-utils";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import axios from "axios";
 import { ElMessage } from "element-plus";
-import { getConfigSync } from "@/utils/config-utils";
-import type { ApiResult } from "@/types/utils/requests-type";
 
 // 创建axios实例（使用默认配置）
 const service = axios.create({
   baseURL: getConfigSync().apiBaseUrl,
   timeout: 60 * 1000,
-  withCredentials: true,
+  withCredentials: false,
 });
 
 // 请求拦截器

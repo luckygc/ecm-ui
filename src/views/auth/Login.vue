@@ -11,49 +11,19 @@
       </div>
 
       <!-- 登录表单 -->
-      <el-form
-        ref="loginFormRef"
-        :model="loginForm"
-        :rules="loginRules"
-        class="login-form"
-        size="large"
-        @keyup.enter="handleLogin"
-      >
+      <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form" size="large"
+        @keyup.enter="handleLogin">
         <el-form-item prop="username">
-          <el-input
-            v-model="loginForm.username"
-            placeholder="请输入用户名"
-            prefix-icon="User"
-            clearable
-          />
+          <el-input v-model="loginForm.username" placeholder="请输入用户名" prefix-icon="User" clearable />
         </el-form-item>
 
         <el-form-item prop="password">
-          <el-input
-            v-model="loginForm.password"
-            type="password"
-            placeholder="请输入密码"
-            prefix-icon="Lock"
-            show-password
-            clearable
-          />
+          <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" show-password
+            clearable />
         </el-form-item>
 
         <el-form-item>
-          <div class="login-options">
-            <el-checkbox v-model="loginForm.rememberMe">
-              记住我
-            </el-checkbox>
-          </div>
-        </el-form-item>
-
-        <el-form-item>
-          <el-button
-            type="primary"
-            class="login-button"
-            :loading="loading"
-            @click="handleLogin"
-          >
+          <el-button type="primary" class="login-button" :loading="loading" @click="handleLogin">
             {{ loading ? '登录中...' : '登录' }}
           </el-button>
         </el-form-item>
@@ -67,7 +37,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { useUserStore } from '@/stores/user'
-import { login } from '@/api/auth'
+import { login } from '@/api/modules/auth-api'
 import type { LoginForm } from '@/types/utils/requests-type'
 
 const router = useRouter()
@@ -82,8 +52,7 @@ const loading = ref(false)
 // 登录表单数据
 const loginForm = reactive<LoginForm>({
   username: '',
-  password: '',
-  rememberMe: false
+  password: ''
 })
 
 // 表单验证规则
@@ -100,12 +69,14 @@ const loginRules: FormRules = {
 
 // 处理登录
 async function handleLogin() {
-  if (!loginFormRef.value) return
+  if (!loginFormRef.value) {
+    return;
+  }
 
   try {
     // 验证表单
     await loginFormRef.value.validate()
-    
+
     loading.value = true
 
     // 调用登录API，启用skipErrorHandler来自定义错误处理
@@ -128,10 +99,10 @@ async function handleLogin() {
     }
 
     ElMessage.success('登录成功')
-    
+
     // 跳转到首页
     router.push('/')
-    
+
   } catch (error: any) {
     // 自定义错误处理
     const errorMessage = error.message || '登录失败，请检查用户名和密码'
@@ -148,7 +119,7 @@ async function handleLogin() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f6fa;
   padding: 20px;
 }
 
@@ -157,7 +128,10 @@ async function handleLogin() {
   max-width: 400px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
   padding: 40px;
 }
 

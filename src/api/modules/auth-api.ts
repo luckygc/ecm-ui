@@ -1,5 +1,8 @@
 import { post } from "@/utils/request";
-import type { LoginForm, LoginResponse } from "@/types/utils/requests-type";
+import type {
+  LoginForm,
+  LoginResponse,
+} from "@/types/api/modules/auth-api-types";
 
 /**
  * 用户登录
@@ -7,7 +10,7 @@ import type { LoginForm, LoginResponse } from "@/types/utils/requests-type";
  * @param skipErrorHandler 是否跳过错误处理
  * @returns Promise<LoginResponse>
  */
-export function login(
+function login(
   data: LoginForm,
   skipErrorHandler = false
 ): Promise<LoginResponse> {
@@ -31,7 +34,7 @@ export function login(
  * 用户登出
  * @returns Promise<void>
  */
-export function logout(): Promise<void> {
+function logout(): Promise<void> {
   return post<void>("/logout");
 }
 
@@ -39,6 +42,12 @@ export function logout(): Promise<void> {
  * 获取当前用户信息
  * @returns Promise<UserInfo>
  */
-export function getCurrentUser(): Promise<any> {
+function getCurrentUser(): Promise<any> {
   return post<any>("/auth/me");
 }
+
+export const authApi = {
+  login,
+  logout,
+  getCurrentUser,
+};
