@@ -5,7 +5,7 @@ export const authRoutes: Array<RouteRecordRaw> = [
   {
     path: "/login",
     name: "Login",
-    component: () => import("@/views/auth/Login.vue"),
+    component: () => import("@/views/authorization/Login.vue"),
     meta: {
       title: "登录",
       hidden: true, // 不在菜单中显示

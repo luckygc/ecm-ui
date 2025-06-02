@@ -1,6 +1,7 @@
 <script setup lang="ts" name="TestDetail">
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import {onMounted, ref} from 'vue'
+import {useRoute} from 'vue-router'
+import {ElMessage} from "element-plus";
 
 const route = useRoute()
 
@@ -74,13 +75,13 @@ onMounted(() => {
           </el-tag>
         </div>
       </template>
-      
+
       <div class="page-info">
         <p><strong>页面ID:</strong> {{ pageId }}</p>
         <p><strong>完整路径:</strong> {{ route.fullPath }}</p>
         <p><strong>加载时间:</strong> {{ loadTime }}</p>
         <p><strong>描述:</strong> {{ pageData.description }}</p>
-        
+
         <!-- 查询参数显示 -->
         <div v-if="Object.keys(route.query).length > 0" class="mt-3">
           <strong>查询参数:</strong>
@@ -96,14 +97,14 @@ onMounted(() => {
       <template #header>
         <span>状态测试 - 验证KeepAlive缓存</span>
       </template>
-      
+
       <div class="state-test">
         <div class="mb-4">
           <label class="block mb-2 font-medium">输入框测试（测试状态保持）:</label>
-          <el-input 
-            v-model="inputValue" 
-            placeholder="在这里输入内容，切换页面后再回来查看是否保留"
-            class="mb-2"
+          <el-input
+              v-model="inputValue"
+              placeholder="在这里输入内容，切换页面后再回来查看是否保留"
+              class="mb-2"
           />
           <p class="text-sm text-gray-600">
             当前输入: {{ inputValue || '(空)' }}
@@ -125,10 +126,10 @@ onMounted(() => {
         <div class="mb-4">
           <label class="block mb-2 font-medium">备注区域:</label>
           <el-input
-            v-model="notes"
-            type="textarea"
-            :rows="3"
-            placeholder="在这里记录一些备注信息..."
+              v-model="notes"
+              type="textarea"
+              :rows="3"
+              placeholder="在这里记录一些备注信息..."
           />
         </div>
       </div>
@@ -139,30 +140,30 @@ onMounted(() => {
       <template #header>
         <span>操作测试</span>
       </template>
-      
+
       <div class="actions">
-        <el-button 
-          type="primary" 
-          @click="saveData" 
-          :loading="isLoading"
-          :icon="'Check'"
+        <el-button
+            type="primary"
+            @click="saveData"
+            :loading="isLoading"
+            :icon="'Check'"
         >
           保存数据
         </el-button>
-        
-        <el-button 
-          type="success" 
-          @click="loadData" 
-          :loading="isLoading"
-          :icon="'Refresh'"
+
+        <el-button
+            type="success"
+            @click="loadData"
+            :loading="isLoading"
+            :icon="'Refresh'"
         >
           重新加载
         </el-button>
-        
-        <el-button 
-          type="info" 
-          @click="$router.go(-1)"
-          :icon="'Back'"
+
+        <el-button
+            type="info"
+            @click="$router.go(-1)"
+            :icon="'Back'"
         >
           返回上页
         </el-button>
@@ -171,10 +172,10 @@ onMounted(() => {
 
     <!-- 说明信息 -->
     <el-alert
-      class="mt-4"
-      title="KeepAlive 测试说明"
-      type="info"
-      :closable="false"
+        class="mt-4"
+        title="KeepAlive 测试说明"
+        type="info"
+        :closable="false"
     >
       <template #default>
         <ul class="list-disc list-inside space-y-1 text-sm">

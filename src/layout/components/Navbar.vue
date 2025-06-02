@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import { ElBreadcrumb, ElBreadcrumbItem, ElDropdown, ElDropdownMenu, ElDropdownItem, ElAvatar, ElMessageBox, ElMessage } from 'element-plus';
-import { useRoute, useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/user';
-import { storeToRefs } from 'pinia';
+import {
+  ElBreadcrumb,
+  ElBreadcrumbItem,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
+  ElAvatar,
+  ElMessageBox,
+  ElMessage
+} from 'element-plus';
+import {useRoute, useRouter} from 'vue-router';
+import {useUserStore} from '@/stores';
+import {storeToRefs} from 'pinia';
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
-const { userInfo } = storeToRefs(userStore);
+const {userInfo} = storeToRefs(userStore);
 
 // 处理下拉菜单命令
 function handleCommand(command: string) {
@@ -33,9 +42,9 @@ async function handleLogout() {
       type: 'warning',
     });
 
-    userStore.logout();
+    await userStore.logout();
     ElMessage.success('已退出登录');
-    router.push('/login');
+    await router.push('/login');
   } catch {
     // 用户取消操作
   }
@@ -61,10 +70,10 @@ async function handleLogout() {
       <!-- 用户信息下拉菜单 -->
       <ElDropdown @command="handleCommand">
         <div class="user-info">
-          <ElAvatar :size="32" :src="userInfo?.avatar">
-            {{ userInfo?.nickname?.[0] || userInfo?.username?.[0] || 'U' }}
+          <ElAvatar :size="32">
+            {{ userInfo?.fullName?.charAt(0).toUpperCase() || '' }}
           </ElAvatar>
-          <span class="username">{{ userInfo?.nickname || userInfo?.username || '用户' }}</span>
+          <span class="username">{{ userInfo?.username || '' }}</span>
         </div>
         <template #dropdown>
           <ElDropdownMenu>

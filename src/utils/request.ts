@@ -1,12 +1,16 @@
 import type {ApiResult} from "@/types/utils/requests-type";
-import {getConfigSync} from "@/utils/config-utils";
+import {getConfig} from "@/utils/config-utils";
 import type {AxiosRequestConfig, AxiosResponse} from "axios";
 import axios from "axios";
 import {ElMessage} from "element-plus";
+import router from "@/router";
+import {useStorage} from "@vueuse/core";
+
+const authToken = useStorage<string>(getConfig().tokenName, null);
 
 // 创建axios实例（使用默认配置）
 const service = axios.create({
-    baseURL: getConfigSync().apiBaseUrl,
+    baseURL: getConfig().apiBaseUrl,
     timeout: 60 * 1000,
     withCredentials: false,
 });
@@ -14,12 +18,10 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
     (config) => {
-        // 添加认证token
-        const token =
-            localStorage.getItem("token") || sessionStorage.getItem("token");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        if (authToken.value) {
+            config.headers['X-Auth-Token'] = authToken.value;
         }
+
         return config;
     },
     (error) => {
@@ -35,15 +37,6 @@ service.interceptors.response.use(
         const {success, error, data} = response.data as ApiResult<any>;
         const skipErrorHandler = (response.config as any).skipErrorHandler;
 
-        // 检查响应头中的认证token
-        const authToken =
-            response.headers["x-auth-token"] || response.headers["X-Auth-Token"];
-        if (authToken) {
-            // 默认存储到localStorage，登录页面会根据rememberMe选项调整存储位置
-            localStorage.setItem("token", authToken);
-        }
-
-        // 根据自定义错误码判断请求是否成功
         if (!success) {
             // 如果没有跳过错误处理，则显示错误消息
             if (!skipErrorHandler) {
@@ -54,14 +47,34 @@ service.interceptors.response.use(
                 });
             }
 
-            return Promise.reject(new Error(error.message || "请求失败"));
+            return Promise.reject(response);
         } else {
             return data;
         }
     },
-    (error) => {
+    async (error) => {
         console.error("Response error:", error);
         const skipErrorHandler = error.config?.skipErrorHandler;
+
+        // 处理401未授权错误
+        if (error.response?.status === 401) {
+            authToken.value = null; // 清除token
+
+            // 避免在登录页面时重复重定向
+            if (router.currentRoute.value.name !== "Login") {
+                // 显示登录过期提示
+                ElMessage({
+                    message: "登录已过期，请重新登录",
+                    type: "warning",
+                    duration: 3 * 1000,
+                });
+
+                // 重定向到登录页面
+                await router.push("/login");
+            }
+
+            throw error;
+        }
 
         // 如果没有跳过错误处理，则显示错误消息
         if (!skipErrorHandler) {
@@ -71,7 +84,8 @@ service.interceptors.response.use(
                 duration: 5 * 1000,
             });
         }
-        return Promise.reject(error);
+
+        throw error;
     }
 );
 
@@ -106,5 +120,3 @@ export function put<T>(
 export function del<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return service.delete(url, config);
 }
-
-export default service;

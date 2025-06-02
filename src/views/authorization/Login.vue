@@ -37,7 +37,7 @@
 import {reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
-import {useUserStore} from '@/stores/user'
+import {useUserStore} from '@/stores'
 import {authApi} from "@/api";
 import type {LoginForm} from "@/types/api/modules/auth-api-types.ts";
 
@@ -64,7 +64,7 @@ const loginRules: FormRules = {
   ],
   password: [
     {required: true, message: '请输入密码', trigger: 'blur'},
-    {min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur'}
+    {min: 3, max: 20, message: '密码长度在 3 到 20 个字符', trigger: 'blur'}
   ]
 }
 
@@ -75,39 +75,13 @@ async function handleLogin() {
   }
 
   try {
-    // 验证表单
     await loginFormRef.value.validate()
-
     loading.value = true
-
-    // 调用登录API，启用skipErrorHandler来自定义错误处理
-    const response = await authApi.login(loginForm, true)
-
-    // 登录成功，token已经在响应拦截器中自动处理
-    userStore.setUserInfo(response.user)
-
-    // 获取自动存储的token并设置到store中
-    const token = localStorage.getItem('token')
-    if (token) {
-      userStore.setToken(token)
-
-      // 根据rememberMe决定存储位置
-      if (!loginForm.rememberMe) {
-        // 如果不记住我，将token移动到sessionStorage
-        localStorage.removeItem('token')
-        sessionStorage.setItem('token', token)
-      }
-    }
-
+    const userInfo = await authApi.login(loginForm)
+    userStore.setUserInfo(userInfo)
     ElMessage.success('登录成功')
-
     // 跳转到首页
-    router.push('/')
-
-  } catch (error: any) {
-    // 自定义错误处理
-    const errorMessage = error.message || '登录失败，请检查用户名和密码'
-    ElMessage.error(errorMessage)
+    await router.push('/')
   } finally {
     loading.value = false
   }

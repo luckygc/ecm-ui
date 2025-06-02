@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {usePageStore} from '@/stores/route-store.ts';
+import {usePageStore} from '@/stores/modules/route-store.ts';
 import {storeToRefs} from 'pinia';
 import {type Component, defineComponent, h} from 'vue';
 import type {RouteLocationNormalizedLoadedGeneric} from "vue-router";
