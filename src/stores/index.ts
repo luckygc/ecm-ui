@@ -1,6 +1,6 @@
 import { createPinia } from 'pinia'
-export { usePageStore } from '@/stores/modules/route-store'
-export { useAppStore } from '@/stores/modules/app-store'
+export { usePageStore } from '@/stores/modules/page-store.ts'
+export { useAppStore } from '@/stores/modules/layout-store.ts'
 export { useUserStore } from '@/stores/modules/user-store'
 
 const pinia = createPinia();

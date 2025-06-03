@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {routes} from '@/router'
-import {useAppStore} from '@/stores/modules/app-store.ts'
+import {useAppStore} from '@/stores/modules/layout-store.ts'
 import {Expand, Fold} from '@element-plus/icons-vue'
 import {ElButton, ElIcon, ElMenu} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'

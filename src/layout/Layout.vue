@@ -3,7 +3,7 @@ import MainContent from '@/layout/components/MainContent.vue'
 import Navbar from '@/layout/components/Navbar.vue'
 import Sidebar from '@/layout/components/Sidebar.vue'
 import TabBar from '@/layout/components/TabBar.vue'
-import {useAppStore} from '@/stores/modules/app-store.ts'
+import {useAppStore} from '@/stores/modules/layout-store.ts'
 import {ElAside, ElContainer, ElHeader, ElMain} from 'element-plus'
 import {storeToRefs} from 'pinia'
 

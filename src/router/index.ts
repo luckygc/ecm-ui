@@ -1,6 +1,6 @@
 import {createRouter, createWebHashHistory} from "vue-router";
 import {routes} from "./modules";
-import {usePageStore} from "@/stores/modules/route-store.ts";
+import {usePageStore} from "@/stores/modules/page-store.ts";
 
 export {routes} from "./modules";
 
@@ -14,9 +14,9 @@ router.beforeEach((_to, _from, next) => {
     next();
 });
 
-router.afterEach((to) => {
+router.afterEach((to, from) => {
     let routeStore = usePageStore();
-    routeStore.handleRouteChange(to);
+    routeStore.afterRouteChange(to,from);
 })
 
 export default router;

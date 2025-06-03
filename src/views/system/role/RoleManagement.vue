@@ -1,7 +1,9 @@
-<script setup lang="ts" name="RoleManagement">
+<script setup lang="ts">
 import { Delete, Edit, Operation, Plus, Refresh, Search } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
+
+console.debug('RoleManagement.vue loaded');
 
 // 查询参数
 const queryParams = reactive({
@@ -84,7 +86,8 @@ function handleDelete(row: any) {
 }
 
 onMounted(() => {
-  getList()
+  getList();
+  console.debug('RoleManagement.vue loaded2');
 })
 </script>
 

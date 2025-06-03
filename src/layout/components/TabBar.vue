@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ArrowDown, CircleClose, FolderDelete, Refresh} from '@element-plus/icons-vue'
 import {ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs,} from 'element-plus'
-import {usePageStore} from '@/stores/modules/route-store.ts'
+import {usePageStore} from '@/stores/modules/page-store.ts'
 import router from "@/router";
 import {useRoute} from "vue-router";
 
@@ -9,17 +9,19 @@ const routeStore = usePageStore();
 
 const route = useRoute();
 
+// 处理刷新按钮点击
+function handleRefresh() {
+  routeStore.refreshPage();
+}
+
 // 处理下拉菜单命令
 function handleCommand(command: string) {
   switch (command) {
-    case 'refresh':
-      routeStore.refreshCurrentPage();
-      break
     case 'closeOthers':
-      routeStore.closeOtherPages()
+      routeStore.closeOtherPage()
       break
     case 'closeAll':
-      routeStore.closeAllPages()
+      routeStore.closeAllPage()
       break
   }
 }
@@ -30,14 +32,23 @@ function handleCommand(command: string) {
     <ElTabs :model-value="route.fullPath" type="card" closable class="tab-bar-tabs"
             @tab-click="({paneName})=> router.push(paneName as string)"
             @tab-remove="(name) => routeStore.closePage(name as string)">
-      <ElTabPane v-for="page in routeStore.visitedPages" :key="page.fullPath"
+      <ElTabPane v-for="page in routeStore.pages" :key="page.fullPath"
                  :label="page.meta?.title as string" :name="page.fullPath"
       >
       </ElTabPane>
     </ElTabs>
 
     <!-- 操作按钮 -->
-    <div v-if="routeStore.visitedPages.length > 0" class="tabs-actions">
+    <div v-if="routeStore.pages.length > 0" class="tabs-actions">
+      <!-- 刷新按钮 -->
+      <ElButton size="large" text @click="handleRefresh" class="refresh-btn">
+        <ElIcon>
+          <Refresh/>
+        </ElIcon>
+        <span>刷新</span>
+      </ElButton>
+
+      <!-- 下拉操作菜单 -->
       <ElDropdown trigger="click" @command="handleCommand">
         <ElButton size="large" text>
           操作
@@ -47,12 +58,6 @@ function handleCommand(command: string) {
         </ElButton>
         <template #dropdown>
           <ElDropdownMenu>
-            <ElDropdownItem command="refresh">
-              <ElIcon>
-                <Refresh/>
-              </ElIcon>
-              <span>刷新当前</span>
-            </ElDropdownItem>
             <ElDropdownItem command="closeOthers">
               <ElIcon>
                 <CircleClose/>
@@ -86,6 +91,16 @@ function handleCommand(command: string) {
   flex: 1;
   min-width: 0;
   /* 确保内容可以正确收缩 */
+}
+
+.tabs-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.refresh-btn {
+  margin-right: 4px;
 }
 
 :deep(.el-tabs__nav-wrap) {
