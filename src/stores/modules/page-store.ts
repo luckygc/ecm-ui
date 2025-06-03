@@ -42,7 +42,10 @@ export const usePageStore = defineStore("page", () => {
         }
 
         if (!from.meta?.hidden) {
-            _lastPage = getPage(from.fullPath);
+            const fromPage = getPage(from.fullPath);
+            if (fromPage) {
+                _lastPage = fromPage;
+            }
         }
 
         let page = getPage(to.fullPath);
@@ -81,8 +84,8 @@ export const usePageStore = defineStore("page", () => {
 
         // 如果没有其他页面,跳转到根路径
         if (pages.value.length === 0) {
-            // 如果没有任何页面，跳转到根路径
             await router.push('/');
+            return;
         }
 
         let targetPage: Page;
@@ -119,11 +122,16 @@ export const usePageStore = defineStore("page", () => {
             return;
         }
 
+        const currentPage = getPage(currentRoute.fullPath);
+        if (!currentPage) {
+            return;
+        }
+
         const pagesToClose = pages.value.filter(page => page.fullPath !== currentRoute.fullPath);
-        pages.value = [getPage(currentRoute.fullPath)!];
+        pages.value = [currentPage];
 
         for (const page of pagesToClose) {
-            _refreshKeyMap.value.delete(computeComponentKey(page.fullPath));
+            _refreshKeyMap.value.delete(page.fullPath);
         }
     }
 
