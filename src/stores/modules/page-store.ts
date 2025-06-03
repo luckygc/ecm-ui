@@ -27,8 +27,8 @@ export const usePageStore = defineStore("page", () => {
 
     const currentRoute = useRoute();
 
-    // 每个组件的refreshKey,用于刷新组件
-    const _refreshKeyMap = ref<Map<string, string>>(new Map());
+    // 每个页面组件的Key的后缀,用于刷新组件
+    const _componentKeySuffixMap = ref<Map<string, string>>(new Map());
 
     const keepAliveInclude = computed(() => pages.value.filter(needKeepAlive).map(computeComponentName));
 
@@ -75,7 +75,7 @@ export const usePageStore = defineStore("page", () => {
         }
 
         pages.value = pages.value.filter(page => page.fullPath !== routeFullPath);
-        _refreshKeyMap.value.delete(routeFullPath);
+        _componentKeySuffixMap.value.delete(routeFullPath);
 
         // 如果关闭的不是当前激活的页面,不需要跳转
         if (currentRoute.fullPath !== routeFullPath) {
@@ -99,7 +99,7 @@ export const usePageStore = defineStore("page", () => {
     }
 
     const computeComponentKey = (routeFullPath: string): string => {
-        const key = _refreshKeyMap.value.get(routeFullPath) || "_";
+        const key = _componentKeySuffixMap.value.get(routeFullPath) || "_";
         return `${routeFullPath}${key}`;
     }
 
@@ -109,7 +109,7 @@ export const usePageStore = defineStore("page", () => {
             return;
         }
 
-        _refreshKeyMap.value.set(currentRoute.fullPath, `_${Date.now()}`);
+        _componentKeySuffixMap.value.set(currentRoute.fullPath, `_${Date.now()}`);
     }
 
     // 关闭其他页面
@@ -131,14 +131,14 @@ export const usePageStore = defineStore("page", () => {
         pages.value = [currentPage];
 
         for (const page of pagesToClose) {
-            _refreshKeyMap.value.delete(page.fullPath);
+            _componentKeySuffixMap.value.delete(page.fullPath);
         }
     }
 
     // 关闭所有页面（优化：批量操作减少响应式更新）
     async function closeAllPage() {
         pages.value = [];
-        _refreshKeyMap.value.clear();
+        _componentKeySuffixMap.value.clear();
 
         // 导航到首页
         await router.push("/");
@@ -147,7 +147,7 @@ export const usePageStore = defineStore("page", () => {
     return {
         pages,
         keepAliveInclude,
-        _refreshKeyMap, // 暴露用于调试查看
+        _componentKeySuffixMap, // 暴露用于调试查看
 
         afterRouteChange,
         computeComponentKey,
