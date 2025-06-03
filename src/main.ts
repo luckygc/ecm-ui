@@ -7,18 +7,18 @@ import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
 import "normalize.css";
-import { createApp } from "vue";
-import "@/assets/transition.css";
+import "@/assets/element-plus.css";
+import {createApp} from "vue";
 
 const app = createApp(App);
 
 // 注册所有图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component);
+    app.component(key, component);
 }
 
 app.use(ElementPlus, {
-  locale: zhCn,
+    locale: zhCn,
 });
 app.use(pinia);
 app.use(router);

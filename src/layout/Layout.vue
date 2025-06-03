@@ -38,20 +38,8 @@ const {sidebarWidth} = storeToRefs(appStore)
 </template>
 
 <style scoped>
-.el-header,
-.el-aside,
-.el-main {
-  padding: 0;
-}
 
 .sidebar-container {
   transition: width 0.15s ease;
-  background-color: #fff;
-  border-right: 1px solid #f0f0f0;
-  overflow-x: hidden;
-  /* 禁止横向滚动 */
-  overflow-y: auto;
-  /* 允许纵向滚动 */
-  box-shadow: none;
 }
 </style>
