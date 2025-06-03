@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {computed, ref} from "vue";
+import {computed, ref, shallowRef} from "vue";
 import {type RouteLocationNormalizedLoadedGeneric, useRoute} from "vue-router";
 import type {Page} from "@/types/store/route-store-types.ts";
 import router from "@/router";
@@ -23,7 +23,7 @@ const createPage = (
 export const usePageStore = defineStore("page", () => {
     // 页面映射,key为路由的fullPath
     let _lastPage: Page | undefined;
-    const pages = ref<Page[]>([]);
+    const pages = shallowRef<Page[]>([]);
 
     const currentRoute = useRoute();
 
@@ -41,8 +41,8 @@ export const usePageStore = defineStore("page", () => {
             return;
         }
 
-        if (!from.meta?.hidden) {
-            const fromPage = getPage(from.fullPath);
+        if (!from?.meta?.hidden) {
+            const fromPage = getPage(from?.fullPath);
             if (fromPage) {
                 _lastPage = fromPage;
             }
@@ -56,7 +56,7 @@ export const usePageStore = defineStore("page", () => {
             page = createPage(to)
         }
 
-        pages.value.push(page);
+        pages.value = [...pages.value, page];
     }
 
     // 关闭指定路由页面,不指定就关闭当前页面

@@ -3,6 +3,7 @@ import {Bell, DataAnalysis, Document, Plus, Refresh, Setting, Upload, User} from
 import {onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {useAppStore} from '@/stores/modules/layout-store.ts'
+import {usePageStore} from "@/stores";
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -34,7 +35,7 @@ const activities = ref([
 ])
 
 function handleRefresh() {
-  appStore.refreshMainContent()
+  usePageStore().refreshPage();
 }
 
 // 测试多开功能
