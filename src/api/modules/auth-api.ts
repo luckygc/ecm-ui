@@ -18,7 +18,7 @@ const login = (data: LoginForm): Promise<UserInfo> => {
  * 用户登出
  * @returns Promise<void>
  */
-function logout(): Promise<void> {
+const logout = (): Promise<void> => {
     return post<void>("/logout");
 }
 

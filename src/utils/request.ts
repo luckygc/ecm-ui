@@ -9,14 +9,14 @@ import {useStorage} from "@vueuse/core";
 const authToken = useStorage<string>(getConfig().tokenName, null);
 
 // 创建axios实例（使用默认配置）
-const service = axios.create({
+const axiosInstance = axios.create({
     baseURL: getConfig().apiBaseUrl,
     timeout: 60 * 1000,
     withCredentials: false,
 });
 
 // 请求拦截器
-service.interceptors.request.use(
+axiosInstance.interceptors.request.use(
     (config) => {
         if (authToken.value) {
             config.headers['X-Auth-Token'] = authToken.value;
@@ -32,10 +32,14 @@ service.interceptors.request.use(
 );
 
 // 响应拦截器
-service.interceptors.response.use(
+axiosInstance.interceptors.response.use(
     (response: AxiosResponse<ApiResult<any>>) => {
         const {success, error, data} = response.data as ApiResult<any>;
         const skipErrorHandler = (response.config as any).skipErrorHandler;
+
+        if(response.headers['x-auth-token']) {
+            authToken.value = response.headers['x-auth-token'];
+        }
 
         if (!success) {
             // 如果没有跳过错误处理，则显示错误消息
@@ -95,7 +99,7 @@ export function get<T>(
     params?: any,
     config?: AxiosRequestConfig
 ): Promise<T> {
-    return service.get(url, {params, ...config});
+    return axiosInstance.get(url, {params, ...config});
 }
 
 // 封装POST请求
@@ -104,7 +108,7 @@ export function post<T>(
     data?: any,
     config?: AxiosRequestConfig
 ): Promise<T> {
-    return service.post(url, data, config);
+    return axiosInstance.post(url, data, config);
 }
 
 // 封装PUT请求
@@ -113,10 +117,10 @@ export function put<T>(
     data?: any,
     config?: AxiosRequestConfig
 ): Promise<T> {
-    return service.put(url, data, config);
+    return axiosInstance.put(url, data, config);
 }
 
 // 封装DELETE请求
 export function del<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    return service.delete(url, config);
+    return axiosInstance.delete(url, config);
 }

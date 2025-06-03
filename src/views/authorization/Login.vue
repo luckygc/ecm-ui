@@ -77,7 +77,7 @@ async function handleLogin() {
   try {
     await loginFormRef.value.validate()
     loading.value = true
-    const userInfo = await authApi.login(loginForm)
+    const userInfo = await authApi.login(loginForm);
     userStore.setUserInfo(userInfo)
     ElMessage.success('登录成功')
     // 跳转到首页
