@@ -1,5 +1,6 @@
 .el-header {
     --el-header-padding: 0;
+    --el-header-height: 50px;
 }
 
 .el-main {
