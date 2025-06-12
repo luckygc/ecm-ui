@@ -141,7 +141,7 @@ export const usePageStore = defineStore("page", () => {
         _componentKeySuffixMap.value.clear();
 
         // 导航到首页
-        await router.push("/");
+        await router.push("/index");
     }
 
     return {
