@@ -1,4 +1,10 @@
 {
+  "compilerOptions": {
+    /* 全局编译器选项 */
+    "composite": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }

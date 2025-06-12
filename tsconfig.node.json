@@ -1,27 +1,46 @@
 {
   "compilerOptions": {
+    /* 基础选项 */
     "target": "ESNext",
     "lib": ["ESNext"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
 
-    /* Features */
-    "resolveJsonModule": true,
-    "allowImportingTsExtensions": true,
-
-    /* Linting */
+    /* 类型检查 */
     "strict": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+
+    /* 未使用代码检查 */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    /* Emit */
-    "noEmit": true,
 
-    /* Interop */
+    /* 模块解析 */
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* 输出控制 */
+    "noEmit": true,
+    "skipLibCheck": true,
+
+    /* 高级选项 */
     "verbatimModuleSyntax": true,
-    "skipLibCheck": true
+    "useDefineForClassFields": true,
+
+    /* Node.js 相关类型 */
+    "types": ["node", "vite/client"]
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "postcss.config.js",
+    "tailwind.config.ts"
+  ]
 }
