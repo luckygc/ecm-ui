@@ -2,9 +2,11 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "target": "ESNext",
-    "baseUrl": "./",
     "module": "ESNext",
+    "lib": ["ES6", "DOM"],
     "moduleResolution": "Bundler",
+    "sourceMap": true,
+    "baseUrl": "./",
     "paths": {
       "@/*": [
         "src/*"
