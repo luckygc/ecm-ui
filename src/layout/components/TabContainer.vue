@@ -12,7 +12,7 @@ const router = useRouter();
 
 <template>
   <div class="tab-bar-container">
-    <ElTabs :model-value="route.fullPath" type="border-card" closable class="tab-bar-tabs"
+    <ElTabs :model-value="route.fullPath" type="card" closable class="tab-bar-tabs"
             @tab-click="({paneName})=> router.push(paneName as string)"
             @tab-remove="(name) => pageStore.closePage(name as string)">
       <ElTabPane v-for="page in pageStore.pages" :key="page.fullPath"

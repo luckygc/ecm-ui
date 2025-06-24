@@ -1,0 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --border-color: rgba(5, 5, 5, 0.06);
+}

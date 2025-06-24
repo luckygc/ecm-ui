@@ -10,6 +10,7 @@ export const routes: Array<RouteRecordRaw> = [
         path: '/',
         component: Layout,
         name: 'Index',
+        meta: {title: '首页'},
         children: [
             {
                 path: '/workbench',

@@ -10,20 +10,16 @@ import {
   ElMessage,
   ElMessageBox
 } from 'element-plus';
-import {Expand, Fold} from '@element-plus/icons-vue';
+import {ArrowRight, Expand, Fold} from '@element-plus/icons-vue';
 import {useRoute, useRouter} from 'vue-router';
 import {useUserStore} from '@/stores';
-import {useAppStore} from '@/stores/modules/layout-store.ts';
+import {useLayoutStore} from '@/stores/modules/layout-store.ts';
 import {storeToRefs} from 'pinia';
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const {userInfo} = storeToRefs(userStore);
-
-const appStore = useAppStore();
-const {toggleSidebar} = appStore;
-const {isSidebarOpened} = storeToRefs(appStore);
 
 // 处理下拉菜单命令
 function handleCommand(command: string) {
@@ -60,25 +56,16 @@ async function handleLogout() {
 
 <template>
   <div class="navbar-container">
-    <ElButton :icon="isSidebarOpened ? Fold : Expand"
-              @click="toggleSidebar()"
-              class="sidebar-toggle-btn"
-              text
-              size="large"/>
-
     <!-- 中间：面包屑导航 -->
-    <ElBreadcrumb style="flex:1">
+    <ElBreadcrumb  >
       <ElBreadcrumbItem v-for="breadcrumb in route.matched" :key="breadcrumb.name">
         <div style="display: flex; align-items: center; gap: 4px;">
-          <ElIcon v-if="breadcrumb.meta.icon" class="breadcrumb-icon">
-            <component :is="breadcrumb.meta.icon"/>
-          </ElIcon>
-          <div>{{ breadcrumb.meta.title }}</div>
+          <div>{{ breadcrumb.meta?.['title'] }}</div>
         </div>
       </ElBreadcrumbItem>
     </ElBreadcrumb>
 
-    <ElDropdown @command="handleCommand">
+    <ElDropdown @command="handleCommand" style="justify-self: end;">
       <div class="user-info">
         <ElAvatar :size="32">
           {{ userInfo?.fullName?.charAt(0).toUpperCase() || '' }}
@@ -103,6 +90,7 @@ async function handleLogout() {
   height: 100%;
   gap: 16px;
   padding: 0 16px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 /* 用户信息样式 */
