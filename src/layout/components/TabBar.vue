@@ -33,7 +33,7 @@ function handleCommand(command: string) {
             @tab-click="({paneName})=> router.push(paneName as string)"
             @tab-remove="(name) => routeStore.closePage(name as string)">
       <ElTabPane v-for="page in routeStore.pages" :key="page.fullPath"
-                 :label="page.meta?.title as string" :name="page.fullPath"
+                 :label="page.meta?.['title'] as string" :name="page.fullPath"
       >
       </ElTabPane>
     </ElTabs>
@@ -105,6 +105,10 @@ function handleCommand(command: string) {
 
 :deep(.el-tabs__nav-wrap) {
   margin-bottom: 0;
+}
+
+:deep(.el-tabs__header) {
+  margin: 0;
 }
 
 :deep(.el-tabs--card>.el-tabs__header) {
