@@ -7,8 +7,8 @@ export const metadataRoutes: Array<RouteRecordRaw> = [
         name: "Metadata",
         component: () => import("@/views/metadata/Metadata.vue"),
         meta: {
-            title: "登录",
-            hidden: true, // 不在菜单中显示
+            title: "元数据管理",
+            sidebar: true,
         },
     },
 ];

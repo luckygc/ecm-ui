@@ -15,7 +15,7 @@ export const routes: Array<RouteRecordRaw> = [
                 path: '/index',
                 component: () => import('@/views/Index.vue'),
                 name: 'Index',
-                meta: {title: '首页', icon: 'HomeFilled', sidebar: true},
+                meta: {title: '工作台', icon: 'HomeFilled', sidebar: true},
             },
 
             ...metadataRoutes
