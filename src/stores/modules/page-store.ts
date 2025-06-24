@@ -105,7 +105,7 @@ const storeSetup = () => {
     }
 
     // 关闭指定路由页面
-    const closePage = async (routeFullPath: string): Promise<void> => {
+    const closePage = async (routeFullPath: string) => {
         const waitClosePage = findPageByRouteFullPath(routeFullPath);
         if (!waitClosePage) {
             throw new Error(`页面{fullPath=${routeFullPath}}不存在`);
@@ -120,11 +120,11 @@ const storeSetup = () => {
         }
 
         if (pages.value.length === 0) {
-            await router.push('/')
+            return await router.push('/')
         }
 
         // 跳转到最后一个页面
-        await router.push(pages.value[pages.value.length - 1]!.fullPath);
+        return await router.push(pages.value[pages.value.length - 1]!.fullPath);
     }
 
     /**
@@ -170,7 +170,7 @@ const storeSetup = () => {
     const closeAllPage = async () => {
         pages.value = [];
         _componentKeySuffixMap.value.clear();
-        await router.push('/')
+        return await router.push('/')
     }
 
     return {
