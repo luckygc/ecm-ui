@@ -12,24 +12,27 @@ const router = useRouter();
 
 <template>
   <div class="tab-bar-container">
-    <ElTabs :model-value="route.fullPath" type="card" closable class="tab-bar-tabs"
+    <ElTabs :model-value="route.fullPath"
+            type="border-card"
+            closable
             @tab-click="({paneName})=> router.push(paneName as string)"
-            @tab-remove="(name) => pageStore.closePage(name as string)">
-      <ElTabPane v-for="page in pageStore.pages" :key="page.fullPath"
-                 :label="page.meta?.['title'] as string" :name="page.fullPath"
-      >
+            @tab-remove="name => pageStore.closePage(name as string)">
+      <ElTabPane v-for="page in pageStore.pages"
+                 :key="page.fullPath"
+                 :label="page.meta?.['title'] as string"
+                 :name="page.fullPath">
       </ElTabPane>
     </ElTabs>
 
     <!-- 操作按钮 -->
     <div v-if="pageStore.pages.length > 0" class="tabs-actions">
-      <!-- 刷新按钮 -->
-      <ElButton text @click="pageStore.refreshPage()" class="refresh-btn">
-        <ElIcon>
-          <Refresh/>
-        </ElIcon>
-        <span>刷新</span>
-      </ElButton>
+      <el-tooltip content="刷新" :auto-close="1000">
+        <ElButton text @click="pageStore.refreshPage()" class="refresh-btn">
+          <ElIcon>
+            <Refresh/>
+          </ElIcon>
+        </ElButton>
+      </el-tooltip>
 
       <!-- 下拉操作菜单 -->
       <ElDropdown trigger="click">
@@ -63,65 +66,33 @@ const router = useRouter();
 <style scoped>
 .tab-bar-container {
   display: flex;
+  align-items: center;
   width: 100%;
   height: 100%;
   box-shadow: none;
-  border-bottom: none;
   background-color: #fff;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.tab-bar-tabs {
-  flex: 1;
-  min-width: 0;
-  /* 确保内容可以正确收缩 */
+:deep(.el-tabs--border-card) {
+  border: none;
 }
 
-.tabs-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+:deep(.el-tabs--border-card>.el-tabs__header) {
+  border-bottom: none;
 }
 
-.refresh-btn {
-  margin-right: 4px;
+:deep(.el-tabs--border-card>.el-tabs__content) {
+  padding: 0;
 }
 
-:deep(.el-tabs__nav-wrap) {
-  margin-bottom: 0;
+:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item) {
+  border: none;
+  background-color: var(--el-bg-color-overlay);
 }
 
-:deep(.el-tabs__header) {
-  margin: 0;
-}
-
-:deep(.el-tabs--card>.el-tabs__header) {
+:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active) {
   border-left: none;
   border-right: none;
-}
-
-:deep(.el-tabs--card>.el-tabs__header .el-tabs__nav) {
-  border-radius: 0;
-  border: none;
-}
-
-:deep(.el-tabs--card>.el-tabs__header .el-tabs__item) {
-  border: none;
-}
-
-:deep(.el-tabs__nav-prev) {
-  border-right: 1px solid var(--el-border-color-light)
-}
-
-
-:deep(.el-tabs__nav-next) {
-  border-left: 1px solid var(--el-border-color-light)
-}
-
-:deep(.el-tabs--card>.el-tabs__header .el-tabs__item.is-active.is-closable) {
-  border-bottom: 2px solid var(--el-color-primary);
-}
-
-:deep(.el-tabs--card>.el-tabs__header .el-tabs__item:hover) {
-  background-color: var(--el-color-primary-light-9);
 }
 </style>
