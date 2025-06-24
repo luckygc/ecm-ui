@@ -22,6 +22,7 @@ const pageStore = usePageStore();
         <ElHeader height="40px">
           <TabBar/>
         </ElHeader>
+
         <ElMain class="page-container">
           <el-scrollbar>
             <router-view v-slot="{ Component, route }">
@@ -34,6 +35,7 @@ const pageStore = usePageStore();
             </router-view>
           </el-scrollbar>
         </ElMain>
+
       </ElContainer>
     </ElContainer>
   </ElContainer>

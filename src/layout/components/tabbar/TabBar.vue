@@ -16,7 +16,8 @@ const router = useRouter();
             type="border-card"
             closable
             @tab-click="({paneName})=> router.push(paneName as string)"
-            @tab-remove="name => pageStore.closePage(name as string)">
+            @tab-remove="name => pageStore.closePage(name as string)"
+            style="width: calc(100% - 135px);">
       <ElTabPane v-for="page in pageStore.pages"
                  :key="page.fullPath"
                  :label="page.meta?.['title'] as string"
@@ -82,8 +83,13 @@ const router = useRouter();
   border: none;
 }
 
+:deep(.el-tabs__nav) {
+  border-bottom: 1px solid var(--border-color);
+}
+
 :deep(.el-tabs--border-card>.el-tabs__header) {
   border-bottom: none;
+  background-color: var(--el-bg-color-overlay);
 }
 
 :deep(.el-tabs--border-card>.el-tabs__content) {

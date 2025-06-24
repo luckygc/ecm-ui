@@ -16,7 +16,7 @@ export const routes: Array<RouteRecordRaw> = [
                 path: '/workbench',
                 component: () => import('@/views/Workbench.vue'),
                 name: 'Workbench',
-                meta: {title: '工作台', icon: 'HomeFilled', sidebar: true},
+                meta: {title: '工作台', icon: 'HomeFilled', sidebar: true, keepAlive: true},
             },
 
             ...metadataRoutes
