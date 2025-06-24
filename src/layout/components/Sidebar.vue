@@ -2,7 +2,7 @@
 import {routes} from '@/router'
 import {useAppStore} from '@/stores/modules/layout-store.ts'
 import {ElMenu} from 'element-plus'
-import {useRoute, useRouter} from 'vue-router'
+import {type RouteRecordRaw, useRoute, useRouter} from 'vue-router'
 import {storeToRefs} from 'pinia'
 import MenuItems from './navbar/MenuItems.vue'
 
@@ -16,6 +16,16 @@ const {isSidebarOpened} = storeToRefs(appStore)
 function handleMenuSelect(routeName: string) {
   router.push({name: routeName})
 }
+
+const finalRenderRoutes = routes.filter(route => route.meta?.['sidebar'] === true || route.path === '/')
+.flatMap(route => {
+  if (route.path === '/') {
+    return route.children;
+  }
+
+  return route;
+}) as RouteRecordRaw[];
+
 </script>
 
 <template>
@@ -25,7 +35,7 @@ function handleMenuSelect(routeName: string) {
       <ElMenu :default-active="route.name as string" :collapse="!isSidebarOpened" mode="vertical"
               class="sidebar-menu"
               @select="handleMenuSelect">
-        <MenuItems :routes="routes"/>
+        <MenuItems :routes="finalRenderRoutes"/>
       </ElMenu>
     </div>
   </div>
