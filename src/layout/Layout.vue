@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Navbar from '@/layout/components/navbar/Navbar.vue'
-import Sidebar from '@/layout/components/sidebar/Sidebar.vue'
-import TabContainer from '@/layout/components/TabContainer.vue'
+import NavBar from '@/layout/components/navbar/NavBar.vue'
+import SideBar from '@/layout/components/sidebar/SideBar.vue'
+import TabBar from '@/layout/components/tabbar/TabBar.vue'
 import {ElAside, ElContainer, ElHeader, ElMain} from 'element-plus'
 import {usePageStore} from '@/stores/modules/page-store.ts';
 
@@ -11,19 +11,16 @@ const pageStore = usePageStore();
 <template>
   <ElContainer>
     <ElHeader height="50px">
-      <!-- 顶部导航栏 -->
-      <Navbar/>
+      <NavBar/>
     </ElHeader>
 
-    <!-- 右侧主要内容区域 -->
     <ElContainer>
       <ElAside width="auto">
-        <Sidebar/>
+        <SideBar/>
       </ElAside>
       <ElContainer>
         <ElHeader height="40px">
-          <!-- 页签容器 -->
-          <TabContainer/>
+          <TabBar/>
         </ElHeader>
         <ElMain class="page-container">
           <el-scrollbar>

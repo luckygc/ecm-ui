@@ -9,6 +9,10 @@
       <div>底部</div>
     </div>
   </div>
+  <div style="position: fixed; width: 100%; bottom: 0;
+   background-color: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+    工具栏
+  </div>
 </template>
 
 <style scoped>
