@@ -1,14 +1,18 @@
 <script setup lang="ts">
 
+import Page from "@/components/page/Page.vue";
 </script>
 
 <template>
+  <Page>
+    <el-table>
+      <el-table-column label="元数据名称" prop="name"></el-table-column>
+      <el-table-column label="元数据类型" prop="type"></el-table-column>
+      <el-table-column label="元数据描述" prop="description"></el-table-column>
+    </el-table>
+    <div style="height: 1900px;background: black;">中间内容区域（很长的内容用于测试滚动）</div>
+  </Page>
 
-  <el-table>
-    <el-table-column label="元数据名称" prop="name"></el-table-column>
-    <el-table-column label="元数据类型" prop="type"></el-table-column>
-    <el-table-column label="元数据描述" prop="description"></el-table-column>
-  </el-table>
 </template>
 
 <style scoped>

@@ -9,4 +9,7 @@ html, body {
 :root {
     /*通用边框颜色*/
     --border-color: rgba(5, 5, 5, 0.06);
+    --page-padding: 10px;
+    --page-toolbar-height: 50px;
+    --page-toolbar-padding: 10px;
 }

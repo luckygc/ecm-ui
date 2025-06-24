@@ -24,16 +24,14 @@ const pageStore = usePageStore();
         </ElHeader>
 
         <ElMain class="page-container">
-          <el-scrollbar>
-            <router-view v-slot="{ Component, route }">
-              <transition name="el-fade-in-linear" mode="out-in">
-                <keep-alive :include="pageStore.keepAliveInclude" :max="15">
-                  <component :is="pageStore.wrapPageComponent(Component,route)"
-                             :key="pageStore.computePageComponentKey(route)"/>
-                </keep-alive>
-              </transition>
-            </router-view>
-          </el-scrollbar>
+          <router-view v-slot="{ Component, route }">
+            <transition name="el-fade-in-linear" mode="out-in">
+              <keep-alive :include="pageStore.keepAliveInclude" :max="15">
+                <component :is="pageStore.wrapPageComponent(Component,route)"
+                           :key="pageStore.computePageComponentKey(route)"/>
+              </keep-alive>
+            </transition>
+          </router-view>
         </ElMain>
 
       </ElContainer>
@@ -45,5 +43,6 @@ const pageStore = usePageStore();
 .page-container {
   background-color: #F7F8FA;
   height: calc(100vh - 90px);
+  position: relative;
 }
 </style>
