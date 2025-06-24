@@ -9,8 +9,8 @@ const pageStore = usePageStore();
 </script>
 
 <template>
-  <ElContainer style="height: 100%">
-    <ElHeader padding="0">
+  <ElContainer style="height: 100%" >
+    <ElHeader height="50px">
       <!-- 顶部导航栏 -->
       <Navbar/>
     </ElHeader>
