@@ -4,7 +4,7 @@ import {useAppStore} from '@/stores/modules/layout-store.ts'
 import {ElMenu} from 'element-plus'
 import {useRoute, useRouter} from 'vue-router'
 import {storeToRefs} from 'pinia'
-import MenuItems from './MenuItems.vue'
+import MenuItems from './navbar/MenuItems.vue'
 
 const router = useRouter()
 const route = useRoute()

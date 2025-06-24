@@ -6,7 +6,7 @@ import router from "@/router";
 import {computeComponentName} from "@/utils/component-utils.ts";
 
 const needKeepAlive = (page: Page | RouteLocationNormalizedLoadedGeneric): boolean => {
-    return page.meta?.keepAlive === true;
+    return page.meta?.['keepAlive'] === true;
 }
 
 const createPage = (
@@ -37,11 +37,11 @@ export const usePageStore = defineStore("page", () => {
     }
 
     const afterRouteChange = (to: RouteLocationNormalizedLoadedGeneric, from: RouteLocationNormalizedLoadedGeneric) => {
-        if (to.meta?.hidden) {
+        if (to.meta?.['hidden']) {
             return;
         }
 
-        if (!from?.meta?.hidden) {
+        if (!from?.meta?.['hidden']) {
             const fromPage = getPage(from?.fullPath);
             if (fromPage) {
                 _lastPage = fromPage;
@@ -92,7 +92,7 @@ export const usePageStore = defineStore("page", () => {
         if (_lastPage && getPage(_lastPage.fullPath)) {
             targetPage = _lastPage;
         } else {
-            targetPage = pages.value[pages.value.length - 1];
+            targetPage = pages.value[pages.value.length - 1]!;
         }
 
         await router.push(targetPage);
