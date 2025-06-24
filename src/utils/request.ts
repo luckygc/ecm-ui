@@ -3,10 +3,12 @@ import {getConfig} from "@/utils/config-utils";
 import type {AxiosRequestConfig, AxiosResponse} from "axios";
 import axios from "axios";
 import {ElMessage} from "element-plus";
-import router from "@/router";
 import {useStorage} from "@vueuse/core";
+import {useRouter} from "vue-router";
 
 const authToken = useStorage<string>(getConfig().tokenName, null);
+
+const router = useRouter();
 
 // 创建axios实例（使用默认配置）
 const axiosInstance = axios.create({
@@ -37,7 +39,7 @@ axiosInstance.interceptors.response.use(
         const {success, error, data} = response.data as ApiResult<any>;
         const skipErrorHandler = (response.config as any).skipErrorHandler;
 
-        if(response.headers['x-auth-token']) {
+        if (response.headers['x-auth-token']) {
             authToken.value = response.headers['x-auth-token'];
         }
 

@@ -1,9 +1,8 @@
 import {defineStore} from "pinia";
-import {computed, ref, shallowRef} from "vue";
-import {type RouteLocationNormalizedLoadedGeneric, useRoute} from "vue-router";
+import {type Component, computed, defineComponent, h, ref, shallowRef} from "vue";
+import {type RouteLocationNormalizedLoadedGeneric, useRoute, useRouter} from "vue-router";
 import type {Page} from "@/types/store/route-store-types.ts";
-import router from "@/router";
-import {computeComponentName} from "@/utils/component-utils.ts";
+import {ElMessage} from "element-plus";
 
 const needKeepAlive = (page: Page | RouteLocationNormalizedLoadedGeneric): boolean => {
     return page.meta?.['keepAlive'] === true;
@@ -20,17 +19,46 @@ const createPage = (
     };
 }
 
-export const usePageStore = defineStore("page", () => {
-    const pages = shallowRef<Page[]>([]);
+// Component缓存
+const pageComponentCache = new WeakMap<Component, Component>();
 
+// 计算页面组件的名称,即使内存里组件name可以随意，但是为了符合规范，还是替换特殊符号
+const computeWrappedPageComponentName = (route: RouteLocationNormalizedLoadedGeneric | Page): string => {
+    return route.fullPath.replace(/[^a-zA-Z0-9]/g, "-");
+}
+
+/**
+ * 包装页面组件,用于多实例页面的缓存
+ * @param pageComponent 原始页面组件
+ * @param route 路由
+ */
+const wrapPageComponent = (pageComponent: Component, route: RouteLocationNormalizedLoadedGeneric) => {
+    if (pageComponentCache.has(pageComponent)) {
+        return pageComponentCache.get(pageComponent);
+    }
+
+    const wrappedPageComponent = defineComponent({
+        name: computeWrappedPageComponentName(route),
+        setup(props, {attrs, slots}) {
+            return () => h(pageComponent, {...attrs, ...props}, slots);
+        },
+    });
+
+    // 将组件添加到缓存中
+    pageComponentCache.set(pageComponent, wrappedPageComponent);
+
+    return wrappedPageComponent;
+}
+
+const storeSetup = () => {
+    const router = useRouter();
     const route = useRoute();
-
+    // 页面数组
+    const pages = shallowRef<Page[]>([]);
     // 每个页面组件的Key的后缀,用于刷新组件
     const _componentKeySuffixMap = ref<Map<string, string>>(new Map());
-
     // 缓存
-    const keepAliveInclude = computed(() => pages.value.filter(needKeepAlive).map(computeComponentName));
-
+    const keepAliveInclude = computed(() => pages.value.filter(needKeepAlive).map(computeWrappedPageComponentName));
     // 非页签页面路由名称
     const specialRouteNames = ['Index', 'Login', 'NotFound'];
 
@@ -47,6 +75,10 @@ export const usePageStore = defineStore("page", () => {
         // 检查页面是否已存在
         if (findPageByRouteFullPath(to.fullPath)) {
             return;
+        }
+
+        if (pages.value.length > 14) {
+            ElMessage.warning('当前打开页面过多,建议关闭部分不需要的页面');
         }
 
         addPage(createPage(to))
@@ -88,14 +120,18 @@ export const usePageStore = defineStore("page", () => {
         await router.push(pages.value[pages.value.length - 1]!.fullPath);
     }
 
-    const computeComponentKey = (routeFullPath: string): string => {
-        let keySuffix = _componentKeySuffixMap.value.get(routeFullPath);
+    /**
+     * 计算页面组件的Key,用于强制刷新组件
+     */
+    const computePageComponentKey = (r: RouteLocationNormalizedLoadedGeneric): string => {
+        const fullPath = r.fullPath;
+        let keySuffix = _componentKeySuffixMap.value.get(fullPath);
         if (!keySuffix) {
             keySuffix = `_${Date.now()}`;
-            _componentKeySuffixMap.value.set(routeFullPath, keySuffix);
+            _componentKeySuffixMap.value.set(fullPath, keySuffix);
         }
 
-        return `${routeFullPath}${keySuffix}`;
+        return `${fullPath}${keySuffix}`;
     }
 
     // 刷新当前页面
@@ -133,10 +169,10 @@ export const usePageStore = defineStore("page", () => {
     return {
         pages,
         keepAliveInclude,
-        _componentKeySuffixMap, // 暴露用于调试查看
 
         afterRouteChange,
-        computeComponentKey,
+        computePageComponentKey,
+        wrapPageComponent,
 
         closeCurrentPage,
         closePage,
@@ -144,4 +180,6 @@ export const usePageStore = defineStore("page", () => {
         closeOtherPage,
         closeAllPage,
     };
-});
+}
+
+export const usePageStore = defineStore("page", storeSetup);
