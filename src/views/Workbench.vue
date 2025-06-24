@@ -6,6 +6,10 @@ const router = useRouter();
 const randomPage = () => {
   router.push(`/workbench?a=${Math.random()}`)
 }
+
+defineOptions({
+  name: 'Workbench'
+})
 </script>
 
 <template>

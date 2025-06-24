@@ -11,5 +11,5 @@ html, body {
     --border-color: rgba(5, 5, 5, 0.06);
     --page-padding: 10px;
     --page-toolbar-height: 50px;
-    --page-toolbar-padding: 10px;
+    --page-toolbar-padding: 0 10px;
 }
