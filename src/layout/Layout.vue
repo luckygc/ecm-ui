@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import MainContent from '@/layout/components/MainContent.vue'
 import Navbar from '@/layout/components/navbar/Navbar.vue'
-import Sidebar from '@/layout/components/Sidebar.vue'
+import Sidebar from '@/layout/components/sidebar/Sidebar.vue'
 import Tabbar from '@/layout/components/Tabbar.vue'
 import {useAppStore} from '@/stores/modules/layout-store.ts'
 import {ElAside, ElContainer, ElHeader, ElMain} from 'element-plus'

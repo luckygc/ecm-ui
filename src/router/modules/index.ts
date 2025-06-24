@@ -9,18 +9,19 @@ export const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         component: Layout,
-        redirect: '/index',
+        name: 'Index',
         children: [
             {
-                path: '/index',
-                component: () => import('@/views/Index.vue'),
-                name: 'Index',
+                path: '/workbench',
+                component: () => import('@/views/Workbench.vue'),
+                name: 'Workbench',
                 meta: {title: '工作台', icon: 'HomeFilled', sidebar: true},
             },
 
             ...metadataRoutes
         ]
     },
+
     ...authRoutes,
     ...errorRoutes,
 ];

@@ -4,7 +4,7 @@ import {useAppStore} from '@/stores/modules/layout-store.ts'
 import {ElMenu} from 'element-plus'
 import {type RouteRecordRaw, useRoute, useRouter} from 'vue-router'
 import {storeToRefs} from 'pinia'
-import MenuItems from './navbar/MenuItems.vue'
+import MenuItems from './MenuItems.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -58,6 +58,5 @@ const finalRenderRoutes = routes.filter(route => route.meta?.['sidebar'] === tru
 
 .sidebar-menu {
   height: 100%;
-  border-right: none;
 }
 </style>

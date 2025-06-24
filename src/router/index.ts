@@ -14,8 +14,8 @@ router.beforeEach((_to, _from, next) => {
     next();
 });
 
-router.afterEach((to, from) => {
-    usePageStore().afterRouteChange(to,from);
+router.afterEach((to) => {
+    usePageStore().afterRouteChange(to);
 })
 
 export default router;

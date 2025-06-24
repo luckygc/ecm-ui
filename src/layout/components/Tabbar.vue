@@ -29,7 +29,7 @@ function handleCommand(command: string) {
 
 <template>
   <div class="tab-bar-container">
-    <ElTabs :model-value="route.fullPath" type="card" closable class="tab-bar-tabs"
+    <ElTabs :model-value="route.fullPath" type="border-card" closable class="tab-bar-tabs"
             @tab-click="({paneName})=> router.push(paneName as string)"
             @tab-remove="(name) => routeStore.closePage(name as string)">
       <ElTabPane v-for="page in routeStore.pages" :key="page.fullPath"
