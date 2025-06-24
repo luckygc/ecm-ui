@@ -1,5 +1,5 @@
 import App from "@/App.vue";
-import router from "@/router";
+import {router} from "@/router";
 import pinia from "@/stores";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 import ElementPlus from "element-plus";

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {routes} from '@/router'
 import {useAppStore} from '@/stores/modules/layout-store.ts'
 import {ElMenu} from 'element-plus'
 import {type RouteRecordRaw, useRoute, useRouter} from 'vue-router'
 import {storeToRefs} from 'pinia'
 import MenuItems from './MenuItems.vue'
+import {routes} from "@/router";
 
 const router = useRouter()
 const route = useRoute()

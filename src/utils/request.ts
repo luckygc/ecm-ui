@@ -4,11 +4,10 @@ import type {AxiosRequestConfig, AxiosResponse} from "axios";
 import axios from "axios";
 import {ElMessage} from "element-plus";
 import {useStorage} from "@vueuse/core";
-import {useRouter} from "vue-router";
+import {router} from "@/router";
 
 const authToken = useStorage<string>(getConfig().tokenName, null);
 
-const router = useRouter();
 
 // 创建axios实例（使用默认配置）
 const axiosInstance = axios.create({

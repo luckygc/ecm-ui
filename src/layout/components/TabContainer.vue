@@ -2,46 +2,29 @@
 import {ArrowDown, CircleClose, FolderDelete, Refresh} from '@element-plus/icons-vue'
 import {ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs,} from 'element-plus'
 import {usePageStore} from '@/stores/modules/page-store.ts'
-import router from "@/router";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 
-const routeStore = usePageStore();
+const pageStore = usePageStore();
 
 const route = useRoute();
-
-// 处理刷新按钮点击
-function handleRefresh() {
-  routeStore.refreshPage();
-}
-
-// 处理下拉菜单命令
-function handleCommand(command: string) {
-  switch (command) {
-    case 'closeOthers':
-      routeStore.closeOtherPage()
-      break
-    case 'closeAll':
-      routeStore.closeAllPage()
-      break
-  }
-}
+const router = useRouter();
 </script>
 
 <template>
   <div class="tab-bar-container">
     <ElTabs :model-value="route.fullPath" type="border-card" closable class="tab-bar-tabs"
             @tab-click="({paneName})=> router.push(paneName as string)"
-            @tab-remove="(name) => routeStore.closePage(name as string)">
-      <ElTabPane v-for="page in routeStore.pages" :key="page.fullPath"
+            @tab-remove="(name) => pageStore.closePage(name as string)">
+      <ElTabPane v-for="page in pageStore.pages" :key="page.fullPath"
                  :label="page.meta?.['title'] as string" :name="page.fullPath"
       >
       </ElTabPane>
     </ElTabs>
 
     <!-- 操作按钮 -->
-    <div v-if="routeStore.pages.length > 0" class="tabs-actions">
+    <div v-if="pageStore.pages.length > 0" class="tabs-actions">
       <!-- 刷新按钮 -->
-      <ElButton size="large" text @click="handleRefresh" class="refresh-btn">
+      <ElButton text @click="pageStore.refreshPage()" class="refresh-btn">
         <ElIcon>
           <Refresh/>
         </ElIcon>
@@ -49,8 +32,8 @@ function handleCommand(command: string) {
       </ElButton>
 
       <!-- 下拉操作菜单 -->
-      <ElDropdown trigger="click" @command="handleCommand">
-        <ElButton size="large" text>
+      <ElDropdown trigger="click">
+        <ElButton text>
           操作
           <ElIcon class="el-icon--right">
             <ArrowDown/>
@@ -58,13 +41,13 @@ function handleCommand(command: string) {
         </ElButton>
         <template #dropdown>
           <ElDropdownMenu>
-            <ElDropdownItem command="closeOthers">
+            <ElDropdownItem @click="pageStore.closeOtherPage()">
               <ElIcon>
                 <CircleClose/>
               </ElIcon>
               <span>关闭其他</span>
             </ElDropdownItem>
-            <ElDropdownItem command="closeAll">
+            <ElDropdownItem @click="pageStore.closeAllPage()">
               <ElIcon>
                 <FolderDelete/>
               </ElIcon>

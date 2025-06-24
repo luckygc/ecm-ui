@@ -33,6 +33,10 @@ const computeWrappedPageComponentName = (route: RouteLocationNormalizedLoadedGen
  * @param route 路由
  */
 const wrapPageComponent = (pageComponent: Component, route: RouteLocationNormalizedLoadedGeneric) => {
+    if (!pageComponent) {
+        return;
+    }
+
     if (pageComponentCache.has(pageComponent)) {
         return pageComponentCache.get(pageComponent);
     }
@@ -44,6 +48,7 @@ const wrapPageComponent = (pageComponent: Component, route: RouteLocationNormali
         },
     });
 
+    console.log(pageComponent)
     // 将组件添加到缓存中
     pageComponentCache.set(pageComponent, wrappedPageComponent);
 
