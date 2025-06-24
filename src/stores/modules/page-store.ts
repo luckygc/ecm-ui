@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {type Component, computed, defineComponent, h, ref, shallowRef} from "vue";
+import {type Component, computed, defineComponent, h, markRaw, ref, shallowRef} from "vue";
 import {type RouteLocationNormalizedLoadedGeneric, useRoute, useRouter} from "vue-router";
 import type {Page} from "@/types/store/route-store-types.ts";
 import {ElMessage} from "element-plus";
@@ -19,12 +19,12 @@ const createPage = (
     };
 }
 
-// Component缓存
-const pageComponentCache = new WeakMap<Component, Component>();
+// PageComponent缓存
+const pageComponentCache = new Map<string, Component>();
 
 // 计算页面组件的名称,即使内存里组件name可以随意，但是为了符合规范，还是替换特殊符号
 const computeWrappedPageComponentName = (route: RouteLocationNormalizedLoadedGeneric | Page): string => {
-    return route.fullPath.replace(/[^a-zA-Z0-9]/g, "-");
+    return 'Page' + route.fullPath.replace(/[^a-zA-Z0-9]/g, "-");
 }
 
 /**
@@ -34,23 +34,25 @@ const computeWrappedPageComponentName = (route: RouteLocationNormalizedLoadedGen
  */
 const wrapPageComponent = (pageComponent: Component, route: RouteLocationNormalizedLoadedGeneric) => {
     if (!pageComponent) {
-        return;
+        return null;
     }
 
-    if (pageComponentCache.has(pageComponent)) {
-        return pageComponentCache.get(pageComponent);
+    const wrappedPageComponentName = computeWrappedPageComponentName(route);
+    if (pageComponentCache.has(wrappedPageComponentName)) {
+        return pageComponentCache.get(wrappedPageComponentName);
     }
 
-    const wrappedPageComponent = defineComponent({
-        name: computeWrappedPageComponentName(route),
-        setup(props, {attrs, slots}) {
-            return () => h(pageComponent, {...attrs, ...props}, slots);
-        },
-    });
+    const wrappedPageComponent = markRaw(
+        defineComponent({
+            name: wrappedPageComponentName,
+            setup(props, { attrs, slots }) {
+                return () => h(pageComponent, { ...attrs, ...props }, slots);
+            },
+        })
+    );
 
-    console.log(pageComponent)
-    // 将组件添加到缓存中
-    pageComponentCache.set(pageComponent, wrappedPageComponent);
+    // 将组件定义添加到缓存中
+    pageComponentCache.set(wrappedPageComponentName, wrappedPageComponent);
 
     return wrappedPageComponent;
 }
