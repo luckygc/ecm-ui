@@ -94,5 +94,6 @@ const router = useRouter();
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active) {
   border-left: none;
   border-right: none;
+  border-bottom: 1px solid var(--el-color-primary);
 }
 </style>
