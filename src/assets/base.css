@@ -2,6 +2,11 @@
     box-sizing: border-box;
 }
 
+html, body {
+    overflow: hidden;
+}
+
 :root {
+    /*通用边框颜色*/
     --border-color: rgba(5, 5, 5, 0.06);
 }
