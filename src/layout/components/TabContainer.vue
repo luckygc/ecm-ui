@@ -81,7 +81,7 @@ function handleCommand(command: string) {
 .tab-bar-container {
   display: flex;
   width: 100%;
-  height: auto;
+  height: 100%;
   box-shadow: none;
   border-bottom: none;
   background-color: #fff;

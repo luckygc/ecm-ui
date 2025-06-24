@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import MainContent from '@/layout/components/MainContent.vue'
+import PageContainer from '@/layout/components/PageContainer.vue'
 import Navbar from '@/layout/components/navbar/Navbar.vue'
 import Sidebar from '@/layout/components/sidebar/Sidebar.vue'
-import Tabbar from '@/layout/components/Tabbar.vue'
+import TabContainer from '@/layout/components/TabContainer.vue'
 import {useAppStore} from '@/stores/modules/layout-store.ts'
 import {ElAside, ElContainer, ElHeader, ElMain} from 'element-plus'
 import {storeToRefs} from 'pinia'
@@ -25,13 +25,13 @@ const {sidebarWidth} = storeToRefs(appStore)
         <!-- 顶部导航栏 -->
         <Navbar/>
       </ElHeader>
-      <ElHeader height="auto">
-        <!-- 页签栏 -->
-        <Tabbar/>
+      <ElHeader height="40px">
+        <!-- 页签容器 -->
+        <TabContainer />
       </ElHeader>
       <ElMain style="background-color: #F7F8FA">
-        <!-- 主要内容区 - 统一的KeepAlive布局 -->
-        <MainContent/>
+        <!-- 页面容器 -->
+        <PageContainer />
       </ElMain>
     </ElContainer>
   </ElContainer>
