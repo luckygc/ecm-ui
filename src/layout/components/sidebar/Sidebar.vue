@@ -30,6 +30,16 @@ const finalRenderRoutes = routes
 
 <template>
   <div class="sidebar-wrapper">
+    <el-tooltip :content="layoutStore.isSidebarOpened ? '收起菜单' : '展开菜单'"
+                :show-after="1000"
+                :auto-close="1000"
+    >
+      <ElButton :icon="layoutStore.isSidebarOpened ? Fold:Expand"
+                @click="layoutStore.toggleSidebar()"
+                text
+                class="toggle-btn"
+                size="large"/>
+    </el-tooltip>
     <ElMenu :default-active="route.name as string"
             :collapse="!layoutStore.isSidebarOpened"
             mode="vertical"
@@ -38,14 +48,6 @@ const finalRenderRoutes = routes
         <MenuItems :routes="finalRenderRoutes"/>
       </el-scrollbar>
     </ElMenu>
-    <el-tooltip :content="layoutStore.isSidebarOpened ? '收起菜单' : '展开菜单'" :auto-close="1000">
-      <ElButton :icon="layoutStore.isSidebarOpened ? Fold:Expand"
-                @click="layoutStore.toggleSidebar()"
-                text
-                class="toggle-btn"
-                size="large"/>
-    </el-tooltip>
-
   </div>
 </template>
 

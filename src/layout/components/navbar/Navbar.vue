@@ -56,16 +56,21 @@ async function handleLogout() {
 
 <template>
   <div class="navbar-container">
-    <!-- 中间：面包屑导航 -->
-    <ElBreadcrumb  >
-      <ElBreadcrumbItem v-for="breadcrumb in route.matched" :key="breadcrumb.name">
-        <div style="display: flex; align-items: center; gap: 4px;">
-          <div>{{ breadcrumb.meta?.['title'] }}</div>
-        </div>
-      </ElBreadcrumbItem>
-    </ElBreadcrumb>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div class="logo-area">
+        文档和记录仓库
+      </div>
 
-    <ElDropdown @command="handleCommand" style="justify-self: end;">
+      <ElBreadcrumb>
+        <ElBreadcrumbItem v-for="breadcrumb in route.matched" :key="breadcrumb.name">
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <div>{{ breadcrumb.meta?.['title'] }}</div>
+          </div>
+        </ElBreadcrumbItem>
+      </ElBreadcrumb>
+    </div>
+
+    <ElDropdown @command="handleCommand">
       <div class="user-info">
         <ElAvatar :size="32">
           {{ userInfo?.fullName?.charAt(0).toUpperCase() || '' }}
@@ -87,6 +92,7 @@ async function handleLogout() {
 .navbar-container {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 100%;
   gap: 16px;
   padding: 0 16px;
