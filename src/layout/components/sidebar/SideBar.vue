@@ -1,20 +1,16 @@
 <script setup lang="ts">
-import {useLayoutStore} from '@/stores/modules/layout-store.ts'
 import {ElMenu} from 'element-plus'
 import {type RouteRecordRaw, useRoute, useRouter} from 'vue-router'
 import MenuItems from './MenuItems.vue'
 import {routes} from "@/router";
 import {Expand, Fold} from '@element-plus/icons-vue';
+import {ref} from "vue";
 
-const router = useRouter()
-const route = useRoute()
-
+const router = useRouter();
 // 处理菜单点击事件
-function handleMenuSelect(routeName: string) {
+const handleMenuSelect = (routeName: string) => {
   router.push({name: routeName})
 }
-
-const layoutStore = useLayoutStore();
 
 const finalRenderRoutes = routes
     .filter(route => route.meta?.['sidebar'] === true || route.name === 'Index')
@@ -26,24 +22,26 @@ const finalRenderRoutes = routes
       return route;
     }) as RouteRecordRaw[];
 
+const isCollapse = ref(false);
+
 </script>
 
 <template>
   <div class="sidebar-wrapper">
-    <ElMenu :default-active="route.name as string"
-            :collapse="!layoutStore.isSidebarOpened"
+    <ElMenu :default-active="useRoute().name as string"
+            :collapse="isCollapse"
             mode="vertical"
             @select="handleMenuSelect">
       <el-scrollbar>
         <MenuItems :routes="finalRenderRoutes"/>
       </el-scrollbar>
     </ElMenu>
-    <el-tooltip :content="layoutStore.isSidebarOpened ? '收起菜单' : '展开菜单'"
+    <el-tooltip :content="isCollapse ? '展开菜单' : '收起菜单'"
                 :show-after="1000"
                 :auto-close="1000"
     >
-      <ElButton :icon="layoutStore.isSidebarOpened ? Fold:Expand"
-                @click="layoutStore.toggleSidebar()"
+      <ElButton :icon="isCollapse ? Expand:Fold"
+                @click="isCollapse = !isCollapse"
                 text
                 class="toggle-btn"
                 size="large"/>

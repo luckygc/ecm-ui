@@ -1,6 +1,5 @@
 import { createPinia } from 'pinia'
 export { usePageStore } from '@/stores/modules/page-store.ts'
-export { useLayoutStore } from '@/stores/modules/layout-store.ts'
 export { useUserStore } from '@/stores/modules/user-store'
 
 const pinia = createPinia();
