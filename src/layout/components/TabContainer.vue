@@ -25,9 +25,13 @@ const router = useRouter();
     </ElTabs>
 
     <!-- 操作按钮 -->
-    <div v-if="pageStore.pages.length > 0" class="tabs-actions">
+    <div class="tabs-actions">
       <el-tooltip content="刷新" :auto-close="1000">
-        <ElButton text @click="pageStore.refreshPage()" class="refresh-btn">
+        <ElButton text
+                  @click="pageStore.refreshPage()"
+                  class="refresh-btn"
+                  :disabled="pageStore.pages.length === 0"
+        >
           <ElIcon>
             <Refresh/>
           </ElIcon>
@@ -36,7 +40,7 @@ const router = useRouter();
 
       <!-- 下拉操作菜单 -->
       <ElDropdown trigger="click">
-        <ElButton text>
+        <ElButton text :disabled="pageStore.pages.length === 0">
           操作
           <ElIcon class="el-icon--right">
             <ArrowDown/>
@@ -67,9 +71,9 @@ const router = useRouter();
 .tab-bar-container {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
   height: 100%;
-  box-shadow: none;
   background-color: #fff;
   border-bottom: 1px solid var(--border-color);
 }
@@ -94,6 +98,16 @@ const router = useRouter();
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active) {
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid var(--el-color-primary);
+}
+
+/* 激活状态下的底部边框 */
+:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active::after) {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background-color: var(--el-color-primary);
+  width: 100%;
 }
 </style>

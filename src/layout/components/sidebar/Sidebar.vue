@@ -38,7 +38,7 @@ const finalRenderRoutes = routes
         <MenuItems :routes="finalRenderRoutes"/>
       </el-scrollbar>
     </ElMenu>
-    <el-tooltip :content="layoutStore.isSidebarOpened ? '收起菜单' : '展开菜单'" placement="right" :auto-close="1000">
+    <el-tooltip :content="layoutStore.isSidebarOpened ? '收起菜单' : '展开菜单'" :auto-close="1000">
       <ElButton :icon="layoutStore.isSidebarOpened ? Fold:Expand"
                 @click="layoutStore.toggleSidebar()"
                 text
