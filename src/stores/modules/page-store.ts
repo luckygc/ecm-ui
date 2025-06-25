@@ -9,19 +9,18 @@ const needKeepAlive = (page: Page | RouteLocationNormalizedLoadedGeneric): boole
     return page.meta?.['keepAlive'] === true;
 }
 
-const createPage = (
-    route: RouteLocationNormalizedLoadedGeneric
-): Page => {
-    return {
-        fullPath: route.fullPath,
-        path: route.path,
-        name: route.name,
-        meta: {...route.meta},
-    };
+const computeIfAbsent = <K, V>(map: Map<K, V>, key: K, mappingFunction: (key?: K) => V): V => {
+    if (map.has(key)) {
+        return map.get(key)!;
+    }
+
+    const value = mappingFunction(key);
+    map.set(key, value);
+    return value;
 }
 
-// PageComponent缓存
-const pageComponentCache = new Map<string, Component>();
+// 包裹组件定义缓存,key:包裹组件name,value:包裹组件定义
+const wrapperPageComponentCache = new Map<string, Component>();
 
 // 计算页面组件的名称,即使内存里组件name可以随意，但是为了符合规范，还是替换特殊符号
 const computeWrappedPageComponentName = (route: RouteLocationNormalizedLoadedGeneric | Page): string => {
@@ -38,24 +37,20 @@ const wrapPageComponent = (pageComponent: Component, route: RouteLocationNormali
         return null;
     }
 
-    const wrappedPageComponentName = computeWrappedPageComponentName(route);
-    if (pageComponentCache.has(wrappedPageComponentName)) {
-        return pageComponentCache.get(wrappedPageComponentName);
-    }
+    return computeIfAbsent(wrapperPageComponentCache, computeWrappedPageComponentName(route), key => {
+        return markRaw(
+            defineComponent({
+                name: key,
+                setup(props, {attrs, slots}) {
+                    return () => h(pageComponent, {...attrs, ...props}, slots);
+                },
+            })
+        );
+    });
+}
 
-    const wrappedPageComponent = markRaw(
-        defineComponent({
-            name: wrappedPageComponentName,
-            setup(props, {attrs, slots}) {
-                return () => h(pageComponent, {...attrs, ...props}, slots);
-            },
-        })
-    );
-
-    // 将组件定义添加到缓存中
-    pageComponentCache.set(wrappedPageComponentName, wrappedPageComponent);
-
-    return wrappedPageComponent;
+const getKeySuffix = () => {
+    return `_${Date.now()}`;
 }
 
 const storeSetup = () => {
@@ -89,10 +84,14 @@ const storeSetup = () => {
             ElMessage.warning('当前打开页面过多,建议关闭部分不需要的页面');
         }
 
-        addPage(createPage(to))
-    }
+        // 新建并追加page
+        const page: Page = {
+            fullPath: to.fullPath,
+            path: to.path,
+            name: to.name,
+            meta: {...to.meta},
+        };
 
-    const addPage = (page: Page) => {
         pages.value = [...pages.value, page];
     }
 
@@ -114,7 +113,7 @@ const storeSetup = () => {
 
         pages.value = pages.value.filter(page => page.fullPath !== routeFullPath);
         _componentKeySuffixMap.value.delete(routeFullPath);
-        pageComponentCache.delete(computeWrappedPageComponentName(waitClosePage))
+        wrapperPageComponentCache.delete(computeWrappedPageComponentName(waitClosePage))
 
         // 如果关闭的不是当前激活的页面,不需要跳转
         if (routeFullPath !== route.fullPath) {
@@ -130,16 +129,11 @@ const storeSetup = () => {
     }
 
     /**
-     * 计算页面组件的Key,用于强制刷新组件
+     * 计算页面组件的Key,路由fullPath加时间戳，用于强制刷新组件
      */
     const computePageComponentKey = (r: RouteLocationNormalizedLoadedGeneric): string => {
         const fullPath = r.fullPath;
-        let keySuffix = _componentKeySuffixMap.value.get(fullPath);
-        if (!keySuffix) {
-            keySuffix = `_${Date.now()}`;
-            _componentKeySuffixMap.value.set(fullPath, keySuffix);
-        }
-
+        const keySuffix = computeIfAbsent(_componentKeySuffixMap.value, fullPath, () => getKeySuffix())
         return `${fullPath}${keySuffix}`;
     }
 
@@ -150,7 +144,7 @@ const storeSetup = () => {
             return;
         }
 
-        _componentKeySuffixMap.value.set(currentPage.fullPath, `_${Date.now()}`);
+        _componentKeySuffixMap.value.set(currentPage.fullPath, getKeySuffix());
     }
 
     // 关闭其他页面
@@ -165,7 +159,7 @@ const storeSetup = () => {
 
         for (const page of pagesToClose) {
             _componentKeySuffixMap.value.delete(page.fullPath);
-            pageComponentCache.delete(computeWrappedPageComponentName(page))
+            wrapperPageComponentCache.delete(computeWrappedPageComponentName(page))
         }
     }
 
@@ -173,7 +167,7 @@ const storeSetup = () => {
     const closeAllPage = async () => {
         pages.value = [];
         _componentKeySuffixMap.value.clear();
-        pageComponentCache.clear();
+        wrapperPageComponentCache.clear();
         return await router.push('/')
     }
 

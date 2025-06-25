@@ -25,7 +25,7 @@ const pageStore = usePageStore();
 
         <ElMain class="page-container">
           <router-view v-slot="{ Component, route }">
-            <transition name="el-fade-in-linear" mode="out-in">
+            <transition name="el-fade-in-linear" mode="out-in" :duration="{ enter: 100, leave: 100 }">
               <keep-alive :include="pageStore.keepAliveInclude" :max="15">
                 <component :is="pageStore.wrapPageComponent(Component,route)"
                            :key="pageStore.computePageComponentKey(route)"/>
