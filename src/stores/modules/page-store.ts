@@ -1,8 +1,9 @@
 import {defineStore} from "pinia";
 import {type Component, computed, defineComponent, h, markRaw, ref, shallowRef} from "vue";
 import {type RouteLocationNormalizedLoadedGeneric, useRoute, useRouter} from "vue-router";
-import type {Page} from "@/types/store/route-store-types.ts";
 import {ElMessage} from "element-plus";
+
+type Page = Pick<RouteLocationNormalizedLoadedGeneric, 'fullPath' | 'name' | 'meta' | 'path'>;
 
 const needKeepAlive = (page: Page | RouteLocationNormalizedLoadedGeneric): boolean => {
     return page.meta?.['keepAlive'] === true;
@@ -45,8 +46,8 @@ const wrapPageComponent = (pageComponent: Component, route: RouteLocationNormali
     const wrappedPageComponent = markRaw(
         defineComponent({
             name: wrappedPageComponentName,
-            setup(props, { attrs, slots }) {
-                return () => h(pageComponent, { ...attrs, ...props }, slots);
+            setup(props, {attrs, slots}) {
+                return () => h(pageComponent, {...attrs, ...props}, slots);
             },
         })
     );
@@ -113,6 +114,7 @@ const storeSetup = () => {
 
         pages.value = pages.value.filter(page => page.fullPath !== routeFullPath);
         _componentKeySuffixMap.value.delete(routeFullPath);
+        pageComponentCache.delete(computeWrappedPageComponentName(waitClosePage))
 
         // 如果关闭的不是当前激活的页面,不需要跳转
         if (routeFullPath !== route.fullPath) {
@@ -163,6 +165,7 @@ const storeSetup = () => {
 
         for (const page of pagesToClose) {
             _componentKeySuffixMap.value.delete(page.fullPath);
+            pageComponentCache.delete(computeWrappedPageComponentName(page))
         }
     }
 
@@ -170,6 +173,7 @@ const storeSetup = () => {
     const closeAllPage = async () => {
         pages.value = [];
         _componentKeySuffixMap.value.clear();
+        pageComponentCache.clear();
         return await router.push('/')
     }
 
