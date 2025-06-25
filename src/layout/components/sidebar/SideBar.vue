@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ElMenu, ElMenuItem} from 'element-plus'
+import {ElMenu} from 'element-plus'
 import {type RouteRecordRaw, useRoute, useRouter} from 'vue-router'
 import MenuItems from './MenuItems.vue'
 import {routes} from "@/router";
@@ -37,11 +37,6 @@ const isCollapse = ref(false);
         >
 
           <MenuItems :routes="finalRenderRoutes"/>
-          <ElMenuItem v-for="(v,i) in [1,1,1,1,1,1]" :index="String(i)">
-            <template #title>
-              <span>{{ v }}</span>
-            </template>
-          </ElMenuItem>
         </ElMenu>
       </el-scrollbar>
     </div>
