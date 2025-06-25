@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ElMenu} from 'element-plus'
+import {ElMenu, ElMenuItem} from 'element-plus'
 import {type RouteRecordRaw, useRoute, useRouter} from 'vue-router'
 import MenuItems from './MenuItems.vue'
 import {routes} from "@/router";
@@ -28,24 +28,34 @@ const isCollapse = ref(false);
 
 <template>
   <div class="sidebar-wrapper">
-    <ElMenu :default-active="useRoute().name as string"
-            :collapse="isCollapse"
-            mode="vertical"
-            @select="handleMenuSelect">
+    <div class="menu-container">
       <el-scrollbar>
-        <MenuItems :routes="finalRenderRoutes"/>
+        <ElMenu :default-active="useRoute().name as string"
+                :collapse="isCollapse"
+                mode="vertical"
+                @select="handleMenuSelect"
+        >
+
+          <MenuItems :routes="finalRenderRoutes"/>
+          <ElMenuItem v-for="(v,i) in [1,1,1,1,1,1]" :index="String(i)">
+            <template #title>
+              <span>{{ v }}</span>
+            </template>
+          </ElMenuItem>
+        </ElMenu>
       </el-scrollbar>
-    </ElMenu>
-    <el-tooltip :content="isCollapse ? '展开菜单' : '收起菜单'"
-                :show-after="1000"
-                :auto-close="1000"
-    >
-      <ElButton :icon="isCollapse ? Expand:Fold"
-                @click="isCollapse = !isCollapse"
-                text
-                class="toggle-btn"
-                size="large"/>
-    </el-tooltip>
+    </div>
+
+    <div class="btn-container">
+      <el-tooltip :content="isCollapse ? '展开菜单' : '收起菜单'">
+        <ElButton :icon="isCollapse ? Expand:Fold"
+                  @click="isCollapse = !isCollapse"
+                  text
+                  bg
+        />
+      </el-tooltip>
+    </div>
+
   </div>
 </template>
 
@@ -67,8 +77,11 @@ const isCollapse = ref(false);
   border-right: none;
 }
 
-.toggle-btn {
-  width: 100%;
-  transition: var(--el-transition-duration) ease-in-out;
+.menu-container {
+  height: calc(100vh - 90px);
+}
+
+.btn-container {
+  padding: 0 var(--el-menu-base-level-padding);
 }
 </style>
