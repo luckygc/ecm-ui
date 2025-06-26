@@ -37,6 +37,13 @@ const hasToolbarContent = computed(() => {
   margin-bottom: var(--page-toolbar-height);
 }
 
+.inner-container{
+  background-color: #fff;
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .toolbar {
   position: absolute;
   bottom: 0;

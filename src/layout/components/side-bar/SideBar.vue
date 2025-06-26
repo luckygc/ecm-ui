@@ -73,10 +73,13 @@ const isCollapse = ref(false);
 }
 
 .menu-container {
-  height: calc(100vh - 90px);
+  height: calc(100vh - 102px);
 }
 
 .btn-container {
-  padding: 0 var(--el-menu-base-level-padding);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
 }
 </style>
