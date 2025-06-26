@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ArrowDown, CircleClose, FolderDelete, Refresh} from '@element-plus/icons-vue'
 import {ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs,} from 'element-plus'
-import {usePageStore} from '@/stores/modules/page-store.ts'
+import {usePageStore} from '@/store/modules/page-store.ts'
 import {useRoute, useRouter} from "vue-router";
 
 const pageStore = usePageStore();

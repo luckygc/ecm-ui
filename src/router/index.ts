@@ -1,6 +1,6 @@
 import {createRouter, createWebHashHistory} from "vue-router";
 import {routes} from "@/router/modules";
-import {usePageStore} from "@/stores/modules/page-store.ts";
+import {usePageStore} from "@/store/modules/page-store.ts";
 
 export {routes} from "@/router/modules";
 

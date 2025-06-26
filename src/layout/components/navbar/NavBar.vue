@@ -10,7 +10,7 @@ import {
   ElMessageBox
 } from 'element-plus';
 import {useRoute, useRouter} from 'vue-router';
-import {useUserStore} from '@/stores';
+import {useUserStore} from '@/store';
 import {storeToRefs} from 'pinia';
 
 const route = useRoute();

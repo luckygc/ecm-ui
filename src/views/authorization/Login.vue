@@ -37,7 +37,7 @@
 import {reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
-import {useUserStore} from '@/stores'
+import {useUserStore} from '@/store'
 import {authApi} from "@/api";
 import type {LoginForm} from "@/types/api/modules/auth-api-types.ts";
 

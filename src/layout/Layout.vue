@@ -3,7 +3,7 @@ import NavBar from '@/layout/components/navbar/NavBar.vue'
 import SideBar from '@/layout/components/sidebar/SideBar.vue'
 import TabBar from '@/layout/components/tabbar/TabBar.vue'
 import {ElAside, ElContainer, ElHeader, ElMain} from 'element-plus'
-import {usePageStore} from '@/stores/modules/page-store.ts';
+import {usePageStore} from '@/store/modules/page-store.ts';
 
 const pageStore = usePageStore();
 </script>
