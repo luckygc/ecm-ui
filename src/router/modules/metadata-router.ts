@@ -10,7 +10,7 @@ export const metadataRoutes: Array<RouteRecordRaw> = [
             title: "元数据管理",
             icon: "Setting",
             sidebar: true,
-            keepAlive: true
+            keepAlive: false
         },
     },
 ];

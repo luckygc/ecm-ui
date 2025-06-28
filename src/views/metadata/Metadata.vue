@@ -1,6 +1,15 @@
 <script setup lang="ts">
 
 import Page from "@/components/page/Page.vue";
+import {onMounted, onUnmounted} from "vue";
+
+onMounted(() => {
+  console.log('meatData mounted')
+})
+
+onUnmounted(() => {
+  console.log('meatData unmounted')
+});
 </script>
 
 <template>

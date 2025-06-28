@@ -9,11 +9,11 @@ const randomPage = () => {
 }
 
 onMounted(() => {
-  console.log('mounted')
+  console.log('workbench mounted')
 })
 
 onUnmounted(() => {
-  console.log('unmounted')
+  console.log('workbench unmounted')
 });
 
 </script>
