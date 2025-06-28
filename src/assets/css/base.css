@@ -11,7 +11,7 @@
     --body-bg-color: #F7F8FA;
 }
 
-html, body {
+html, body, #app {
     overflow: hidden;
     background-color: var(--body-bg-color);
 }

@@ -9,7 +9,7 @@ const pageStore = usePageStore();
 </script>
 
 <template>
-  <ElContainer>
+  <ElContainer style="height: 100%;">
     <ElHeader height="50px">
       <NavBar/>
     </ElHeader>
@@ -41,7 +41,7 @@ const pageStore = usePageStore();
 
 <style scoped>
 .el-header {
-  --el-header-padding: 5px;
+  --el-header-padding: 0;
 }
 
 .el-main {
