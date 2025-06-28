@@ -2,7 +2,7 @@
 import NavBar from '@/layout/components/nav-bar/NavBar.vue'
 import SideBar from '@/layout/components/side-bar/SideBar.vue'
 import TabBar from '@/layout/components/tab-bar/TabBar.vue'
-import { usePageStore } from '@/store/modules/page-store.ts';
+import {usePageStore} from '@/store/modules/page-store.ts';
 
 const pageStore = usePageStore();
 </script>
@@ -11,19 +11,19 @@ const pageStore = usePageStore();
   <div class="layout">
     <!-- 顶部导航栏 -->
     <header class="header">
-      <NavBar />
+      <NavBar/>
     </header>
 
     <!-- 侧边栏 -->
     <aside class="aside">
-      <SideBar />
+      <SideBar/>
     </aside>
 
     <!-- 主内容区域 -->
     <main class="main">
       <!-- 标签栏 -->
       <div class="tab-bar">
-        <TabBar />
+        <TabBar/>
       </div>
 
       <!-- 页面内容区域 -->
@@ -32,9 +32,9 @@ const pageStore = usePageStore();
         <div class="page-container">
           <router-view v-slot="{ Component, route }">
             <transition name="el-fade-in-linear" mode="out-in" :duration="{ enter: 100, leave: 100 }">
-              <keep-alive :include="pageStore.keepAliveInclude" :max="15">
+              <keep-alive :include="pageStore.keepAliveInclude as string[]" :max="15">
                 <component :is="pageStore.wrapPageComponent(Component, route)"
-                  :key="pageStore.computePageComponentKey(route)" />
+                           :key="pageStore.computePageComponentKey(route)"/>
               </keep-alive>
             </transition>
           </router-view>
