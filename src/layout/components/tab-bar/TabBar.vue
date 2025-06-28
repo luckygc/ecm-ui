@@ -14,10 +14,11 @@ const router = useRouter();
 <template>
   <div class="tab-bar-container">
     <ElTabs :model-value="route.fullPath" type="border-card" closable
-      @tab-click="({ paneName }) => router.push(paneName as string)"
-      @tab-remove="name => pageStore.closePage(name as string)" style="width: calc(100% - 135px);">
+            @tab-click="({ paneName }) => router.push(paneName as string)"
+            @tab-remove="name => pageStore.closePage(name as string)" style="flex: 1;min-width:0"
+    >
       <ElTabPane v-for="page in pageStore.pages" :key="page.fullPath" :label="page.meta?.['title'] as string"
-        :name="page.fullPath">
+                 :name="page.fullPath">
       </ElTabPane>
     </ElTabs>
 
@@ -31,7 +32,7 @@ const router = useRouter();
         </ElButton>
       </el-tooltip>
 
-      <el-tooltip :content="layoutStore.isPageMaximized ? '正常' : '最大化'">
+      <el-tooltip :content="layoutStore.isPageMaximized ? '还原' : '最大化'">
         <ElButton circle text @click="layoutStore.togglePageMaximized()" :disabled="pageStore.pages.length === 0"
           icon="FullScreen">
         </ElButton>
@@ -73,15 +74,15 @@ const router = useRouter();
   justify-content: space-between;
   width: 100%;
   height: 100%;
-  background-color: #fff;
-  border-bottom: 1px solid var(--border-color);
-  padding: 0 16px;
+  max-width: 100%;
+  padding: 10px 10px 0 10px;
 }
 
 .tabs-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink:0;
 }
 
 :deep(.el-tabs--border-card) {
@@ -89,8 +90,12 @@ const router = useRouter();
   background-color: transparent;
 }
 
-:deep(.el-tabs__nav) {
-  border-bottom: 1px solid var(--border-color);
+:deep(.el-tabs__nav-next:hover){
+  background-color: #fff;
+}
+
+:deep(.el-tabs__nav-prev:hover){
+  background-color: #fff;
 }
 
 :deep(.el-tabs--border-card>.el-tabs__header) {
@@ -106,9 +111,6 @@ const router = useRouter();
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item) {
   border: none;
   background-color: transparent;
-  border-radius: 6px 6px 0 0;
-  margin-right: 4px;
-  transition: all 0.2s ease;
 }
 
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:hover) {
@@ -119,11 +121,10 @@ const router = useRouter();
   border-left: none;
   border-right: none;
   background-color: #fff;
-  box-shadow: 0 -2px 0 0 var(--el-color-primary);
 }
 
 /* 激活状态下的底部边框 */
-:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active::after) {
+/*:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active::after) {
   display: none;
-}
+}*/
 </style>
