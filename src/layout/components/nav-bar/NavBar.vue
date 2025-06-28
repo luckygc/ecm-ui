@@ -60,7 +60,7 @@ async function handleLogout() {
 
       <el-divider direction="vertical"></el-divider>
 
-      <ElBreadcrumb>
+      <ElBreadcrumb >
         <ElBreadcrumbItem v-for="breadcrumb in route.matched" :key="breadcrumb.name">
           <div style="display: flex; align-items: center; gap: 4px;">
             <div>{{ breadcrumb.meta?.['title'] }}</div>
@@ -95,7 +95,7 @@ async function handleLogout() {
   height: 100%;
   gap: 16px;
   padding: 0 16px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 .logo-area {
@@ -104,7 +104,6 @@ async function handleLogout() {
   color: var(--el-color-primary);
   padding: 8px 12px;
   border-radius: 6px;
-  background-color: rgba(var(--el-color-primary-rgb), 0.1);
 }
 
 /* 用户信息样式 */

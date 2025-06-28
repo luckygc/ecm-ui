@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import NavBar from '@/layout/components/nav-bar/NavBar.vue'
 import SideBar from '@/layout/components/side-bar/SideBar.vue'
-import TabBar from '@/layout/components/tab-bar/TabBar.vue'
+import PageManager from '@/layout/components/page-manager/PageManager.vue'
 import {usePageStore} from '@/store/modules/page-store.ts';
 
 const pageStore = usePageStore();
@@ -22,8 +22,8 @@ const pageStore = usePageStore();
     <!-- 主内容区域 -->
     <main class="main">
       <!-- 标签栏 -->
-      <div class="tab-bar">
-        <TabBar/>
+      <div class="page-manager-container">
+        <PageManager/>
       </div>
 
       <!-- 页面内容区域 -->
@@ -60,13 +60,11 @@ const pageStore = usePageStore();
 .header {
   grid-area: header;
   background-color: #fff;
-  border-bottom: 1px solid var(--el-border-color-light);
 }
 
 .aside {
   grid-area: aside;
   background-color: #fff;
-  border-right: 1px solid var(--el-border-color-light);
 }
 
 .main {
@@ -76,21 +74,17 @@ const pageStore = usePageStore();
   overflow: hidden;
 }
 
-.tab-bar {
-  height: 50px;
+.page-manager-container {
+  height: 40px;
 }
 
 .content-area {
   flex: 1;
   overflow: hidden;
-  padding: 8px;
+  padding: 10px;
 }
 
 .page-container {
-  overflow: hidden;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   height: 100%;
 }
 </style>

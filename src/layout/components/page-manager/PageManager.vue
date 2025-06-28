@@ -1,303 +1,158 @@
 <script setup lang="ts">
-import {ref, reactive, watch, onMounted, nextTick, computed, onBeforeUnmount} from 'vue'
+import {ArrowDown, CircleClose, FolderDelete, FullScreen, Refresh} from '@element-plus/icons-vue'
+import {ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs,} from 'element-plus'
+import {usePageStore} from '@/store/modules/page-store.ts'
+import {useRoute, useRouter} from "vue-router";
+import {useLayoutStore} from '@/store/modules/layout-store.ts';
 
-defineProps({
-  tabs: {
-    type: Array,
-    required: true,
-  },
-  modelValue: {
-    type: [String, Number],
-    default: null,
-  },
-})
-
-const emit = defineEmits(['update:modelValue', 'close'])
-
-const containerRef = ref<HTMLElement>()
-const tabbarRef = ref(null)
-
-const scrollState = reactive({
-  scrollLeft: 0,
-  scrollWidth: 0,
-  clientWidth: 0,
-})
-
-const showScroll = computed(() => {
-  return scrollState.scrollWidth > scrollState.clientWidth
-})
-
-const scrollLeftDisabled = computed(() => scrollState.scrollLeft <= 0)
-const scrollRightDisabled = computed(() => {
-  return (
-      scrollState.scrollLeft + scrollState.clientWidth >=
-      scrollState.scrollWidth - 1
-  )
-})
-
-const activeBgStyle = ref({
-  width: '0px',
-  left: '0px',
-  transition: 'left 0.3s cubic-bezier(0.4,0,0.2,1), width 0.3s cubic-bezier(0.4,0,0.2,1)',
-  position: 'absolute',
-  top: '6px',
-  bottom: '6px',
-  borderRadius: '8px',
-  background: 'white',
-  boxShadow: '0 2px 8px rgb(0 0 0 / 0.15)',
-  zIndex: 0,
-  pointerEvents: 'none',
-})
-const activeBgVisible = ref(false)
-
-function updateActiveBg() {
-  nextTick(() => {
-    if (!tabbarRef.value) return
-    const activeTabEl = tabbarRef.value.querySelector('.tab.active')
-    if (!activeTabEl) {
-      activeBgVisible.value = false
-      return
-    }
-    activeBgVisible.value = true
-    const containerRect = tabbarRef.value.getBoundingClientRect()
-    const activeRect = activeTabEl.getBoundingClientRect()
-
-    activeBgStyle.value = {
-      ...activeBgStyle.value,
-      left: activeRect.left - containerRect.left + 'px',
-      width: activeRect.width + 'px',
-    }
-  })
-}
-
-watch(() => modelValue, () => {
-  updateActiveBg()
-})
-
-watch(
-    () => tabs,
-    () => {
-      nextTick(() => {
-        updateActiveBg()
-        updateScrollState()
-      })
-    },
-    {deep: true}
-)
-
-function activateTab(key) {
-  if (key !== modelValue) {
-    emit('update:modelValue', key)
-  }
-}
-
-function closeTab(key) {
-  emit('close', key)
-}
-
-function updateScrollState() {
-  if (!containerRef.value) return
-  scrollState.scrollLeft = containerRef.value.scrollLeft
-  scrollState.scrollWidth = containerRef.value.scrollWidth
-  scrollState.clientWidth = containerRef.value.clientWidth
-}
-
-function scrollLeft() {
-  if (!containerRef.value) {
-    return;
-  }
-  containerRef.value.scrollBy({
-    left: -150,
-    behavior: 'smooth',
-  })
-}
-
-function scrollRight() {
-  if (!containerRef.value) return
-  containerRef.value.scrollBy({
-    left: 150,
-    behavior: 'smooth',
-  })
-}
-
-function onScroll() {
-  updateScrollState()
-}
-
-onMounted(() => {
-  updateScrollState()
-  updateActiveBg()
-  window.addEventListener('resize', () => {
-    updateActiveBg()
-    updateScrollState()
-  })
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', () => {
-    updateActiveBg()
-    updateScrollState()
-  })
-})
+const pageStore = usePageStore();
+const layoutStore = useLayoutStore();
+const route = useRoute();
+const router = useRouter();
 </script>
 
 <template>
-  <div class="tabbar-wrapper">
-    <button
-        v-if="showScroll"
-        class="scroll-btn left"
-        @click="scrollLeft"
-        :disabled="scrollLeftDisabled"
-        aria-label="向左滚动"
-    >‹
-    </button>
-
-    <div
-        class="tabbar-container"
-        ref="containerRef"
-        @scroll="onScroll"
-        tabindex="0"
+  <div class="page-manager">
+    <ElTabs :model-value="route.fullPath" type="border-card" closable
+            @tab-click="({ paneName }) => router.push(paneName as string)"
+            @tab-remove="name => pageStore.closePage(name as string)" style="flex: 1;min-width:0"
     >
-      <div class="tabbar" ref="tabbarRef">
-        <div
-            v-for="tab in tabs"
-            :key="tab.key"
-            :class="['tab', { active: tab.key === modelValue }]"
-            @click="activateTab(tab.key)"
-        >
-          <span class="tab-label">{{ tab.label }}</span>
-          <span class="close-btn" @click.stop="closeTab(tab.key)">×</span>
-        </div>
-        <div
-            class="active-bg"
-            :style="activeBgStyle"
-            v-show="activeBgVisible"
-        ></div>
-      </div>
-    </div>
+      <ElTabPane v-for="page in pageStore.pages" :key="page.fullPath" :label="page.meta?.['title'] as string"
+                 :name="page.fullPath">
+      </ElTabPane>
+    </ElTabs>
 
-    <button
-        v-if="showScroll"
-        class="scroll-btn right"
-        @click="scrollRight"
-        :disabled="scrollRightDisabled"
-        aria-label="向右滚动"
-    >›
-    </button>
+    <!--    <el-divider direction="vertical"></el-divider>-->
+
+    <!-- 操作按钮 -->
+    <div class="page-actions">
+      <el-tooltip content="刷新">
+        <ElButton circle text @click="pageStore.refreshPage()" :disabled="pageStore.pages.length === 0">
+          <ElIcon>
+            <Refresh/>
+          </ElIcon>
+        </ElButton>
+      </el-tooltip>
+
+      <el-tooltip :content="layoutStore.isPageMaximized ? '还原' : '最大化'">
+        <ElButton circle text @click="layoutStore.togglePageMaximized()" :disabled="pageStore.pages.length === 0"
+                  icon="FullScreen">
+        </ElButton>
+      </el-tooltip>
+
+      <!-- 下拉操作菜单 -->
+      <ElDropdown trigger="click">
+        <ElButton text :disabled="pageStore.pages.length === 0">
+          操作
+          <ElIcon class="el-icon--right">
+            <ArrowDown/>
+          </ElIcon>
+        </ElButton>
+        <template #dropdown>
+          <ElDropdownMenu>
+            <ElDropdownItem @click="pageStore.closeOtherPage()">
+              <ElIcon>
+                <CircleClose/>
+              </ElIcon>
+              <span>关闭其他</span>
+            </ElDropdownItem>
+            <ElDropdownItem @click="pageStore.closeAllPage()">
+              <ElIcon>
+                <FolderDelete/>
+              </ElIcon>
+              <span>关闭所有</span>
+            </ElDropdownItem>
+          </ElDropdownMenu>
+        </template>
+      </ElDropdown>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.tabbar-wrapper {
+.page-manager {
   display: flex;
   align-items: center;
-  position: relative;
-  background: #e0e0e0;
-  border-radius: 12px;
-  padding: 6px;
-  user-select: none;
+  justify-content: space-between;
+  height: 100%;
   width: 100%;
-  max-width: 600px;
-  box-sizing: border-box;
+  padding: 0 10px;
+  background-color: #fff;
 }
 
-.tabbar-container {
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  flex: 1;
-  position: relative;
+.page-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
-.tabbar-container::-webkit-scrollbar {
+.el-tabs {
+  --el-tabs-header-height: 30px;
+}
+
+:deep(.el-tabs--border-card) {
+  border: none;
+}
+
+:deep(.el-tabs__nav){
+  column-gap: 6px;
+}
+
+:deep(.el-tabs__item){
+  padding: 0 8px;
+}
+
+:deep(.el-tabs--top.el-tabs--border-card>.el-tabs__header .el-tabs__item:nth-child(2)){
+  padding-left: 8px;
+}
+
+:deep(.el-tabs--top.el-tabs--border-card>.el-tabs__header .el-tabs__item:last-child){
+  padding-right: 8px;
+}
+
+:deep(.el-tabs__nav-wrap) {
+  margin-bottom: 0;
+}
+
+:deep(.el-tabs__nav-next){
+  line-height: 34px;
+}
+
+:deep(.el-tabs__nav-prev) {
+  line-height: 34px;
+}
+
+:deep(.el-tabs--border-card>.el-tabs__header) {
+  border-bottom: none;
+  margin: 0;
+  background-color: #fff;
+}
+
+:deep(.el-tabs--border-card>.el-tabs__content) {
   display: none;
 }
 
-.tabbar {
-  display: flex;
-  gap: 16px;
-  position: relative;
-  min-width: max-content;
-}
-
-.tab {
-  position: relative;
-  padding: 10px 28px 10px 24px;
-  font-weight: 600;
-  color: #666;
-  cursor: pointer;
-  border-radius: 8px;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  z-index: 1;
-  transition: color 0.3s;
-  white-space: nowrap;
-}
-
-.tab.active {
-  color: #333;
-}
-
-.close-btn {
-  margin-left: 8px;
-  font-size: 14px;
-  color: #999;
-  cursor: pointer;
-  user-select: none;
-  line-height: 1;
-  transition: color 0.2s;
-}
-
-.close-btn:hover {
-  color: #666;
-}
-
-.active-bg {
-  position: absolute;
-  top: 6px;
-  bottom: 6px;
-  border-radius: 8px;
-  background: white;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
-  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-  width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 0;
-  pointer-events: none;
-}
-
-.scroll-btn {
-  background: #c1c1c1;
+:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item) {
   border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font-size: 20px;
-  color: white;
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s;
-  margin: 0 6px;
+  margin-top: 0;
+  background-color: var(--el-fill-color-light);
 }
 
-.scroll-btn:disabled {
-  cursor: not-allowed;
-  background: #eee;
-  color: #999;
+:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:hover) {
+  background-color: rgba(var(--el-color-primary-rgb), 0.08);
 }
 
-.scroll-btn:hover:not(:disabled) {
-  background: #999;
+:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active) {
+  border-left: none;
+  border-right: none;
+  background-color: rgba(var(--el-color-primary-rgb), 0.1);
 }
 
-.scroll-btn.left {
-  order: 0;
+:deep( .el-tabs--border-card>.el-tabs__header .el-tabs__item:first-child) {
+  margin-left: 0;
 }
 
-.scroll-btn.right {
-  order: 2;
+:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item+.el-tabs__item){
+  margin-left: 0;
 }
 </style>
