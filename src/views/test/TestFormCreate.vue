@@ -40,7 +40,7 @@ const rule = reactive([
     },
 ]);
 const options = reactive({
-    submitBtn: false,
+    submitBtn: true,
 });
 const formData = reactive({});
 const fApi = reactive({});
