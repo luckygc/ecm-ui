@@ -35,37 +35,13 @@ const hasToolbarContent = computed(() => {
   padding: var(--page-padding);
 }
 
-.page-content.has-toolbar {
-  height: calc(100% - var(--page-toolbar-height));
-}
-
 .toolbar {
   background-color: #fff;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--el-border-color-lighter);
   height: var(--page-toolbar-height);
   padding: var(--page-toolbar-padding);
   display: flex;
   align-items: center;
   flex-shrink: 0;
-}
-
-/* 现代化滚动条样式 */
-.page-content::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.page-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.page-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-.page-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
 }
 </style>

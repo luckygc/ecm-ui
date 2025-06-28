@@ -78,6 +78,7 @@ const router = useRouter();
   width: 100%;
   padding: 0 10px;
   background-color: #fff;
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 .page-actions {

@@ -67,10 +67,6 @@ defineOptions({
 </template>
 
 <style scoped>
-.workbench-container {
-  padding: 20px;
-}
-
 .header-section {
   margin-bottom: 24px;
 }
@@ -99,7 +95,7 @@ defineOptions({
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--el-border-color-lighter);
 }
 
 .card h3 {
@@ -120,7 +116,7 @@ defineOptions({
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--el-border-color-lighter);
   border-radius: 6px;
   background: #fff;
   cursor: pointer;
@@ -136,7 +132,7 @@ defineOptions({
 .search-input {
   flex: 1;
   padding: 8px 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--el-border-color-lighter);
   border-radius: 6px;
   font-size: 14px;
   max-width: 300px;
@@ -166,7 +162,7 @@ defineOptions({
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--el-border-color-lighter);
   border-radius: 6px;
   background: var(--el-fill-color-lighter);
   transition: all 0.2s ease;
@@ -221,7 +217,7 @@ defineOptions({
 
 .toolbar-btn {
   padding: 6px 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--el-border-color-lighter);
   border-radius: 4px;
   background: #fff;
   cursor: pointer;

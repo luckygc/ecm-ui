@@ -54,6 +54,7 @@ const isCollapse = ref(false);
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
+  border-right: 1px solid var(--el-border-color-lighter);
 }
 
 .sidebar-wrapper:not(:has(.el-menu--collapse)) .el-menu {
@@ -75,9 +76,7 @@ const isCollapse = ref(false);
   align-items: center;
   justify-content: center;
   padding: 10px 0;
-  border-top: 1px solid var(--border-color);
   flex-shrink: 0;
-  background-color: #fafafa;
 }
 
 /* 现代化滚动条样式 */

@@ -27,18 +27,16 @@ const pageStore = usePageStore();
       </div>
 
       <!-- 页面内容区域 -->
-      <div class="content-area">
+      <div class="page-container">
         <!-- 页面内容 -->
-        <div class="page-container">
-          <router-view v-slot="{ Component, route }">
-            <transition name="el-fade-in-linear" mode="out-in" :duration="{ enter: 100, leave: 100 }">
-              <keep-alive :include="pageStore.keepAliveInclude as string[]" :max="15">
-                <component :is="pageStore.wrapPageComponent(Component, route)"
-                           :key="pageStore.computePageComponentKey(route)"/>
-              </keep-alive>
-            </transition>
-          </router-view>
-        </div>
+        <router-view v-slot="{ Component, route }">
+          <transition name="el-fade-in-linear" mode="out-in" :duration="{ enter: 100, leave: 100 }">
+            <keep-alive :include="pageStore.keepAliveInclude as string[]" :max="15">
+              <component :is="pageStore.wrapPageComponent(Component, route)"
+                         :key="pageStore.computePageComponentKey(route)"/>
+            </keep-alive>
+          </transition>
+        </router-view>
       </div>
     </main>
   </div>
@@ -78,13 +76,8 @@ const pageStore = usePageStore();
   height: 40px;
 }
 
-.content-area {
+.page-container {
   flex: 1;
   overflow: hidden;
-  padding: 10px;
-}
-
-.page-container {
-  height: 100%;
 }
 </style>
