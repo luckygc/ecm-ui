@@ -3,12 +3,23 @@ import NavBar from '@/layout/components/nav-bar/NavBar.vue'
 import SideBar from '@/layout/components/side-bar/SideBar.vue'
 import PageManager from '@/layout/components/page-manager/PageManager.vue'
 import {usePageStore} from '@/store/modules/page-store.ts';
+import {useLayoutStore} from "@/store/modules/layout-store.ts";
+import {watch} from "vue";
 
 const pageStore = usePageStore();
+
+const layoutStore = useLayoutStore();
+watch(() => layoutStore.isPageMaximized, (newVal) => {
+  if (newVal) {
+
+  }
+})
+
+
 </script>
 
 <template>
-  <div class="layout">
+  <div class="layout" :class="{ pageMaximized: layoutStore.isPageMaximized }">
     <!-- 顶部导航栏 -->
     <header class="header">
       <NavBar/>
@@ -53,6 +64,21 @@ const pageStore = usePageStore();
   height: 100%;
   width: 100%;
   overflow: hidden;
+}
+
+.layout.pageMaximized {
+  grid-template-areas:
+    "main";
+  grid-template-rows:  1fr;
+  grid-template-columns:  1fr;
+}
+
+.layout.pageMaximized .header{
+  display: none;
+}
+
+.layout.pageMaximized .aside {
+  display: none;
 }
 
 .header {

@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
+import {useRouter} from "vue-router";
 import Page from "@/components/page/Page.vue";
+import {onMounted, onUnmounted} from "vue";
 
 const router = useRouter();
 const randomPage = () => {
   router.push(`/workbench?a=${Math.random()}`)
 }
 
-defineOptions({
-  name: 'Workbench'
+onMounted(() => {
+  console.log('mounted')
 })
+
+onUnmounted(() => {
+  console.log('unmounted')
+});
+
 </script>
 
 <template>
@@ -28,7 +34,7 @@ defineOptions({
               <span class="icon">🔄</span>
               <span>随机跳转测试</span>
             </button>
-            <input type="text" placeholder="搜索内容..." class="search-input" />
+            <input type="text" placeholder="搜索内容..." class="search-input"/>
           </div>
         </div>
 
