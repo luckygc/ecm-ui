@@ -60,7 +60,9 @@ const isCollapse = ref(false);
   width: 100%;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--border-color);
+  justify-content: end;
+  /*border-right: 1px solid var(--border-color);*/
+  padding: 10px;
 }
 
 .sidebar-wrapper:not(:has(.el-menu--collapse)) .el-menu {
@@ -73,7 +75,9 @@ const isCollapse = ref(false);
 }
 
 .menu-container {
-  height: calc(100vh - 102px);
+  flex: 1;
+  background-color: #ffffff;
+  border-radius: 10px 10px 0 0;
 }
 
 .btn-container {
@@ -81,5 +85,7 @@ const isCollapse = ref(false);
   align-items: center;
   justify-content: center;
   padding: 10px 0;
+  border-radius: 0 0 10px 10px;
+  background-color: #ffffff;
 }
 </style>

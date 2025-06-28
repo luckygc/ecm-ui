@@ -2,14 +2,16 @@
     box-sizing: border-box;
 }
 
-html, body {
-    overflow: hidden;
-}
-
 :root {
     /*通用边框颜色*/
     --border-color: rgba(5, 5, 5, 0.06);
     --page-padding: 10px;
     --page-toolbar-height: 50px;
     --page-toolbar-padding: 0 10px;
+    --body-bg-color: #F7F8FA;
+}
+
+html, body {
+    overflow: hidden;
+    background-color: var(--body-bg-color);
 }

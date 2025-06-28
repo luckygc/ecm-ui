@@ -19,7 +19,7 @@ const pageStore = usePageStore();
         <SideBar/>
       </ElAside>
       <ElContainer>
-        <ElHeader height="40px">
+        <ElHeader height="50px">
           <TabBar/>
         </ElHeader>
 
@@ -41,16 +41,15 @@ const pageStore = usePageStore();
 
 <style scoped>
 .el-header {
-  --el-header-padding: 0;
+  --el-header-padding: 5px;
 }
 
 .el-main {
-  --el-main-padding: 10;
+  --el-main-padding: 0;
 }
 
 .page-container {
-  background-color: #F7F8FA;
   height: calc(100vh - 90px);
-  position: relative;
+  overflow: hidden;
 }
 </style>
