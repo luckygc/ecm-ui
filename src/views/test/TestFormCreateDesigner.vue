@@ -5,7 +5,7 @@ import Page from "@/components/page/Page.vue";
 
 <template>
   <Page>
-    <fc-designer ref="designer" height="100%" />
+    <fc-designer ref="designer" height="500" />
   </Page>
 </template>
 

@@ -1,10 +1,6 @@
-.el-header {
-    --el-header-padding: 0;
-}
 
-.el-main {
-    --el-main-padding: 0;
-}
+
+
 
 .el-breadcrumb__separator {
     font-weight: normal;

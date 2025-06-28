@@ -11,37 +11,27 @@ const hasToolbarContent = computed(() => {
 
 <template>
   <div class="page-container">
-    <el-scrollbar>
-
-      <div class="outer-container" :class="{ 'has-toolbar': hasToolbarContent }">
-        <div class="inner-container">
-          <slot></slot>
-        </div>
-      </div>
-      <div class="toolbar" v-if="hasToolbarContent">
-        <slot name="toolbar"></slot>
-      </div>
-    </el-scrollbar>
+    <!--    <el-scrollbar>-->
+    <div class="content-container" :class="{ 'has-toolbar': hasToolbarContent }">
+      <slot></slot>
+    </div>
+    <div class="toolbar" v-if="hasToolbarContent">
+      <slot name="toolbar"></slot>
+    </div>
+    <!--    </el-scrollbar>-->
   </div>
 
 </template>
 
 <style scoped>
-.outer-container {
+.content-container {
   height: auto;
   width: 100%;
   padding: var(--page-padding);
 }
 
-.outer-container.has-toolbar {
+.content-container.has-toolbar {
   margin-bottom: var(--page-toolbar-height);
-}
-
-.inner-container{
-  background-color: #fff;
-  padding: 16px;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .toolbar {

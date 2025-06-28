@@ -39,7 +39,15 @@ const pageStore = usePageStore();
   </ElContainer>
 </template>
 
-<style>
+<style scoped>
+.el-header {
+  --el-header-padding: 0;
+}
+
+.el-main {
+  --el-main-padding: 10;
+}
+
 .page-container {
   background-color: #F7F8FA;
   height: calc(100vh - 90px);
