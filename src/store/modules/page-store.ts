@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {type Component, computed, defineComponent, h, markRaw, ref, shallowRef} from "vue";
+import {type Component, computed, defineComponent, h, markRaw, readonly, ref, shallowRef} from "vue";
 import {type RouteLocationNormalizedLoadedGeneric, useRoute, useRouter} from "vue-router";
 import {ElMessage} from "element-plus";
 
@@ -172,8 +172,8 @@ const storeSetup = () => {
     }
 
     return {
-        pages,
-        keepAliveInclude,
+        pages: readonly(pages),
+        keepAliveInclude: readonly(keepAliveInclude),
 
         afterRouteChange,
         computePageComponentKey,

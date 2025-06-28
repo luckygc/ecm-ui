@@ -9,14 +9,14 @@ import {
   ElMessage,
   ElMessageBox
 } from 'element-plus';
-import {useRoute, useRouter} from 'vue-router';
-import {useUserStore} from '@/store';
-import {storeToRefs} from 'pinia';
+import { useRoute, useRouter } from 'vue-router';
+import { useUserStore } from '@/store';
+import { storeToRefs } from 'pinia';
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
-const {userInfo} = storeToRefs(userStore);
+const { userInfo } = storeToRefs(userStore);
 
 // 处理下拉菜单命令
 function handleCommand(command: string) {
@@ -55,8 +55,10 @@ async function handleLogout() {
   <div class="navbar-container">
     <div style="display: flex; align-items: center; gap: 16px;">
       <div class="logo-area">
-        文档和记录仓库
+        管理系统demo
       </div>
+
+      <el-divider direction="vertical"></el-divider>
 
       <ElBreadcrumb>
         <ElBreadcrumbItem v-for="breadcrumb in route.matched" :key="breadcrumb.name">
@@ -96,14 +98,32 @@ async function handleLogout() {
   border-bottom: 1px solid var(--border-color);
 }
 
+.logo-area {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--el-color-primary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: rgba(var(--el-color-primary-rgb), 0.1);
+}
+
 /* 用户信息样式 */
 .user-info {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease;
+}
+
+.user-info:hover {
+  background-color: var(--el-fill-color-light);
+}
+
+.username {
+  font-weight: 500;
+  color: var(--el-text-color-primary);
 }
 </style>

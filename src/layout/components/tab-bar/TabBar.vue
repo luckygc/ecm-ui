@@ -1,41 +1,39 @@
 <script setup lang="ts">
-import {ArrowDown, CircleClose, FolderDelete, Refresh} from '@element-plus/icons-vue'
-import {ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs,} from 'element-plus'
-import {usePageStore} from '@/store/modules/page-store.ts'
-import {useRoute, useRouter} from "vue-router";
+import { ArrowDown, CircleClose, FolderDelete, FullScreen, Refresh } from '@element-plus/icons-vue'
+import { ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs, } from 'element-plus'
+import { usePageStore } from '@/store/modules/page-store.ts'
+import { useRoute, useRouter } from "vue-router";
+import { useLayoutStore } from '@/store/modules/layout-store';
 
 const pageStore = usePageStore();
-
+const layoutStore = useLayoutStore();
 const route = useRoute();
 const router = useRouter();
 </script>
 
 <template>
   <div class="tab-bar-container">
-    <ElTabs :model-value="route.fullPath"
-            type="border-card"
-            closable
-            @tab-click="({paneName})=> router.push(paneName as string)"
-            @tab-remove="name => pageStore.closePage(name as string)"
-            style="width: calc(100% - 135px);">
-      <ElTabPane v-for="page in pageStore.pages"
-                 :key="page.fullPath"
-                 :label="page.meta?.['title'] as string"
-                 :name="page.fullPath">
+    <ElTabs :model-value="route.fullPath" type="border-card" closable
+      @tab-click="({ paneName }) => router.push(paneName as string)"
+      @tab-remove="name => pageStore.closePage(name as string)" style="width: calc(100% - 135px);">
+      <ElTabPane v-for="page in pageStore.pages" :key="page.fullPath" :label="page.meta?.['title'] as string"
+        :name="page.fullPath">
       </ElTabPane>
     </ElTabs>
 
     <!-- 操作按钮 -->
     <div class="tabs-actions">
-      <el-tooltip content="刷新" :auto-close="1000">
-        <ElButton text
-                  @click="pageStore.refreshPage()"
-                  class="refresh-btn"
-                  :disabled="pageStore.pages.length === 0"
-        >
+      <el-tooltip content="刷新">
+        <ElButton circle text @click="pageStore.refreshPage()" :disabled="pageStore.pages.length === 0">
           <ElIcon>
-            <Refresh/>
+            <Refresh />
           </ElIcon>
+        </ElButton>
+      </el-tooltip>
+
+      <el-tooltip :content="layoutStore.isPageMaximized ? '正常' : '最大化'">
+        <ElButton circle text @click="layoutStore.togglePageMaximized()" :disabled="pageStore.pages.length === 0"
+          icon="FullScreen">
         </ElButton>
       </el-tooltip>
 
@@ -44,20 +42,20 @@ const router = useRouter();
         <ElButton text :disabled="pageStore.pages.length === 0">
           操作
           <ElIcon class="el-icon--right">
-            <ArrowDown/>
+            <ArrowDown />
           </ElIcon>
         </ElButton>
         <template #dropdown>
           <ElDropdownMenu>
             <ElDropdownItem @click="pageStore.closeOtherPage()">
               <ElIcon>
-                <CircleClose/>
+                <CircleClose />
               </ElIcon>
               <span>关闭其他</span>
             </ElDropdownItem>
             <ElDropdownItem @click="pageStore.closeAllPage()">
               <ElIcon>
-                <FolderDelete/>
+                <FolderDelete />
               </ElIcon>
               <span>关闭所有</span>
             </ElDropdownItem>
@@ -77,10 +75,18 @@ const router = useRouter();
   height: 100%;
   background-color: #fff;
   border-bottom: 1px solid var(--border-color);
+  padding: 0 16px;
+}
+
+.tabs-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 :deep(.el-tabs--border-card) {
   border: none;
+  background-color: transparent;
 }
 
 :deep(.el-tabs__nav) {
@@ -89,7 +95,8 @@ const router = useRouter();
 
 :deep(.el-tabs--border-card>.el-tabs__header) {
   border-bottom: none;
-  background-color: var(--el-bg-color-overlay);
+  background-color: transparent;
+  margin: 0;
 }
 
 :deep(.el-tabs--border-card>.el-tabs__content) {
@@ -98,22 +105,25 @@ const router = useRouter();
 
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item) {
   border: none;
-  background-color: var(--el-bg-color-overlay);
+  background-color: transparent;
+  border-radius: 6px 6px 0 0;
+  margin-right: 4px;
+  transition: all 0.2s ease;
+}
+
+:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:hover) {
+  background-color: var(--el-fill-color-light);
 }
 
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active) {
   border-left: none;
   border-right: none;
+  background-color: #fff;
+  box-shadow: 0 -2px 0 0 var(--el-color-primary);
 }
 
 /* 激活状态下的底部边框 */
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active::after) {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  background-color: var(--el-color-primary);
-  width: 100%;
+  display: none;
 }
 </style>

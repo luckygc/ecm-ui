@@ -1,17 +1,19 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 :root {
-    /*通用边框颜色*/
-    --border-color: rgba(5, 5, 5, 0.06);
-    --page-padding: 10px;
-    --page-toolbar-height: 50px;
-    --page-toolbar-padding: 0 10px;
-    --body-bg-color: #F7F8FA;
+  /*通用边框颜色*/
+  --border-color: rgba(5, 5, 5, 0.06);
+  --page-padding: 10px;
+  --page-toolbar-height: 50px;
+  --page-toolbar-padding: 0 10px;
+  --body-bg-color: #f7f8fa;
 }
 
-html, body, #app {
-    overflow: hidden;
-    background-color: var(--body-bg-color);
+html,
+body,
+#app {
+  overflow: hidden;
+  background-color: var(--body-bg-color);
 }
