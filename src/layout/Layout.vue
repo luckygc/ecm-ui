@@ -52,22 +52,21 @@ const pageStore = usePageStore();
     "aside main";
   grid-template-rows: 50px 1fr;
   grid-template-columns: auto 1fr;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
   overflow: hidden;
 }
 
 .header {
   grid-area: header;
   background-color: #fff;
-  border-bottom: 1px solid var(--border-color);
-  z-index: 1000;
+  border-bottom: 1px solid var(--el-border-color-light);
 }
 
 .aside {
   grid-area: aside;
   background-color: #fff;
-  border-right: 1px solid var(--border-color);
-  z-index: 999;
+  border-right: 1px solid var(--el-border-color-light);
 }
 
 .main {
@@ -81,7 +80,6 @@ const pageStore = usePageStore();
   height: 50px;
   background-color: #fff;
   border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
 }
 
 .content-area {
