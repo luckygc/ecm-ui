@@ -1,7 +1,7 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
 import type {UserInfo} from "@/types/api/modules/auth-api-types.ts";
-import {authApi} from "@/api/auth-api.ts";
+import {authApi} from "@/api/auth/auth-api.ts";
 import {useStorage} from "@vueuse/core";
 import {getConfig} from "@/utils/config-utils.ts";
 

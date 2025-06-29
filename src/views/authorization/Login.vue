@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, reactive, ref} from 'vue'
+import {nextTick, onMounted, onUnmounted, reactive, ref, toValue} from 'vue'
 import {useRouter} from 'vue-router'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
 import {useUserStore} from '@/store'
-import {authApi} from "@/api/auth-api.ts";
-import type {LoginForm} from "@/types/api/modules/auth-api-types.ts";
+import {authApi} from "@/api/auth/auth-api.ts";
 import {getConfig} from "@/utils/config-utils.ts";
-import {axiosInstance} from "@/utils/request.ts";
+import type {LoginForm} from "@/api/auth/types.ts";
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -24,7 +23,8 @@ const loading = ref(false)
 // 登录表单数据
 const loginForm = reactive<LoginForm>({
   username: '',
-  password: ''
+  password: '',
+  capToken: ''
 })
 
 // 表单验证规则
@@ -40,15 +40,17 @@ const loginRules: FormRules = {
 }
 
 const handleCapSolve: EventListenerOrEventListenerObject = async (e: Event) => {
-  const token = (e as CustomEvent).detail.token;
-  const formData = new FormData();
-  formData.set('token', token);
-  await axiosInstance.post('/api/cap/validateToken', formData);
+  loginForm.capToken = (e as CustomEvent).detail.token;
   disabled.value = false;
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await nextTick();
   cap.value?.addEventListener("solve", handleCapSolve);
+  if (cap.value?.shadowRoot && (cap.value.shadowRoot.querySelector('.captcha') as HTMLElement)) {
+    (cap.value.shadowRoot.querySelector('.captcha') as HTMLElement).style.boxSizing = 'border-box';
+    cap.value.shadowRoot.querySelector('.credits')?.setAttribute('hidden', 'true')
+  }
 });
 
 onUnmounted(() => {
@@ -61,12 +63,14 @@ async function handleLogin() {
     return;
   }
 
+  console.log(toValue(loginForm))
+
   try {
-    await loginFormRef.value.validate()
-    loading.value = true
+    await loginFormRef.value.validate();
+    loading.value = true;
     const userInfo = await authApi.login(loginForm);
-    userStore.setUserInfo(userInfo)
-    ElMessage.success('登录成功')
+    userStore.setUserInfo(userInfo);
+    ElMessage.success('登录成功');
     // 跳转到首页
     await router.push('/')
   } finally {
@@ -100,7 +104,14 @@ async function handleLogin() {
                     clearable/>
         </el-form-item>
 
-        <cap-widget ref="cap" :data-cap-api-endpoint="`${getConfig().apiBaseUrl}/api/cap/`"></cap-widget>
+        <el-form-item>
+          <cap-widget ref="cap"
+                      :data-cap-api-endpoint="`${getConfig().apiBaseUrl}/api/cap/`"
+                      data-cap-i18n-verifying-label="验证中..."
+                      data-cap-i18n-initial-state="人机验证"
+                      data-cap-i18n-solved-label="验证通过！"
+                      data-cap-i18n-error-label="验证错误！"></cap-widget>
+        </el-form-item>
 
         <el-form-item>
           <el-button type="primary" class="login-button" :loading="loading" @click="handleLogin" :disabled="disabled">
@@ -108,7 +119,8 @@ async function handleLogin() {
           </el-button>
         </el-form-item>
       </el-form>
-    </div></div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -170,6 +182,9 @@ async function handleLogin() {
 }
 
 cap-widget {
-  --cap-widget-width: 100%;
+  --cap-widget-height: 40px;
+  --cap-widget-width: 180px;
+  --cap-checkbox-size: 20px;
+  --cap-border-radius: var(--el-border-radius-base);
 }
 </style>

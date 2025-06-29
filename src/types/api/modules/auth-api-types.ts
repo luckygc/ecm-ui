@@ -3,13 +3,6 @@ type CodeLabel = {
     label: string;
 }
 
-// 登录相关类型定义
-export interface LoginForm {
-    username: string;
-    password: string;
-    rememberMe?: boolean;
-}
-
 export interface UserInfo {
     id: number;
     username: string;
