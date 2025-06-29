@@ -1,4 +1,4 @@
-import type {ApiResult} from "@/types/utils/requests-type";
+import type {ApiResult} from "./types.ts";
 import {getConfig} from "@/utils/config-utils";
 import type {AxiosRequestConfig, AxiosResponse} from "axios";
 import axios from "axios";
