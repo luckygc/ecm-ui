@@ -12,6 +12,7 @@ import {
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '@/store';
 import { storeToRefs } from 'pinia';
+import {getConfig} from "@/utils/config-utils.ts";
 
 const route = useRoute();
 const router = useRouter();
@@ -55,7 +56,7 @@ async function handleLogout() {
   <div class="navbar-container">
     <div style="display: flex; align-items: center; gap: 16px;">
       <div class="logo-area">
-        管理系统demo
+        {{ getConfig().appName}}
       </div>
 
       <el-divider direction="vertical"></el-divider>

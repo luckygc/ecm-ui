@@ -5,9 +5,11 @@ import PageManager from '@/layout/components/page-manager/PageManager.vue'
 import {usePageStore} from '@/store/modules/page-store.ts';
 import {useLayoutStore} from "@/store/modules/layout-store.ts";
 import {router} from "@/router";
+import {getConfig} from "@/utils/config-utils.ts";
 
 const pageStore = usePageStore();
 const layoutStore = useLayoutStore();
+
 </script>
 
 <template>
@@ -33,20 +35,21 @@ const layoutStore = useLayoutStore();
       <div class="page-container">
         <!-- 页面内容 -->
         <router-view v-slot="{ Component, route }">
-          <transition v-if="Component" name="el-fade-in-linear" mode="out-in" :duration="layoutStore.pageTransitionDuration">
+          <transition v-if="Component" name="el-fade-in-linear" mode="out-in"
+                      :duration="layoutStore.pageTransitionDuration">
             <keep-alive :include="pageStore.keepAliveInclude as string[]" :max="pageStore.maxKeepAliveCount">
               <component :is="pageStore.createOrGetWrapperComponentByRoute(Component, route)"
                          :key="pageStore.createOrGetComponentKeyByRoute(route)"/>
             </keep-alive>
           </transition>
-            <el-result v-else  icon="info" title=" 管理系统demo">
-              <template #sub-title>
-                <p>去往工作台</p>
-              </template>
-              <template #extra>
-                <el-button type="primary" @click="router.push('/workbench')">跳转</el-button>
-              </template>
-            </el-result>
+          <el-result v-else :title="`欢迎使用${getConfig().appName}`" style="height: 100%;">
+            <template #icon>
+              <span></span>
+            </template>
+            <template #extra>
+              <el-button type="primary" @click="router.push('/workbench')">前往工作台</el-button>
+            </template>
+          </el-result>
         </router-view>
       </div>
     </main>

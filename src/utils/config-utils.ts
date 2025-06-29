@@ -14,7 +14,7 @@ export interface AppConfig {
 // 默认配置
 const defaultConfig: AppConfig = {
     apiBaseUrl: "http://localhost:8080",
-    appName: "Repodar Web",
+    appName: "管理系统demo",
     tokenName: "repodar:token",
 };
 
