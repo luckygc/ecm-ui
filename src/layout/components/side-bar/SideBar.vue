@@ -2,7 +2,7 @@
 import {ElMenu} from 'element-plus'
 import {type RouteRecordRaw, useRoute, useRouter} from 'vue-router'
 import MenuItems from './MenuItems.vue'
-import {routes} from "@/router";
+import {routes} from "@/router/modules";
 import {Expand, Fold} from '@element-plus/icons-vue';
 import {ref} from "vue";
 

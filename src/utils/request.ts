@@ -10,7 +10,7 @@ const authToken = useStorage<string>(getConfig().tokenName, null);
 
 
 // 创建axios实例（使用默认配置）
-const axiosInstance = axios.create({
+export const axiosInstance = axios.create({
     baseURL: getConfig().apiBaseUrl,
     timeout: 60 * 1000,
     withCredentials: false,
