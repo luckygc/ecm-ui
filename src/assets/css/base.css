@@ -3,9 +3,12 @@
 }
 
 :root {
-    --page-padding: 10px;
+    --layout-header-height: 50px;
+    --layout-aside-width: 200px;
+    --page-padding: 20px;
     --page-toolbar-height: 50px;
     --page-toolbar-padding: 0 10px;
+    --page-manager-container-height: 40px;
 }
 
 html,

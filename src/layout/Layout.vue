@@ -62,7 +62,7 @@ const layoutStore = useLayoutStore();
   grid-template-areas:
     "header header"
     "aside main";
-  grid-template-rows: 50px 1fr;
+  grid-template-rows: var(--layout-header-height) 1fr;
   grid-template-columns: auto 1fr;
   height: 100%;
   width: 100%;
@@ -102,7 +102,7 @@ const layoutStore = useLayoutStore();
 }
 
 .page-manager-container {
-  height: 40px;
+  height: var(--page-manager-container-height);
 }
 
 .page-container {

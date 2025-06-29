@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { ElMenu } from 'element-plus'
-import { type RouteRecordRaw, useRoute, useRouter } from 'vue-router'
+import {ElMenu} from 'element-plus'
+import {type RouteRecordRaw, useRoute, useRouter} from 'vue-router'
 import MenuItems from './MenuItems.vue'
-import { routes } from "@/router";
-import { Expand, Fold } from '@element-plus/icons-vue';
-import { ref } from "vue";
+import {routes} from "@/router";
+import {Expand, Fold} from '@element-plus/icons-vue';
+import {ref} from "vue";
 
 const router = useRouter();
 // 处理菜单点击事件
 const handleMenuSelect = (routeName: string) => {
-  router.push({ name: routeName })
+  router.push({name: routeName})
 }
 
 const finalRenderRoutes = routes
-  .filter(route => route.meta?.['sidebar'] === true || route.name === 'Index')
-  .flatMap(route => {
-    if (route.path === '/') {
-      return route.children;
-    }
+    .filter(route => route.meta?.['sidebar'] === true || route.name === 'Index')
+    .flatMap(route => {
+      if (route.path === '/') {
+        return route.children;
+      }
 
-    return route;
-  }) as RouteRecordRaw[];
+      return route;
+    }) as RouteRecordRaw[];
 
 const isCollapse = ref(false);
 
@@ -31,16 +31,16 @@ const isCollapse = ref(false);
     <div class="menu-container">
       <el-scrollbar>
         <ElMenu :default-active="useRoute().name as string" :collapse="isCollapse" mode="vertical"
-          @select="handleMenuSelect">
+                @select="handleMenuSelect">
 
-          <MenuItems :routes="finalRenderRoutes" />
+          <MenuItems :routes="finalRenderRoutes"/>
         </ElMenu>
       </el-scrollbar>
     </div>
 
     <div class="btn-container">
       <el-tooltip :content="isCollapse ? '展开菜单' : '收起菜单'">
-        <ElButton :icon="isCollapse ? Expand : Fold" @click="isCollapse = !isCollapse" text bg />
+        <ElButton :icon="isCollapse ? Expand : Fold" @click="isCollapse = !isCollapse" text bg/>
       </el-tooltip>
     </div>
 
@@ -58,7 +58,7 @@ const isCollapse = ref(false);
 }
 
 .sidebar-wrapper:not(:has(.el-menu--collapse)) .el-menu {
-  width: 200px;
+  width: var(--layout-aside-width);
 }
 
 .el-menu {
@@ -77,23 +77,5 @@ const isCollapse = ref(false);
   justify-content: center;
   padding: 10px 0;
   flex-shrink: 0;
-}
-
-/* 现代化滚动条样式 */
-.menu-container::-webkit-scrollbar {
-  width: 4px;
-}
-
-.menu-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.menu-container::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
-}
-
-.menu-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
 }
 </style>
