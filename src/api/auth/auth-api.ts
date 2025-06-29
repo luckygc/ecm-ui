@@ -1,5 +1,5 @@
 import {get, post} from "@/utils/request.ts";
-import type {LoginForm, UserInfo,} from "@/types/api/modules/auth-api-types.ts";
+import type {LoginForm, UserInfo,} from "./types.ts";
 
 /**
  * 用户登录

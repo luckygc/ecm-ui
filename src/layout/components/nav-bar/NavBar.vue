@@ -10,13 +10,13 @@ import {
   ElMessageBox
 } from 'element-plus';
 import { useRoute, useRouter } from 'vue-router';
-import { useUserStore } from '@/store';
+import { useAuthStore } from '@/store';
 import { storeToRefs } from 'pinia';
 import {getConfig} from "@/utils/config-utils.ts";
 
 const route = useRoute();
 const router = useRouter();
-const userStore = useUserStore();
+const userStore = useAuthStore();
 const { userInfo } = storeToRefs(userStore);
 
 // 处理下拉菜单命令
@@ -89,6 +89,10 @@ async function handleLogout() {
 </template>
 
 <style scoped>
+.el-breadcrumb__separator {
+  font-weight: normal;
+}
+
 .navbar-container {
   display: flex;
   align-items: center;

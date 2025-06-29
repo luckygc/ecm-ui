@@ -9,7 +9,6 @@ import "element-plus/dist/index.css";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
 import "@/assets/css/base.css";
 import "normalize.css";
-import "@/assets/css/element-plus.css";
 
 import {createApp} from "vue";
 

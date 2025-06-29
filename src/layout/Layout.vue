@@ -2,8 +2,8 @@
 import NavBar from '@/layout/components/nav-bar/NavBar.vue'
 import SideBar from '@/layout/components/side-bar/SideBar.vue'
 import PageManager from '@/layout/components/page-manager/PageManager.vue'
-import {usePageStore} from '@/store/modules/page-store.ts';
-import {useLayoutStore} from "@/store/modules/layout-store.ts";
+import {usePageStore} from '@/store/modules/page/page-store.ts';
+import {useLayoutStore} from "@/store/modules/layout/layout-store.ts";
 import {router} from "@/router";
 import {getConfig} from "@/utils/config-utils.ts";
 

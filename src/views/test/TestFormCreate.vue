@@ -121,7 +121,7 @@ defineOptions({
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--el-border-color);
 }
 
 .card h3 {
@@ -153,7 +153,7 @@ defineOptions({
 .form-textarea,
 .form-select {
     padding: 8px 12px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--el-border-color);
     border-radius: 6px;
     font-size: 14px;
     transition: all 0.2s ease;
@@ -208,7 +208,7 @@ defineOptions({
     align-items: center;
     gap: 12px;
     padding: 12px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--el-border-color);
     border-radius: 6px;
     background: var(--el-fill-color-lighter);
     transition: all 0.2s ease;

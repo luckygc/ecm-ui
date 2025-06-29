@@ -2,13 +2,13 @@
 import {nextTick, onMounted, onUnmounted, reactive, ref, toValue} from 'vue'
 import {useRouter} from 'vue-router'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
-import {useUserStore} from '@/store'
+import {useAuthStore} from '@/store'
 import {authApi} from "@/api/auth/auth-api.ts";
 import {getConfig} from "@/utils/config-utils.ts";
 import type {LoginForm} from "@/api/auth/types.ts";
 
 const router = useRouter()
-const userStore = useUserStore()
+const userStore = useAuthStore()
 
 // 表单引用
 const loginFormRef = ref<FormInstance>()
