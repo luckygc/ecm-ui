@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import {nextTick, onMounted, onUnmounted, reactive, ref, toValue} from 'vue'
+import {reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
-import {useAuthStore} from '@/store'
+import {useAuthStore} from '@/store/modules/auth/auth-store.ts'
 import {authApi} from "@/api/auth/auth-api.ts";
 import {getConfig} from "@/utils/config-utils.ts";
 import type {LoginForm} from "@/api/auth/types.ts";
+import CapWrapper from "@/components/captcha/CapWrapper.vue"
 
 const router = useRouter()
-const userStore = useAuthStore()
+const authStore = useAuthStore()
 
 // 表单引用
 const loginFormRef = ref<FormInstance>()
-
-const cap = ref<HTMLElement>();
 
 const disabled = ref(true);
 
@@ -39,23 +38,10 @@ const loginRules: FormRules = {
   ]
 }
 
-const handleCapSolve: EventListenerOrEventListenerObject = async (e: Event) => {
-  loginForm.capToken = (e as CustomEvent).detail.token;
+const handleCapSolve = (token: string) => {
+  loginForm.capToken = token;
   disabled.value = false;
 }
-
-onMounted(async () => {
-  await nextTick();
-  cap.value?.addEventListener("solve", handleCapSolve);
-  if (cap.value?.shadowRoot && (cap.value.shadowRoot.querySelector('.captcha') as HTMLElement)) {
-    (cap.value.shadowRoot.querySelector('.captcha') as HTMLElement).style.boxSizing = 'border-box';
-    cap.value.shadowRoot.querySelector('.credits')?.setAttribute('hidden', 'true')
-  }
-});
-
-onUnmounted(() => {
-  cap.value?.removeEventListener("solve", handleCapSolve);
-});
 
 // 处理登录
 async function handleLogin() {
@@ -63,13 +49,11 @@ async function handleLogin() {
     return;
   }
 
-  console.log(toValue(loginForm))
-
   try {
     await loginFormRef.value.validate();
     loading.value = true;
     const userInfo = await authApi.login(loginForm);
-    userStore.setUserInfo(userInfo);
+    authStore.setUserInfo(userInfo);
     ElMessage.success('登录成功');
     // 跳转到首页
     await router.push('/')
@@ -105,12 +89,7 @@ async function handleLogin() {
         </el-form-item>
 
         <el-form-item>
-          <cap-widget ref="cap"
-                      :data-cap-api-endpoint="`${getConfig().apiBaseUrl}/api/cap/`"
-                      data-cap-i18n-verifying-label="验证中..."
-                      data-cap-i18n-initial-state="人机验证"
-                      data-cap-i18n-solved-label="验证通过！"
-                      data-cap-i18n-error-label="验证错误！"></cap-widget>
+          <CapWrapper :cap-api-endpoint="`${getConfig().apiBaseUrl}/api/cap/`" @solve="handleCapSolve"></CapWrapper>
         </el-form-item>
 
         <el-form-item>
@@ -179,12 +158,5 @@ async function handleLogin() {
   width: 100%;
   height: 44px;
   font-size: 16px;
-}
-
-cap-widget {
-  --cap-widget-height: 40px;
-  --cap-widget-width: 180px;
-  --cap-checkbox-size: 20px;
-  --cap-border-radius: var(--el-border-radius-base);
 }
 </style>
