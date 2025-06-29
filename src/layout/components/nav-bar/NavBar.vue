@@ -9,15 +9,15 @@ import {
   ElMessage,
   ElMessageBox
 } from 'element-plus';
-import { useRoute, useRouter } from 'vue-router';
-import { useAuthStore } from '@/store';
-import { storeToRefs } from 'pinia';
+import {useRoute, useRouter} from 'vue-router';
+import {useAuthStore} from '@/store/modules/auth/auth-store.ts';
+import {storeToRefs} from 'pinia';
 import {getConfig} from "@/utils/config-utils.ts";
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useAuthStore();
-const { userInfo } = storeToRefs(userStore);
+const {userInfo} = storeToRefs(userStore);
 
 // 处理下拉菜单命令
 function handleCommand(command: string) {
@@ -56,12 +56,12 @@ async function handleLogout() {
   <div class="navbar-container">
     <div style="display: flex; align-items: center; gap: 16px;">
       <div class="logo-area">
-        {{ getConfig().appName}}
+        {{ getConfig().appName }}
       </div>
 
       <el-divider direction="vertical"></el-divider>
 
-      <ElBreadcrumb >
+      <ElBreadcrumb>
         <ElBreadcrumbItem v-for="breadcrumb in route.matched" :key="breadcrumb.name">
           <div style="display: flex; align-items: center; gap: 4px;">
             <div>{{ breadcrumb.meta?.['title'] }}</div>

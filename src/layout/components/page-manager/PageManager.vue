@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ArrowDown, CircleClose, FolderDelete, Refresh } from '@element-plus/icons-vue'
-import { ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs, } from 'element-plus'
-import { usePageStore } from '@/store/modules/page-store.ts'
-import { useRoute, useRouter } from "vue-router";
-import { useLayoutStore } from '@/store/modules/layout-store.ts';
-import { watch } from 'vue';
+import {ArrowDown, CircleClose, FolderDelete, Refresh} from '@element-plus/icons-vue'
+import {ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs,} from 'element-plus'
+import {usePageStore} from '@/store/modules/page/page-store.ts'
+import {useRoute, useRouter} from "vue-router";
+import {useLayoutStore} from '@/store/modules/layout/layout-store.ts';
+import {watch} from 'vue';
 
 const pageStore = usePageStore();
 const layoutStore = useLayoutStore();
@@ -21,10 +21,10 @@ watch(() => pageStore.pages, (newVal) => {
 <template>
   <div class="page-manager">
     <ElTabs :model-value="route.fullPath" type="border-card" closable
-      @tab-click="({ paneName }) => router.push(paneName as string)"
-      @tab-remove="name => pageStore.closePage(name as string)" style="flex: 1;min-width:0">
+            @tab-click="({ paneName }) => router.push(paneName as string)"
+            @tab-remove="name => pageStore.closePage(name as string)" style="flex: 1;min-width:0">
       <ElTabPane v-for="page in pageStore.pages" :key="page.fullPath" :label="page.meta?.['title'] as string"
-        :name="page.fullPath">
+                 :name="page.fullPath">
       </ElTabPane>
     </ElTabs>
 
@@ -33,14 +33,14 @@ watch(() => pageStore.pages, (newVal) => {
       <el-tooltip content="刷新">
         <ElButton circle text @click="pageStore.refreshCurrentPage()" :disabled="pageStore.pages.length === 0">
           <ElIcon>
-            <Refresh />
+            <Refresh/>
           </ElIcon>
         </ElButton>
       </el-tooltip>
 
       <el-tooltip :content="layoutStore.isPageMaximized ? '还原' : '最大化'">
         <ElButton circle text @click="layoutStore.togglePageMaximized()" :disabled="pageStore.pages.length === 0"
-          icon="FullScreen">
+                  icon="FullScreen">
         </ElButton>
       </el-tooltip>
 
@@ -49,20 +49,20 @@ watch(() => pageStore.pages, (newVal) => {
         <ElButton text :disabled="pageStore.pages.length === 0">
           操作
           <ElIcon class="el-icon--right">
-            <ArrowDown />
+            <ArrowDown/>
           </ElIcon>
         </ElButton>
         <template #dropdown>
           <ElDropdownMenu>
             <ElDropdownItem @click="pageStore.closeOtherPage()">
               <ElIcon>
-                <CircleClose />
+                <CircleClose/>
               </ElIcon>
               <span>关闭其他</span>
             </ElDropdownItem>
             <ElDropdownItem @click="pageStore.closeAllPage()">
               <ElIcon>
-                <FolderDelete />
+                <FolderDelete/>
               </ElIcon>
               <span>关闭所有</span>
             </ElDropdownItem>
@@ -148,7 +148,7 @@ watch(() => pageStore.pages, (newVal) => {
   color: var(--el-text-color-primary);
 }
 
-:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:not(.is-disabled):hover){
+:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:not(.is-disabled):hover) {
   color: var(--el-text-color-primary);
 }
 

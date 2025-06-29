@@ -1,4 +1,4 @@
-import {get, post} from "@/utils/request.ts";
+import {get, post} from "@/utils/request/request.ts";
 import type {LoginForm, UserInfo,} from "./types.ts";
 
 /**
