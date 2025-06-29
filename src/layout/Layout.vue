@@ -4,18 +4,9 @@ import SideBar from '@/layout/components/side-bar/SideBar.vue'
 import PageManager from '@/layout/components/page-manager/PageManager.vue'
 import {usePageStore} from '@/store/modules/page-store.ts';
 import {useLayoutStore} from "@/store/modules/layout-store.ts";
-import {watch} from "vue";
 
 const pageStore = usePageStore();
-
 const layoutStore = useLayoutStore();
-watch(() => layoutStore.isPageMaximized, (newVal) => {
-  if (newVal) {
-
-  }
-})
-
-
 </script>
 
 <template>
@@ -44,7 +35,7 @@ watch(() => layoutStore.isPageMaximized, (newVal) => {
           <transition name="el-fade-in-linear" mode="out-in" :duration="{ enter: 100, leave: 100 }">
             <keep-alive :include="pageStore.keepAliveInclude as string[]" :max="15">
               <component :is="pageStore.wrapPageComponent(Component, route)"
-                         :key="pageStore.computePageComponentKey(route)"/>
+                         :key="pageStore.getPageComponentKey(route)"/>
             </keep-alive>
           </transition>
         </router-view>
@@ -73,7 +64,7 @@ watch(() => layoutStore.isPageMaximized, (newVal) => {
   grid-template-columns:  1fr;
 }
 
-.layout.pageMaximized .header{
+.layout.pageMaximized .header {
   display: none;
 }
 

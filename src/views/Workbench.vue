@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useRouter} from "vue-router";
 import Page from "@/components/page/Page.vue";
-import {onMounted, onUnmounted} from "vue";
+import {onActivated, onDeactivated, onMounted, onUnmounted} from "vue";
 
 const router = useRouter();
 const randomPage = () => {
@@ -10,6 +10,14 @@ const randomPage = () => {
 
 onMounted(() => {
   console.log('workbench mounted')
+})
+
+onActivated(() => {
+  console.log('workbench activated')
+})
+
+onDeactivated(() => {
+  console.log('workbench deActivated')
 })
 
 onUnmounted(() => {

@@ -11,7 +11,6 @@ const layoutStore = useLayoutStore();
 const route = useRoute();
 const router = useRouter();
 
-
 watch(() => pageStore.pages, (newVal) => {
   if (newVal.length === 0 && layoutStore.isPageMaximized) {
     layoutStore.togglePageMaximized();
@@ -145,13 +144,19 @@ watch(() => pageStore.pages, (newVal) => {
 }
 
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:hover) {
-  background-color: rgba(var(--el-color-primary-rgb), 0.08);
+  background-color: var(--el-fill-color-dark);
+  color: var(--el-text-color-primary);
+}
+
+:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:not(.is-disabled):hover){
+  color: var(--el-text-color-primary);
 }
 
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active) {
   border-left: none;
   border-right: none;
-  background-color: rgba(var(--el-color-primary-rgb), 0.1);
+  background-color: var(--el-fill-color-dark);
+  color: var(--el-text-color-primary);
 }
 
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:first-child) {

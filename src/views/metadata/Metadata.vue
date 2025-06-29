@@ -1,10 +1,18 @@
 <script setup lang="ts">
 
 import Page from "@/components/page/Page.vue";
-import {onMounted, onUnmounted} from "vue";
+import {onActivated, onDeactivated, onMounted, onUnmounted} from "vue";
 
 onMounted(() => {
   console.log('meatData mounted')
+})
+
+onActivated(()=>{
+  console.log('meatData activated')
+})
+
+onDeactivated(()=>{
+  console.log('meatData deActivated')
 })
 
 onUnmounted(() => {
