@@ -9,11 +9,12 @@ import {getConfig} from "@/utils/config-utils.ts";
 
 const pageStore = usePageStore();
 const layoutStore = useLayoutStore();
+const layoutClass = {pageMaximized: layoutStore.isPageMaximized};
 
 </script>
 
 <template>
-  <div class="layout" :class="{ pageMaximized: layoutStore.isPageMaximized }">
+  <div class="layout" :class="layoutClass">
     <!-- 顶部导航栏 -->
     <header class="header">
       <NavBar/>
