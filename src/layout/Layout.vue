@@ -33,9 +33,9 @@ const layoutStore = useLayoutStore();
         <!-- 页面内容 -->
         <router-view v-slot="{ Component, route }">
           <transition name="el-fade-in-linear" mode="out-in" :duration="{ enter: 100, leave: 100 }">
-            <keep-alive :include="pageStore.keepAliveInclude as string[]" :max="15">
-              <component :is="pageStore.wrapPageComponent(Component, route)"
-                         :key="pageStore.getPageComponentKey(route)"/>
+            <keep-alive :include="pageStore.keepAliveInclude as string[]" :max="pageStore.maxKeepAliveCount">
+              <component :is="pageStore.createOrGetWrapperComponentByRoute(Component, route)"
+                         :key="pageStore.createOrGetComponentKeyByRoute(route)"/>
             </keep-alive>
           </transition>
         </router-view>

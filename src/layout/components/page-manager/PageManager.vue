@@ -31,7 +31,7 @@ watch(() => pageStore.pages, (newVal) => {
     <!-- 操作按钮 -->
     <div class="page-actions">
       <el-tooltip content="刷新">
-        <ElButton circle text @click="pageStore.refreshPage()" :disabled="pageStore.pages.length === 0">
+        <ElButton circle text @click="pageStore.refreshCurrentPage()" :disabled="pageStore.pages.length === 0">
           <ElIcon>
             <Refresh />
           </ElIcon>

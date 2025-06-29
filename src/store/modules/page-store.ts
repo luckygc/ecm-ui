@@ -6,15 +6,13 @@ import {
     markRaw,
     nextTick,
     readonly,
+    type Ref,
     ref,
+    type ShallowRef,
     shallowRef,
-    watch,
+    toValue,
 } from "vue";
-import {
-    type RouteLocationNormalizedLoadedGeneric,
-    useRoute,
-    useRouter,
-} from "vue-router";
+import {type RouteLocationNormalizedLoadedGeneric, useRoute, useRouter,} from "vue-router";
 import {ElMessage} from "element-plus";
 
 type Page = Pick<
@@ -22,10 +20,12 @@ type Page = Pick<
     "fullPath" | "name" | "meta" | "path"
 >;
 
+type PageOrRouteOrFullPath = Page | RouteLocationNormalizedLoadedGeneric | string;
+
 const needKeepAlive = (
-    page: Page | RouteLocationNormalizedLoadedGeneric
+    pageOrRoute: Page | RouteLocationNormalizedLoadedGeneric
 ): boolean => {
-    return page.meta?.["keepAlive"] === true;
+    return pageOrRoute.meta?.["keepAlive"] === true;
 };
 
 /**
@@ -37,55 +37,54 @@ const needKeepAlive = (
  * @param mappingFunction 计算value的函数
  */
 const computeIfAbsent = <K, V>(
-    map: Map<K, V>,
+    map: Map<K, V> | Ref<Map<K, V>>,
     key: K,
     mappingFunction: (key: K) => V
 ): V => {
-    if (map.has(key)) {
-        return map.get(key)!;
+    const _map = toValue(map);
+
+    if (_map.has(key)) {
+        return _map.get(key)!;
     }
 
     const value = mappingFunction(key);
-    map.set(key, value);
+    _map.set(key, value);
     return value;
 };
 
-// 页面组件定义缓存,key:包裹组件name,value:包裹组件定义
-const PageComponentCache = new Map<string, Component>();
-
-// 计算页面组件的名称,即使内存里组件name可以随意，但是为了符合规范，还是替换特殊符号
-const computeComponentName = (
-    routeOrFullPath: RouteLocationNormalizedLoadedGeneric | Page | string
-): string => {
-    if (typeof routeOrFullPath === "string") {
-        return "Page" + routeOrFullPath.replace(/[^a-zA-Z0-9]/g, "-");
+const getFullPath = (pageOrRouteOrFullPath: PageOrRouteOrFullPath): string => {
+    if (typeof pageOrRouteOrFullPath === 'string') {
+        return pageOrRouteOrFullPath;
     }
 
-    return "Page" + routeOrFullPath.fullPath.replace(/[^a-zA-Z0-9]/g, "-");
-};
+    return pageOrRouteOrFullPath.fullPath;
+}
+
+// 包裹组件缓存,key:包裹组件name,value:包裹组件
+const _wrapperComponentCache = new Map<string, Component>();
 
 /**
- * 包装页面组件,用于多实例页面的缓存
- * @param pageComponent 原始页面组件
+ * 根据路由包裹一层组件,包裹组件name为路由fullPath。缓存不存在就新建
+ * @param component 原始组件
  * @param route 路由
  */
-const wrapPageComponent = (
-    pageComponent: Component,
+const createOrGetWrapperComponentByRoute = (
+    component: Component,
     route: RouteLocationNormalizedLoadedGeneric
 ) => {
-    if (!pageComponent) {
+    if (!component) {
         return null;
     }
 
     return computeIfAbsent(
-        PageComponentCache,
-        computeComponentName(route),
-        (componentName) => {
+        _wrapperComponentCache,
+        getFullPath(route),
+        componentName => {
             return markRaw(
                 defineComponent({
                     name: componentName,
                     setup(props, {attrs, slots}) {
-                        return () => h(pageComponent, {...attrs, ...props}, slots);
+                        return () => h(component, {...attrs, ...props}, slots);
                     },
                 })
             );
@@ -93,178 +92,193 @@ const wrapPageComponent = (
     );
 };
 
+/**
+ * 根据路由信息计算组件Key
+ * @param pageOrRouteOrFullPath
+ */
 const computeComponentKey = (
-    routeOrFullPath: RouteLocationNormalizedLoadedGeneric | Page | string
+    pageOrRouteOrFullPath: PageOrRouteOrFullPath
 ) => {
-    if (typeof routeOrFullPath === "string") {
-        return `${routeOrFullPath}_${Date.now()}`;
-    }
-
-    return `${routeOrFullPath.fullPath}_${Date.now()}`;
+    return `${getFullPath(pageOrRouteOrFullPath)}_${Date.now()}`;
 };
 
+/**
+ * 根据fullPath在页面数组查找页面
+ * @param pages 页面数组
+ * @param pageOrRouteOrFullPath 路由或fullPath
+ */
+const findPageFromPages = (pages: Page[] | ShallowRef<Page[]>, pageOrRouteOrFullPath: PageOrRouteOrFullPath): Page | undefined => {
+    let fullPath = getFullPath(pageOrRouteOrFullPath)
+
+    return toValue(pages).find((page) => page.fullPath === fullPath)
+}
+
 const storeSetup = () => {
-    const router = useRouter();
-    const route = useRoute();
     // 页面数组
     const pages = shallowRef<Page[]>([]);
-    // 每个页面组件的Key的后缀,用于刷新组件
-    const _componentKeySuffixMap = ref<Map<string, string>>(new Map());
-    // 缓存
+    // 组件缓存
     const keepAliveInclude = shallowRef<string[]>([]);
+    const maxKeepAliveCount = 10;
+
+    // 组件Key缓存,key:路由fullPath,value:组件key
+    const _componentKeyCache = ref<Map<string, string>>(new Map());
+    const _router = useRouter();
+    const _route = useRoute();
     // 非页签页面路由名称
-    const specialRouteNames = ["Index", "Login", "NotFound"];
+    const _specialRouteNames = ["Index", "Login", "NotFound"];
 
-    watch(
-        () => pages.value,
-        () => {
-            keepAliveInclude.value = pages.value
-                .filter(needKeepAlive)
-                .map(computeComponentName);
+    const _afterPageAdd = (newPage: Page) => {
+        if (!needKeepAlive(newPage)) {
+            return;
         }
-    );
 
-    const findPageByRouteFullPath = (fullPath: string): Page | undefined => {
-        return pages.value.find((page) => page.fullPath === fullPath);
-    };
+        keepAliveInclude.value = pages.value
+            .filter(needKeepAlive)
+            .map(page => page.fullPath);
+    }
 
     const afterRouteChange = (to: RouteLocationNormalizedLoadedGeneric) => {
         // 无需管理的页面
-        if (specialRouteNames.findIndex((name) => to.name === name) > -1) {
+        if (_specialRouteNames.findIndex((name) => to.name === name) > -1) {
             return;
         }
 
         // 检查页面是否已存在
-        if (findPageByRouteFullPath(to.fullPath)) {
+        if (findPageFromPages(pages, to)) {
             return;
         }
 
-        if (pages.value.length > 14) {
+        if (pages.value.length >= maxKeepAliveCount) {
             ElMessage.warning("当前打开页面过多,建议关闭部分不需要的页面");
         }
 
         // 新建并追加page
-        const page: Page = {
+        const newPage: Page = {
             fullPath: to.fullPath,
             path: to.path,
             name: to.name,
             meta: {...to.meta},
         };
+        pages.value = [...pages.value, newPage];
 
-        pages.value = [...pages.value, page];
+        _afterPageAdd(newPage);
     };
 
-    const closeCurrentPage = async () => {
-        const currentPage = findPageByRouteFullPath(route.fullPath);
-        if (!currentPage) {
+    // 刷新当前页面
+    const refreshCurrentPage = async () => {
+        return refreshPage(_route.fullPath);
+    };
+
+    const refreshPage = async (pageOrRouteOrFullPath: PageOrRouteOrFullPath) => {
+        const waitRefreshPage = findPageFromPages(pages, getFullPath(pageOrRouteOrFullPath));
+        if (!waitRefreshPage) {
             return;
         }
 
-        return closePage(currentPage.fullPath);
+        const reRenderPage = () => _componentKeyCache.value.set(getFullPath(waitRefreshPage), computeComponentKey(waitRefreshPage));
+
+        if (!needKeepAlive(waitRefreshPage)) {
+            reRenderPage();
+            return;
+        }
+
+        // 删除缓存,重渲染,加回缓存
+        const originalKeepAliveInclude = keepAliveInclude.value;
+        keepAliveInclude.value = keepAliveInclude.value.filter(
+            (name) => name !== _route.fullPath
+        );
+        reRenderPage();
+        await nextTick();
+        keepAliveInclude.value = originalKeepAliveInclude;
+    }
+
+    const _afterPageClose = (...closedPages: Page[]) => {
+        if (pages.value.length === 0) {
+            _componentKeyCache.value.clear();
+            _wrapperComponentCache.clear();
+            return;
+        }
+
+        for (const page of closedPages) {
+            _componentKeyCache.value.delete(page.fullPath);
+            _wrapperComponentCache.delete(page.fullPath);
+        }
+    }
+
+    const closeCurrentPage = async () => {
+        return closePage(_route.fullPath);
     };
 
     // 关闭指定路由页面
-    const closePage = async (routeFullPath: string) => {
-        const waitClosePage = findPageByRouteFullPath(routeFullPath);
+    const closePage = async (pageOrRouteOrFullPath: PageOrRouteOrFullPath) => {
+        const waitClosePage = findPageFromPages(pages, pageOrRouteOrFullPath);
         if (!waitClosePage) {
-            throw new Error(`页面{fullPath=${routeFullPath}}不存在`);
+            throw new Error(`页面${pageOrRouteOrFullPath}不存在`);
         }
 
-        pages.value = pages.value.filter((page) => page.fullPath !== routeFullPath);
-        _componentKeySuffixMap.value.delete(routeFullPath);
-        PageComponentCache.delete(computeComponentName(waitClosePage));
+        pages.value = pages.value.filter(page => page.fullPath !== waitClosePage.fullPath);
+
+        _afterPageClose(waitClosePage)
 
         // 如果关闭的不是当前激活的页面,不需要跳转
-        if (routeFullPath !== route.fullPath) {
+        if (waitClosePage.fullPath !== _route.fullPath) {
             return;
         }
 
+        // 没有页面了就跳转到首页
         if (pages.value.length === 0) {
-            return await router.push("/");
+            return await _router.push("/");
         }
 
         // 跳转到最后一个页面
-        return await router.push(pages.value[pages.value.length - 1]!.fullPath);
+        return await _router.push(pages.value[pages.value.length - 1]!.fullPath);
     };
 
     /**
-     * 计算页面组件的Key,路由fullPath加时间戳，用于强制刷新组件
+     * 根据路由获取组件的Key,路由fullPath加时间戳,缓存不存在就新建
      */
-    const getPageComponentKey = (
-        r: RouteLocationNormalizedLoadedGeneric
-    ): string =>
-        computeIfAbsent(
-            _componentKeySuffixMap.value,
-            r.fullPath,
-            computeComponentKey
-        );
-
-    // 刷新当前页面
-    const refreshPage = async () => {
-        const currentPage = findPageByRouteFullPath(route.fullPath);
-        if (!currentPage) {
-            return;
-        }
-
-        if (currentPage.meta?.["keepAlive"]) {
-            // 删除缓存,重渲染,加回缓存
-            const originalKeepAliveInclude = keepAliveInclude.value;
-            keepAliveInclude.value = keepAliveInclude.value.filter(
-                (name) => name !== computeComponentName(route.fullPath)
-            );
-            _componentKeySuffixMap.value.set(
-                currentPage.fullPath,
-                computeComponentKey(currentPage)
-            );
-            await nextTick();
-            keepAliveInclude.value = originalKeepAliveInclude;
-        } else {
-            _componentKeySuffixMap.value.set(
-                currentPage.fullPath,
-                computeComponentKey(currentPage)
-            );
-        }
-    };
+    const createOrGetComponentKeyByRoute = (routeOrPageOrFullPath: PageOrRouteOrFullPath): string => {
+        return computeIfAbsent(_componentKeyCache, getFullPath(routeOrPageOrFullPath), computeComponentKey);
+    }
 
     // 关闭其他页面
     const closeOtherPage = async () => {
-        const currentPage = findPageByRouteFullPath(route.fullPath);
-        if (!currentPage || pages.value.length <= 1) {
+        if (pages.value.length <= 1) {
             return;
         }
 
-        const pagesToClose = pages.value.filter(
-            (page) => page.fullPath !== currentPage.fullPath
-        );
+        const currentPage = findPageFromPages(pages, _route.fullPath)!;
+        if (!currentPage) {
+            throw new Error(`当前页面${_route.fullPath}不存在`)
+        }
+
+        const waitClosePages = pages.value.filter(page => page.fullPath !== currentPage.fullPath);
         pages.value = [currentPage];
 
-        for (const page of pagesToClose) {
-            _componentKeySuffixMap.value.delete(page.fullPath);
-            PageComponentCache.delete(computeComponentName(page));
-        }
+        _afterPageClose(...waitClosePages)
     };
 
-    // 关闭所有页面（优化：批量操作减少响应式更新）
+    // 关闭所有页面
     const closeAllPage = async () => {
         pages.value = [];
-        _componentKeySuffixMap.value.clear();
-        PageComponentCache.clear();
-        return await router.push("/");
+        _afterPageClose();
+        return await _router.push("/");
     };
 
     return {
         pages: readonly(pages),
         keepAliveInclude: readonly(keepAliveInclude),
+        maxKeepAliveCount,
 
         // 路由和页面组件
         afterRouteChange,
-        getPageComponentKey,
-        wrapPageComponent,
+        createOrGetComponentKeyByRoute,
+        createOrGetWrapperComponentByRoute,
 
         // 页面操作
+        refreshCurrentPage,
         closeCurrentPage,
         closePage,
-        refreshPage,
         closeOtherPage,
         closeAllPage,
     };
