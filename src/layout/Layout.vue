@@ -6,10 +6,13 @@ import {usePageStore} from '@/store/modules/page/page-store.ts';
 import {useLayoutStore} from "@/store/modules/layout/layout-store.ts";
 import {router} from "@/router";
 import {getConfig} from "@/utils/config-utils.ts";
+import {computed} from "vue";
 
 const pageStore = usePageStore();
 const layoutStore = useLayoutStore();
-const layoutClass = {pageMaximized: layoutStore.isPageMaximized};
+const layoutClass = computed(() => {
+  return {pageMaximized: layoutStore.isPageMaximized}
+});
 
 </script>
 

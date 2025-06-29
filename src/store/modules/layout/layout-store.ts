@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 import {computed, readonly, ref} from "vue";
-import {usePageStore} from "@/store";
+import {usePageStore} from "@/store/modules/page/page-store.ts";
 
 export const useLayoutStore = defineStore("layout", () => {
     const isPageMaximized = ref(false);
