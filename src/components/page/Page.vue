@@ -1,17 +1,36 @@
 <script setup lang="ts">
-import { useSlots, computed } from 'vue'
+import {computed, onActivated, onDeactivated, ref, useSlots} from 'vue'
 
 const slots = useSlots()
+
+const pageContentRef = ref<HTMLElement>();
+const pageScrollTop = ref<number>(0);
 
 // 检测 toolbar 插槽是否有内容
 const hasToolbarContent = computed(() => {
   return !!slots?.['toolbar']
 })
+
+if (typeof onActivated === 'function') {
+  onActivated(() => {
+    if (pageContentRef.value) {
+      pageContentRef.value.scrollTop = pageScrollTop.value;
+    }
+  })
+}
+if (typeof onDeactivated === 'function') {
+  onDeactivated(() => {
+    if (pageContentRef.value) {
+      pageScrollTop.value = pageContentRef.value.scrollTop;
+    }
+  })
+}
+
 </script>
 
 <template>
   <div class="page">
-    <div class="page-content" :class="{ 'has-toolbar': hasToolbarContent }">
+    <div ref="pageContentRef" class="page-content" :class="{ 'has-toolbar': hasToolbarContent }">
       <slot></slot>
     </div>
 

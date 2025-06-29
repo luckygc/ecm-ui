@@ -14,6 +14,7 @@ import {
 } from "vue";
 import {type RouteLocationNormalizedLoadedGeneric, useRoute, useRouter,} from "vue-router";
 import {ElMessage} from "element-plus";
+import Page from "@/components/page/Page.vue";
 
 type Page = Pick<
     RouteLocationNormalizedLoadedGeneric,
@@ -164,17 +165,14 @@ const storeSetup = () => {
         _afterPageAdd(newPage);
     };
 
-    // 刷新当前页面
-    const refreshCurrentPage = async () => {
-        return refreshPage(_route.fullPath);
-    };
+    /**
+     * 根据路由获取组件的Key,路由fullPath加时间戳,缓存不存在就新建
+     */
+    const createOrGetComponentKeyByRoute = (routeOrPageOrFullPath: PageOrRouteOrFullPath): string => {
+        return computeIfAbsent(_componentKeyCache, getFullPath(routeOrPageOrFullPath), computeComponentKey);
+    }
 
-    const refreshPage = async (pageOrRouteOrFullPath: PageOrRouteOrFullPath) => {
-        const waitRefreshPage = findPageFromPages(pages, getFullPath(pageOrRouteOrFullPath));
-        if (!waitRefreshPage) {
-            return;
-        }
-
+    const _handlePageReRender = async (waitRefreshPage: Page) => {
         const reRenderPage = () => _componentKeyCache.value.set(getFullPath(waitRefreshPage), computeComponentKey(waitRefreshPage));
 
         if (!needKeepAlive(waitRefreshPage)) {
@@ -192,22 +190,32 @@ const storeSetup = () => {
         keepAliveInclude.value = originalKeepAliveInclude;
     }
 
-    const _afterPageClose = (...closedPages: Page[]) => {
+    const refreshPage = async (pageOrRouteOrFullPath: PageOrRouteOrFullPath) => {
+        const waitRefreshPage = findPageFromPages(pages, getFullPath(pageOrRouteOrFullPath));
+        if (!waitRefreshPage) {
+            return;
+        }
+
+        return _handlePageReRender(waitRefreshPage);
+    }
+
+    // 刷新当前页面
+    const refreshCurrentPage = async () => {
+        return refreshPage(_route);
+    };
+
+    const _afterPageRemove = (closedPages: Page[]) => {
         if (pages.value.length === 0) {
             _componentKeyCache.value.clear();
             _wrapperComponentCache.clear();
             return;
         }
 
-        for (const page of closedPages) {
-            _componentKeyCache.value.delete(page.fullPath);
-            _wrapperComponentCache.delete(page.fullPath);
+        for (const closedPage of closedPages) {
+            _componentKeyCache.value.delete(closedPage.fullPath)
+            _wrapperComponentCache.delete(closedPage.fullPath)
         }
     }
-
-    const closeCurrentPage = async () => {
-        return closePage(_route.fullPath);
-    };
 
     // 关闭指定路由页面
     const closePage = async (pageOrRouteOrFullPath: PageOrRouteOrFullPath) => {
@@ -217,8 +225,7 @@ const storeSetup = () => {
         }
 
         pages.value = pages.value.filter(page => page.fullPath !== waitClosePage.fullPath);
-
-        _afterPageClose(waitClosePage)
+        _afterPageRemove([waitClosePage]);
 
         // 如果关闭的不是当前激活的页面,不需要跳转
         if (waitClosePage.fullPath !== _route.fullPath) {
@@ -234,12 +241,9 @@ const storeSetup = () => {
         return await _router.push(pages.value[pages.value.length - 1]!.fullPath);
     };
 
-    /**
-     * 根据路由获取组件的Key,路由fullPath加时间戳,缓存不存在就新建
-     */
-    const createOrGetComponentKeyByRoute = (routeOrPageOrFullPath: PageOrRouteOrFullPath): string => {
-        return computeIfAbsent(_componentKeyCache, getFullPath(routeOrPageOrFullPath), computeComponentKey);
-    }
+    const closeCurrentPage = async () => {
+        return closePage(_route);
+    };
 
     // 关闭其他页面
     const closeOtherPage = async () => {
@@ -254,14 +258,14 @@ const storeSetup = () => {
 
         const waitClosePages = pages.value.filter(page => page.fullPath !== currentPage.fullPath);
         pages.value = [currentPage];
-
-        _afterPageClose(...waitClosePages)
+        _afterPageRemove(waitClosePages);
     };
 
     // 关闭所有页面
     const closeAllPage = async () => {
+        const waitClosePages = pages.value;
         pages.value = [];
-        _afterPageClose();
+        _afterPageRemove(waitClosePages);
         return await _router.push("/");
     };
 
