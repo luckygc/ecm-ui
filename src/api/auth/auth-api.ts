@@ -11,6 +11,7 @@ const login = (data: LoginForm): Promise<UserInfo> => {
     const params = new URLSearchParams();
     params.append("username", data.username);
     params.append("password", data.password);
+    params.append("capToken", data.capToken);
     return post<UserInfo>("/login", params);
 }
 
