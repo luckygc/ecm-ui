@@ -7,7 +7,7 @@ export const errorRoutes: Array<RouteRecordRaw> = [
         path: "/404",
         name: "NotFound",
         component: () => import("@/pages/error-page/404.vue"),
-        meta: {title: "页面未找到", keepAlive: false},
+        meta: {title: "页面未找到"},
     },
     // 通配符路由 - 处理未匹配的路径，重定向到404页面
     {

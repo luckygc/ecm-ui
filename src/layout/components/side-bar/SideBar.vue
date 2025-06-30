@@ -5,6 +5,7 @@ import MenuItems from './MenuItems.vue'
 import {routes} from "@/router/modules";
 import {Expand, Fold} from '@element-plus/icons-vue';
 import {ref} from "vue";
+import routeMetaUtils from '@/utils/route/route-meta-utils.ts'
 
 const router = useRouter();
 // 处理菜单点击事件
@@ -13,7 +14,7 @@ const handleMenuSelect = (routeName: string) => {
 }
 
 const finalRenderRoutes = routes
-    .filter(route => route.meta?.['sidebar'] === true || route.name === 'Index')
+    .filter(route => routeMetaUtils.isSideBar(route) || route.name === 'Index')
     .flatMap(route => {
       if (route.path === '/') {
         return route.children;

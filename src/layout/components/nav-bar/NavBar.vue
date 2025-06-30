@@ -13,6 +13,8 @@ import {useRoute, useRouter} from 'vue-router';
 import {useAuthStore} from '@/store/modules/auth/auth-store.ts';
 import {storeToRefs} from 'pinia';
 import {getConfig} from "@/utils/config-utils.ts";
+import routeMetaUtils from "@/utils/route/route-meta-utils.ts";
+import {UserFilled} from "@element-plus/icons-vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -62,29 +64,27 @@ async function handleLogout() {
       <el-divider direction="vertical"></el-divider>
 
       <ElBreadcrumb>
-        <ElBreadcrumbItem v-for="breadcrumb in route.matched" :key="breadcrumb.name">
+        <ElBreadcrumbItem v-for="_route in route.matched" :key="_route.name">
           <div style="display: flex; align-items: center; gap: 4px;">
-            <div>{{ breadcrumb.meta?.['title'] }}</div>
+            <div>{{ routeMetaUtils.getTitle(_route) }}</div>
           </div>
         </ElBreadcrumbItem>
       </ElBreadcrumb>
     </div>
 
-    <ElDropdown @command="handleCommand">
+    <el-dropdown @command="handleCommand">
       <div class="user-info">
-        <ElAvatar :size="32">
-          {{ userInfo?.fullName?.charAt(0).toUpperCase() || '' }}
-        </ElAvatar>
-        <span class="username">{{ userInfo?.username || '' }}</span>
+        <el-avatar :icon="UserFilled"/>
+        <span class="username">{{ userInfo?.username || '未登录' }}</span>
       </div>
       <template #dropdown>
-        <ElDropdownMenu>
-          <ElDropdownItem command="profile">个人信息</ElDropdownItem>
-          <ElDropdownItem command="settings">设置</ElDropdownItem>
-          <ElDropdownItem divided command="logout">退出登录</ElDropdownItem>
-        </ElDropdownMenu>
+        <el-dropdown-menu>
+          <el-dropdown-item command="profile">个人信息</el-dropdown-item>
+          <el-dropdown-item command="settings">设置</el-dropdown-item>
+          <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+        </el-dropdown-menu>
       </template>
-    </ElDropdown>
+    </el-dropdown>
   </div>
 </template>
 

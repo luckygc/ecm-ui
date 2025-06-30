@@ -6,9 +6,8 @@ export interface AppConfig {
     appName: string;
     // token名称
     tokenName: string;
-
-    // 其他可能的配置项
-    [key: string]: any;
+    // 最大页面数量
+    maxPageCount: number
 }
 
 // 默认配置
@@ -16,6 +15,7 @@ const defaultConfig: AppConfig = {
     apiBaseUrl: "http://localhost:8080",
     appName: "管理系统demo",
     tokenName: "repodar:token",
+    maxPageCount: 10
 };
 
 /**
@@ -23,44 +23,26 @@ const defaultConfig: AppConfig = {
  * @returns AppConfig
  */
 export function loadConfigSync(): AppConfig {
-    try {
-        const xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
 
-        const timestamp = new Date().getTime();
-        const configPath = `/config.json?t=${timestamp}`;
+    const timestamp = new Date().getTime();
+    const configPath = `/config.json?t=${timestamp}`;
 
-        // 配置同步请求
-        xhr.open("GET", configPath, false); // false 表示同步请求
-        xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.open("GET", configPath, false); // false 表示同步请求
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send();
+    if (xhr.status === 200) {
+        const configData = JSON.parse(xhr.responseText) as Partial<AppConfig>;
 
-        // 发送请求
-        xhr.send();
+        const config = {
+            ...defaultConfig,
+            ...configData,
+        };
 
-        // 检查请求状态
-        if (xhr.status === 200) {
-            try {
-                // 解析 JSON 响应
-                const configData = JSON.parse(xhr.responseText) as Partial<AppConfig>;
-
-                // 合并默认配置和从文件加载的配置
-                const config = {
-                    ...defaultConfig,
-                    ...configData,
-                };
-
-                console.log("同步加载配置成功:", config);
-                return config;
-            } catch (parseError) {
-                console.warn("解析配置文件失败，使用默认配置", parseError);
-                return defaultConfig;
-            }
-        } else {
-            console.warn(`加载配置文件失败，HTTP状态码: ${xhr.status}，使用默认配置`);
-            return defaultConfig;
-        }
-    } catch (error) {
-        console.warn("同步加载配置文件失败，使用默认配置", error);
-        return defaultConfig;
+        console.debug("同步加载配置成功:", config);
+        return config;
+    } else {
+        throw new Error(`加载配置文件失败，HTTP状态码: ${xhr.status}`);
     }
 }
 

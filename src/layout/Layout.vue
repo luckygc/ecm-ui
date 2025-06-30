@@ -1,23 +1,15 @@
 <script setup lang="ts">
 import NavBar from '@/layout/components/nav-bar/NavBar.vue'
 import SideBar from '@/layout/components/side-bar/SideBar.vue'
-import PageManager from '@/layout/components/page-manager/PageManager.vue'
-import {usePageStore} from '@/store/modules/page/page-store.ts';
+import TabBar from '@/layout/components/tab-bar/TabBar.vue'
 import {useLayoutStore} from "@/store/modules/layout/layout-store.ts";
-import {router} from "@/router";
-import {getConfig} from "@/utils/config-utils.ts";
-import {computed, onUnmounted} from "vue";
+import {computed} from "vue";
+import PageContainer from "@/layout/components/page-container/PageContainer.vue";
 
-const pageStore = usePageStore();
 const layoutStore = useLayoutStore();
 const layoutClass = computed(() => {
   return {pageMaximized: layoutStore.isPageMaximized}
 });
-
-onUnmounted(() => {
-  pageStore.reset();
-})
-
 </script>
 
 <template>
@@ -35,31 +27,12 @@ onUnmounted(() => {
     <!-- 主内容区域 -->
     <main class="main">
       <!-- 标签栏 -->
-      <div class="page-manager-container">
-        <PageManager/>
+      <div class="tab-bar-container">
+        <TabBar/>
       </div>
 
       <!-- 页面内容区域 -->
-      <div class="page-container">
-        <!-- 页面内容 -->
-        <router-view v-slot="{ Component, route }">
-          <transition v-if="Component" name="el-fade-in-linear" mode="out-in"
-                      :duration="pageStore.pageTransitionDuration">
-            <keep-alive :include="pageStore.keepAliveInclude as string[]" :max="pageStore.maxKeepAliveCount">
-              <component :is="pageStore.createOrGetWrapperComponentByRoute(Component, route)"
-                         :key="pageStore.createOrGetComponentKeyByRoute(route)"/>
-            </keep-alive>
-          </transition>
-          <el-result v-else :title="`欢迎使用${getConfig().appName}`" style="height: 100%;">
-            <template #icon>
-              <span></span>
-            </template>
-            <template #extra>
-              <el-button type="primary" @click="router.push('/workbench')">前往工作台</el-button>
-            </template>
-          </el-result>
-        </router-view>
-      </div>
+      <PageContainer/>
     </main>
   </div>
 </template>
@@ -109,12 +82,7 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-.page-manager-container {
-  height: var(--page-manager-container-height);
-}
-
-.page-container {
-  flex: 1;
-  overflow: hidden;
+.tab-bar-container {
+  height: var(--tab-bar-container-height);
 }
 </style>

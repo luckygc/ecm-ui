@@ -5,27 +5,27 @@ import {usePageStore} from '@/store/modules/page/page-store.ts'
 import {useRoute, useRouter} from "vue-router";
 import {useLayoutStore} from '@/store/modules/layout/layout-store.ts';
 import {watch} from 'vue';
+import routeMetaUtils from "@/utils/route/route-meta-utils.ts";
 
 const pageStore = usePageStore();
 const layoutStore = useLayoutStore();
 const route = useRoute();
 const router = useRouter();
 
-
-
 watch(() => pageStore.pages, (newVal) => {
   if (newVal.length === 0 && layoutStore.isPageMaximized) {
     layoutStore.togglePageMaximized();
   }
 })
+
 </script>
 
 <template>
-  <div class="page-manager">
+  <div class="tab-bar">
     <ElTabs :model-value="route.fullPath" type="border-card" closable
             @tab-click="({ paneName }) => router.push(paneName as string)"
             @tab-remove="name => pageStore.closePage(name as string)" style="flex: 1;min-width:0">
-      <ElTabPane v-for="page in pageStore.pages" :key="page.fullPath" :label="page.meta?.['title'] as string"
+      <ElTabPane v-for="page in pageStore.pages" :key="page.fullPath" :label="routeMetaUtils.getTitle(page)"
                  :name="page.fullPath">
       </ElTabPane>
     </ElTabs>
@@ -76,7 +76,7 @@ watch(() => pageStore.pages, (newVal) => {
 </template>
 
 <style scoped>
-.page-manager {
+.tab-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
