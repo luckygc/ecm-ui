@@ -1,32 +1,42 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
-import type {UserInfo} from "@/api/auth/types.ts";
-import {authApi} from "@/api/auth/auth-api.ts";
+import type {LoginForm, UserInfo} from "@/api/auth/types.ts";
 import {useStorage} from "@vueuse/core";
 import {getConfig} from "@/utils/config-utils.ts";
-import {usePageStore} from "@/store/modules/page/page-store.ts";
+import {getCurrentUser} from "@/api/user/user-api.ts";
+import {authApi} from "@/api/auth/auth-api.ts";
+import {useRouter} from "vue-router";
 
 export const useAuthStore = defineStore("auth", () => {
     const userInfo = ref<UserInfo | null>(null);
 
-    // 设置用户信息
-    const setUserInfo = (user: UserInfo) => {
-        userInfo.value = user;
+    const router = useRouter();
+
+    const token = useStorage(getConfig().tokenName, null);
+
+    if (token.value) {
+        getCurrentUser().then(u => userInfo.value = u);
     }
 
-    const pageStore = usePageStore();
+    const login = async (loginForm: LoginForm) => {
+        userInfo.value = await authApi.login(loginForm);
+    }
 
     const logout = async () => {
         await authApi.logout()
-        userInfo.value = null;
-        let token = useStorage(getConfig().tokenName, null);
+        reset();
         token.value = null;
-        await pageStore.closeAllPage();
+        await router.push('/login');
+    }
+
+    const reset = () => {
+        userInfo.value = null;
     }
 
     return {
         userInfo,
-        setUserInfo,
-        logout
+        login,
+        logout,
+        reset
     };
 });

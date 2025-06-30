@@ -5,21 +5,18 @@ import {
   ElBreadcrumbItem,
   ElDropdown,
   ElDropdownItem,
-  ElDropdownMenu,
+  ElDropdownMenu, ElIcon,
   ElMessage,
   ElMessageBox
 } from 'element-plus';
-import {useRoute, useRouter} from 'vue-router';
+import {useRoute} from 'vue-router';
 import {useAuthStore} from '@/store/modules/auth/auth-store.ts';
-import {storeToRefs} from 'pinia';
 import {getConfig} from "@/utils/config-utils.ts";
 import routeMetaUtils from "@/utils/route/route-meta-utils.ts";
-import {UserFilled} from "@element-plus/icons-vue";
+import {ArrowDown, UserFilled} from "@element-plus/icons-vue";
 
 const route = useRoute();
-const router = useRouter();
-const userStore = useAuthStore();
-const {userInfo} = storeToRefs(userStore);
+const authStore = useAuthStore();
 
 // 处理下拉菜单命令
 function handleCommand(command: string) {
@@ -45,10 +42,7 @@ async function handleLogout() {
       type: 'warning',
     });
 
-    await userStore.logout();
-
-    ElMessage.success('已退出登录');
-    await router.push('/login');
+    await authStore.logout();
 
   } catch {
     // 用户取消操作
@@ -74,10 +68,13 @@ async function handleLogout() {
       </ElBreadcrumb>
     </div>
 
-    <el-dropdown @command="handleCommand">
+    <el-dropdown trigger="click" @command="handleCommand">
       <div class="user-info">
         <el-avatar :icon="UserFilled"/>
-        <span class="username">{{ userInfo?.username || '未登录' }}</span>
+        <span class="username">{{ authStore.userInfo?.fullName || '未登录' }}</span>
+        <ElIcon>
+          <ArrowDown/>
+        </ElIcon>
       </div>
       <template #dropdown>
         <el-dropdown-menu>
@@ -113,23 +110,10 @@ async function handleLogout() {
   border-radius: 6px;
 }
 
-/* 用户信息样式 */
 .user-info {
   display: flex;
+  gap: 10px;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.user-info:hover {
-  background-color: var(--el-fill-color-light);
-}
-
-.username {
-  font-weight: 500;
-  color: var(--el-text-color-primary);
 }
 </style>

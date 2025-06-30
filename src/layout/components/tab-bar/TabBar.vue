@@ -50,7 +50,7 @@ watch(() => pageStore.pages, (newVal) => {
       <ElDropdown trigger="click">
         <ElButton text :disabled="pageStore.pages.length === 0">
           操作
-          <ElIcon class="el-icon--right">
+          <ElIcon>
             <ArrowDown/>
           </ElIcon>
         </ElButton>

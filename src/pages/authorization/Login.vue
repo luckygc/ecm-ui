@@ -54,8 +54,9 @@ async function handleLogin() {
   try {
     await loginFormRef.value.validate();
     loading.value = true;
-    const userInfo = await authApi.login(loginForm);
-    authStore.setUserInfo(userInfo);
+
+    authStore.login(loginForm);
+
     ElMessage.success('登录成功');
     // 跳转到首页
     await router.push('/')
