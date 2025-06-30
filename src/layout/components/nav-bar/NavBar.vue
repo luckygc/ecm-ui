@@ -46,8 +46,10 @@ async function handleLogout() {
     });
 
     await userStore.logout();
+
     ElMessage.success('已退出登录');
     await router.push('/login');
+
   } catch {
     // 用户取消操作
   }

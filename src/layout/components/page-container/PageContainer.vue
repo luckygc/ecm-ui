@@ -16,7 +16,7 @@ watch(() => pageStore.pages, (newVal, oldVal) => {
 })
 
 onUnmounted(() => {
-  pageStore.closeAllPage();
+  pageStore.reset();
 })
 </script>
 

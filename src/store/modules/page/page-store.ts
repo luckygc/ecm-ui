@@ -109,7 +109,7 @@ const storeSetup = () => {
         return refreshPage(_currentRoute.fullPath);
     };
 
-    const _checkCloseCurrentPage = async () => {
+    const _trySwitchOtherPage = async () => {
         if (_pageMap.value.has(_currentRoute.fullPath)) {
             return;
         }
@@ -129,7 +129,7 @@ const storeSetup = () => {
         }
 
         _pageMap.value.delete(fullPath);
-        await _checkCloseCurrentPage();
+        await _trySwitchOtherPage();
         triggerRef(_pageMap);
     };
 
@@ -155,16 +155,21 @@ const storeSetup = () => {
             }
         }
 
-        await _checkCloseCurrentPage();
+        await _trySwitchOtherPage();
         triggerRef(_pageMap);
     };
 
     // 关闭所有页面
     const closeAllPage = async () => {
         _pageMap.value.clear();
-        await _checkCloseCurrentPage();
+        await _trySwitchOtherPage();
         triggerRef(_pageMap);
     };
+
+    const reset = async () => {
+        _pageMap.value = new Map();
+        triggerRef(_pageMap);
+    }
 
     return {
         pages,
@@ -178,6 +183,8 @@ const storeSetup = () => {
         closePage,
         closeOtherPage,
         closeAllPage,
+
+        reset
     };
 };
 
