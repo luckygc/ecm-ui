@@ -29,6 +29,10 @@ onUnmounted(() => {
   capRef.value?.removeEventListener("solve", handleCapSolve);
 })
 
+defineExpose({
+  reset: () => (capRef.value as any)?.reset()
+})
+
 </script>
 
 <template>

@@ -17,7 +17,9 @@ const loginFormRef = ref<FormInstance>()
 const disabled = ref(true);
 
 // 加载状态
-const loading = ref(false)
+const loading = ref(false);
+
+const cap = ref<InstanceType<typeof CapWrapper>>();
 
 // 登录表单数据
 const loginForm = reactive<LoginForm>({
@@ -57,6 +59,8 @@ async function handleLogin() {
     ElMessage.success('登录成功');
     // 跳转到首页
     await router.push('/')
+  } catch (e) {
+    cap.value?.reset();
   } finally {
     loading.value = false
   }
@@ -89,7 +93,8 @@ async function handleLogin() {
         </el-form-item>
 
         <el-form-item>
-          <CapWrapper :cap-api-endpoint="`${getConfig().apiBaseUrl}/api/cap/`" @solve="handleCapSolve"></CapWrapper>
+          <CapWrapper ref="cap" :cap-api-endpoint="`${getConfig().apiBaseUrl}/api/cap/`"
+                      @solve="handleCapSolve"></CapWrapper>
         </el-form-item>
 
         <el-form-item>
