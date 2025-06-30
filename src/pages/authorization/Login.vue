@@ -61,6 +61,7 @@ async function handleLogin() {
     await router.push('/')
   } catch (e) {
     cap.value?.reset();
+    disabled.value = true;
   } finally {
     loading.value = false
   }
