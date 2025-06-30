@@ -43,14 +43,9 @@ export const isSideBar = (route: MetaObj): boolean => {
     return getBooleanValue(route, 'isSideBar');
 };
 
-export const isPage = (route: MetaObj): boolean => {
-    return getBooleanValue(route, 'isPage');
-};
-
 export default {
     getTitle,
     getIcon,
     isKeepAlive,
-    isSideBar,
-    isPage,
+    isSideBar
 };
