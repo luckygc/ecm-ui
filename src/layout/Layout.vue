@@ -6,13 +6,17 @@ import {usePageStore} from '@/store/modules/page/page-store.ts';
 import {useLayoutStore} from "@/store/modules/layout/layout-store.ts";
 import {router} from "@/router";
 import {getConfig} from "@/utils/config-utils.ts";
-import {computed} from "vue";
+import {computed, onUnmounted} from "vue";
 
 const pageStore = usePageStore();
 const layoutStore = useLayoutStore();
 const layoutClass = computed(() => {
   return {pageMaximized: layoutStore.isPageMaximized}
 });
+
+onUnmounted(() => {
+  pageStore.reset();
+})
 
 </script>
 
@@ -40,7 +44,7 @@ const layoutClass = computed(() => {
         <!-- 页面内容 -->
         <router-view v-slot="{ Component, route }">
           <transition v-if="Component" name="el-fade-in-linear" mode="out-in"
-                      :duration="layoutStore.pageTransitionDuration">
+                      :duration="pageStore.pageTransitionDuration">
             <keep-alive :include="pageStore.keepAliveInclude as string[]" :max="pageStore.maxKeepAliveCount">
               <component :is="pageStore.createOrGetWrapperComponentByRoute(Component, route)"
                          :key="pageStore.createOrGetComponentKeyByRoute(route)"/>

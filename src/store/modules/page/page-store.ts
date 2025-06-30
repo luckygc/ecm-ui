@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 import {
-    type Component,
+    type Component, computed,
     defineComponent,
     h,
     markRaw,
@@ -125,6 +125,14 @@ const storeSetup = () => {
     const _componentKeyCache = ref<Map<string, string>>(new Map());
     const _router = useRouter();
     const _route = useRoute();
+
+    const pageTransitionDuration = computed(() => {
+        return {
+            enter: 100,
+            leave: pages.value.length == 0 ? 0 : 100
+        }
+    })
+
     // 非页签页面路由名称
     const _specialRouteNames = ["Index", "Login", "NotFound"];
 
@@ -269,6 +277,12 @@ const storeSetup = () => {
         return await _router.push("/");
     };
 
+    const reset = () => {
+        pages.value = [];
+        keepAliveInclude.value = [];
+        _componentKeyCache.value.clear();
+    }
+
     return {
         pages: readonly(pages),
         keepAliveInclude: readonly(keepAliveInclude),
@@ -285,6 +299,12 @@ const storeSetup = () => {
         closePage,
         closeOtherPage,
         closeAllPage,
+
+        // 过渡
+        pageTransitionDuration,
+
+        // 状态
+        reset
     };
 };
 

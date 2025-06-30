@@ -1,17 +1,8 @@
 import {defineStore} from "pinia";
-import {computed, readonly, ref} from "vue";
-import {usePageStore} from "@/store/modules/page/page-store.ts";
+import {readonly, ref} from "vue";
 
 export const useLayoutStore = defineStore("layout", () => {
     const isPageMaximized = ref(false);
-    const pageStore = usePageStore();
-
-    const pageTransitionDuration = computed(() => {
-        return {
-            enter: 100,
-            leave: pageStore.pages.length == 0 ? 0 : 100
-        }
-    })
 
     const togglePageMaximized = () => {
         isPageMaximized.value = !isPageMaximized.value;
@@ -19,7 +10,6 @@ export const useLayoutStore = defineStore("layout", () => {
 
     return {
         isPageMaximized: readonly(isPageMaximized),
-        pageTransitionDuration,
         togglePageMaximized,
     };
 });
