@@ -11,6 +11,8 @@ const layoutStore = useLayoutStore();
 const route = useRoute();
 const router = useRouter();
 
+
+
 watch(() => pageStore.pages, (newVal) => {
   if (newVal.length === 0 && layoutStore.isPageMaximized) {
     layoutStore.togglePageMaximized();
@@ -103,10 +105,6 @@ watch(() => pageStore.pages, (newVal) => {
   column-gap: 6px;
 }
 
-:deep(.el-tabs__item) {
-  padding: 0 8px;
-}
-
 :deep(.el-tabs--top.el-tabs--border-card>.el-tabs__header .el-tabs__item:nth-child(2)) {
   padding-left: 8px;
 }
@@ -141,21 +139,24 @@ watch(() => pageStore.pages, (newVal) => {
   border: none;
   margin-top: 0;
   background-color: var(--el-fill-color-light);
+  transition: none;
+  padding: 0 8px;
+  font-size: var(--el-font-size-small);
 }
 
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:hover) {
-  background-color: var(--el-fill-color-dark);
-  color: var(--el-text-color-primary);
-}
-
-:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:not(.is-disabled):hover) {
-  color: var(--el-text-color-primary);
+  background-color: var(--active-tab-bg-color);
+  color: initial;
 }
 
 :deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active) {
   border-left: none;
   border-right: none;
-  background-color: var(--el-fill-color-dark);
+  background-color: var(--active-tab-bg-color);
+  color: var(--el-text-color-primary);
+}
+
+:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:not(.is-disabled):hover) {
   color: var(--el-text-color-primary);
 }
 

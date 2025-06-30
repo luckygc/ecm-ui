@@ -4,7 +4,7 @@ export const testRoutes: Array<RouteRecordRaw> = [
   {
     path: "/test/formCreate",
     name: "TestFormCreate",
-    component: () => import("@/views/test/TestFormCreate.vue"),
+    component: () => import("@/pages/test/TestFormCreate.vue"),
     meta: {
       icon: "Setting",
       title: "FormCreate",
@@ -15,7 +15,7 @@ export const testRoutes: Array<RouteRecordRaw> = [
   {
     path: "/test/formCreateDesigner",
     name: "TestFormCreateDesigner",
-    component: () => import("@/views/test/TestFormCreateDesigner.vue"),
+    component: () => import("@/pages/test/TestFormCreateDesigner.vue"),
     meta: {
       icon: "Setting",
       title: "FormCreateDesigner",

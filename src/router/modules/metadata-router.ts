@@ -5,7 +5,7 @@ export const metadataRoutes: Array<RouteRecordRaw> = [
     {
         path: "/metadata",
         name: "Metadata",
-        component: () => import("@/views/metadata/Metadata.vue"),
+        component: () => import("@/pages/metadata/Metadata.vue"),
         meta: {
             title: "元数据管理",
             icon: "Setting",

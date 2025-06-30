@@ -15,7 +15,7 @@ export const routes: Array<RouteRecordRaw> = [
         children: [
             {
                 path: '/workbench',
-                component: () => import('@/views/Workbench.vue'),
+                component: () => import('@/pages/Workbench.vue'),
                 name: 'Workbench',
                 meta: {title: '工作台', icon: 'HomeFilled', sidebar: true, keepAlive: true},
             },
