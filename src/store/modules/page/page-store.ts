@@ -104,7 +104,6 @@ const storeSetup = () => {
         triggerRef(_pageMap);
     };
 
-    // 刷新当前页面
     const refreshCurrentPage = async () => {
         return refreshPage(_currentRoute.fullPath);
     };
@@ -122,7 +121,6 @@ const storeSetup = () => {
         return await _router.push("/");
     };
 
-    // 关闭指定路由页面
     const closePage = async (fullPath: string) => {
         if (!_pageMap.value.has(fullPath)) {
             throw new Error(`页面${fullPath}不存在`);
@@ -137,7 +135,6 @@ const storeSetup = () => {
         return closePage(_currentRoute.fullPath);
     };
 
-    // 关闭其他页面
     const closeOtherPage = async () => {
         if (_pageMap.value.size <= 1) {
             return;
@@ -159,7 +156,6 @@ const storeSetup = () => {
         triggerRef(_pageMap);
     };
 
-    // 关闭所有页面
     const closeAllPage = async () => {
         _pageMap.value.clear();
         await _trySwitchOtherPage();
