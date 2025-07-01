@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
-import type {LoginForm, UserInfo} from "@/api/auth/types.ts";
+import type {UserInfo} from "@/api/auth/types.ts";
 import {useStorage} from "@vueuse/core";
 import {getConfig} from "@/utils/config-utils.ts";
 import {getCurrentUser} from "@/api/user/user-api.ts";
@@ -11,19 +11,14 @@ export const useAuthStore = defineStore("auth", () => {
 
     const token = useStorage(getConfig().tokenName, null);
 
+    // 已认证
     if (token.value) {
         getCurrentUser().then(u => userInfo.value = u);
     }
 
-    const login = async (loginForm: LoginForm) => {
-        userInfo.value = await authApi.login(loginForm);
-    }
-
     const logout = async () => {
         await authApi.logout()
-        reset();
-        token.value = null;
-        window.location.href='/#/'
+        window.location.href = '/#/'
     }
 
     const reset = () => {
@@ -32,8 +27,6 @@ export const useAuthStore = defineStore("auth", () => {
 
     return {
         userInfo: userInfo,
-
-        login: login,
         logout: logout,
         reset: reset
     };

@@ -1,16 +1,17 @@
 <script setup lang="ts">
 
 import {nextTick, onMounted, onUnmounted, ref} from "vue";
-import type {Props, Emits} from "./types.ts";
+import type {Props} from "./types.ts";
 
 const props = defineProps<Props>();
-const emits = defineEmits<Emits>();
+
+const modelValue = defineModel<string>();
 
 const capRef = ref<HTMLElement>();
 const capShadowRootRef = ref<ShadowRoot | null>()
 
 const handleCapSolve: EventListenerOrEventListenerObject = async (e: Event) => {
-  emits('solve', (e as CustomEvent).detail.token)
+  modelValue.value = (e as CustomEvent).detail.token;
 }
 
 onMounted(async () => {
@@ -25,12 +26,17 @@ onMounted(async () => {
   }
 })
 
+const reset = () => {
+  (capRef.value as any)?.reset();
+  modelValue.value = '';
+}
+
 onUnmounted(() => {
   capRef.value?.removeEventListener("solve", handleCapSolve);
 })
 
 defineExpose({
-  reset: () => (capRef.value as any)?.reset()
+  reset
 })
 
 </script>

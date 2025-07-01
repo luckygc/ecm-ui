@@ -64,12 +64,12 @@ axiosInstance.interceptors.response.use(
             authToken.value = null; // 清除token
 
             ElMessage({
-                message: "登录已过期，请重新登录",
+                message: "未登录，请登录",
                 type: "warning",
                 duration: 3 * 1000,
             });
 
-            window.location.href='/#/login'
+            window.location.href = '/#/login'
 
             throw error;
         }

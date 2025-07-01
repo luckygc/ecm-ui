@@ -1,22 +1,18 @@
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
+import {reactive, ref, unref} from 'vue'
 import {useRouter} from 'vue-router'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
-import {useAuthStore} from '@/store/modules/auth/auth-store.ts'
 import {getConfig} from "@/utils/config-utils.ts";
 import type {LoginForm} from "@/api/auth/types.ts";
 import CapWrapper from "@/components/captcha/CapWrapper.vue"
+import {authApi} from "@/api/auth/auth-api.ts";
+import {useRequest} from "@/hooks/use-request.ts";
+import {useStorage} from "@vueuse/core";
 
 const router = useRouter()
-const authStore = useAuthStore()
 
 // 表单引用
 const loginFormRef = ref<FormInstance>()
-
-const disabled = ref(true);
-
-// 加载状态
-const loading = ref(false);
 
 const cap = ref<InstanceType<typeof CapWrapper>>();
 
@@ -36,36 +32,27 @@ const loginRules: FormRules = {
   password: [
     {required: true, message: '请输入密码', trigger: 'blur'},
     {min: 3, max: 20, message: '密码长度在 3 到 20 个字符', trigger: 'blur'}
+  ],
+  capToken: [
+    {required: true, message: '请完成人机验证'}
   ]
 }
 
-const handleCapSolve = (token: string) => {
-  loginForm.capToken = token;
-  disabled.value = false;
-}
+const token = useStorage<string>(getConfig().tokenName, null);
 
-// 处理登录
-async function handleLogin() {
-  if (!loginFormRef.value) {
-    return;
-  }
-
+const handleLogin = async () => {
   try {
-    await loginFormRef.value.validate();
-    loading.value = true;
-
-    await authStore.login(loginForm);
-
+    await loginFormRef.value?.validate();
+    token.value = (await authApi.login(loginForm)).token;
     ElMessage.success('登录成功');
-    // 跳转到首页
     await router.push('/')
   } catch (e) {
     cap.value?.reset();
-    disabled.value = true;
-  } finally {
-    loading.value = false
   }
 }
+
+const {isFetching, execute} = useRequest(handleLogin);
+
 </script>
 
 <template>
@@ -82,7 +69,7 @@ async function handleLogin() {
 
       <!-- 登录表单 -->
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form" size="large"
-               @keyup.enter="handleLogin">
+               @keyup.enter="execute">
         <el-form-item prop="username">
           <el-input v-model="loginForm.username" placeholder="请输入用户名" prefix-icon="User" clearable/>
         </el-form-item>
@@ -93,14 +80,14 @@ async function handleLogin() {
                     clearable/>
         </el-form-item>
 
-        <el-form-item>
-          <CapWrapper ref="cap" :cap-api-endpoint="`${getConfig().apiBaseUrl}/api/cap/`"
-                      @solve="handleCapSolve"></CapWrapper>
+        <el-form-item prop="capToken">
+          <CapWrapper ref="cap" v-model="loginForm.capToken"
+                      :cap-api-endpoint="`${getConfig().apiBaseUrl}/api/cap/`"></CapWrapper>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" class="login-button" :loading="loading" @click="handleLogin" :disabled="disabled">
-            {{ loading ? '登录中...' : '登录' }}
+          <el-button type="primary" class="login-button" :loading="isFetching" @click="execute">
+            {{ isFetching ? '登录中...' : '登录' }}
           </el-button>
         </el-form-item>
       </el-form>

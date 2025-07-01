@@ -1,18 +1,18 @@
 import {get, post} from "@/utils/request/request.ts";
-import type {LoginForm, UserInfo,} from "./types.ts";
+import type {LoginForm} from "./types.ts";
 
 /**
  * 用户登录
  * @param data 登录表单数据
  * @returns Promise<LoginResponse>
  */
-const login = (data: LoginForm): Promise<UserInfo> => {
+const login = (data: LoginForm): Promise<{ token: string }> => {
     // 创建URL编码的表单数据
     const params = new URLSearchParams();
     params.append("username", data.username);
     params.append("password", data.password);
     params.append("capToken", data.capToken);
-    return post<UserInfo>("/login", params);
+    return post("/login", params);
 }
 
 /**
