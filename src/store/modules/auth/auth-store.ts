@@ -1,32 +1,34 @@
 import {defineStore} from "pinia";
-import {ref} from "vue";
-import type {UserInfo} from "@/api/auth/types.ts";
+import type {LoginForm, UserInfo} from "@/api/auth/types.ts";
 import {authApi} from "@/api/auth/auth-api.ts";
 import {getConfig} from "@/utils/config-utils.ts";
-import {useStorage} from "@vueuse/core";
+import {useSessionStorage, useStorage} from "@vueuse/core";
+import {useRouter} from "vue-router";
 import {getCurrentUserDetail} from "@/api/user/user-api.ts";
 
 export const useAuthStore = defineStore("auth", () => {
-    const userInfo = ref<UserInfo | null>(null);
-    const _token = useStorage(getConfig().tokenName, null);
+    const userInfo = useSessionStorage<UserInfo>(getConfig().userInfoKey, {} as any);
 
-    if (!userInfo.value) {
-        getCurrentUserDetail().then(u => userInfo.value = u)
+    const _token = useStorage<string>(getConfig().tokenKey, null);
+    const _router = useRouter();
+
+    const login = async (loginForm: LoginForm) => {
+        const {token} = await authApi.login(loginForm);
+        _token.value = token;
+        userInfo.value = await getCurrentUserDetail();
+        await _router.push('/')
     }
 
     const logout = async () => {
         await authApi.logout();
         _token.value = null;
-        window.location.href = '/#/login'
-    }
-
-    const reset = () => {
         userInfo.value = null;
+        await _router.push('/login')
     }
 
     return {
         userInfo: userInfo,
-        logout: logout,
-        reset: reset
+        login: login,
+        logout: logout
     };
 });

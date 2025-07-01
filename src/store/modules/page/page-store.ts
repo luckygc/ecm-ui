@@ -177,14 +177,14 @@ const storeSetup = () => {
         pageTransitionDuration,
         _pageMap,
 
-        createOrGetPage,
-        refreshCurrentPage,
-        closeCurrentPage,
-        closePage,
-        closeOtherPage,
-        closeAllPage,
+        createOrGetPage: createOrGetPage,
+        refreshCurrentPage: refreshCurrentPage,
+        closeCurrentPage: closeCurrentPage,
+        closePage: closePage,
+        closeOtherPage: closeOtherPage,
+        closeAllPage: closeAllPage,
 
-        reset
+        reset:reset
     };
 };
 

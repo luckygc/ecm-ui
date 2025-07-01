@@ -5,7 +5,8 @@ export interface AppConfig {
     // 应用名称
     appName: string;
     // token名称
-    tokenName: string;
+    tokenKey: string;
+    userInfoKey: string;
     // 最大页面数量
     maxPageCount: number
 }
@@ -14,8 +15,9 @@ export interface AppConfig {
 const defaultConfig: AppConfig = {
     apiBaseUrl: "http://localhost:8080",
     appName: "管理系统demo",
-    tokenName: "repodar:token",
-    maxPageCount: 10
+    tokenKey: "_token",
+    maxPageCount: 10,
+    userInfoKey: '_user_info'
 };
 
 /**

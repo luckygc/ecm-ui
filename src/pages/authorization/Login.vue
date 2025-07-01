@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import {reactive, ref, unref} from 'vue'
+import {reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
 import {getConfig} from "@/utils/config-utils.ts";
 import type {LoginForm} from "@/api/auth/types.ts";
 import CapWrapper from "@/components/captcha/CapWrapper.vue"
-import {authApi} from "@/api/auth/auth-api.ts";
 import {useRequest} from "@/hooks/use-request.ts";
-import {useStorage} from "@vueuse/core";
 import {useAuthStore} from "@/store/modules/auth/auth-store.ts";
-import {getCurrentUserDetail} from "@/api/user/user-api.ts";
 
 const router = useRouter()
 
@@ -40,15 +37,12 @@ const loginRules: FormRules = {
   ]
 }
 
-const token = useStorage<string>(getConfig().tokenName, null);
 const authStore = useAuthStore();
 const handleLogin = async () => {
   try {
     await loginFormRef.value?.validate();
-    token.value = (await authApi.login(loginForm)).token;
+    await authStore.login(loginForm);
     ElMessage.success('登录成功');
-    authStore.userInfo = (await getCurrentUserDetail())
-    await router.push('/')
   } catch (e) {
     cap.value?.reset();
   }

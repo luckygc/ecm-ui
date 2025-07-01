@@ -5,7 +5,7 @@ import axios from "axios";
 import {ElMessage} from "element-plus";
 import {useStorage} from "@vueuse/core";
 
-const authToken = useStorage<string>(getConfig().tokenName, null);
+const authToken = useStorage<string>(getConfig().tokenKey, null);
 
 // 创建axios实例（使用默认配置）
 export const axiosInstance = axios.create({
