@@ -24,7 +24,7 @@ function getValue<V, D extends V = V>(route: MetaObj, key: string, defaultValue?
 }
 
 const getBooleanValue = (route: MetaObj, key: string): boolean => {
-    return getValue(route, key, true);
+    return getValue(route, key, false);
 };
 
 export const getIcon = (route: MetaObj): string | undefined => {
