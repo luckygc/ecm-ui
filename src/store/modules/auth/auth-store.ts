@@ -5,12 +5,9 @@ import {useStorage} from "@vueuse/core";
 import {getConfig} from "@/utils/config-utils.ts";
 import {getCurrentUser} from "@/api/user/user-api.ts";
 import {authApi} from "@/api/auth/auth-api.ts";
-import {useRouter} from "vue-router";
 
 export const useAuthStore = defineStore("auth", () => {
     const userInfo = ref<UserInfo | null>(null);
-
-    const router = useRouter();
 
     const token = useStorage(getConfig().tokenName, null);
 
@@ -26,7 +23,7 @@ export const useAuthStore = defineStore("auth", () => {
         await authApi.logout()
         reset();
         token.value = null;
-        await router.push('/login');
+        window.location.href='/#/'
     }
 
     const reset = () => {
@@ -34,9 +31,10 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     return {
-        userInfo,
-        login,
-        logout,
-        reset
+        userInfo: userInfo,
+
+        login: login,
+        logout: logout,
+        reset: reset
     };
 });

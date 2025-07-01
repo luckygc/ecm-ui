@@ -70,7 +70,7 @@ async function handleLogout() {
 
     <el-dropdown trigger="click" @command="handleCommand">
       <div class="user-info">
-        <el-avatar :icon="UserFilled"/>
+        <el-avatar :icon="UserFilled" size="small"/>
         <span class="username">{{ authStore.userInfo?.fullName || '未登录' }}</span>
         <ElIcon>
           <ArrowDown/>

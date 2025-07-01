@@ -3,7 +3,6 @@ import {reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
 import {useAuthStore} from '@/store/modules/auth/auth-store.ts'
-import {authApi} from "@/api/auth/auth-api.ts";
 import {getConfig} from "@/utils/config-utils.ts";
 import type {LoginForm} from "@/api/auth/types.ts";
 import CapWrapper from "@/components/captcha/CapWrapper.vue"
@@ -55,7 +54,7 @@ async function handleLogin() {
     await loginFormRef.value.validate();
     loading.value = true;
 
-    authStore.login(loginForm);
+    await authStore.login(loginForm);
 
     ElMessage.success('登录成功');
     // 跳转到首页

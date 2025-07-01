@@ -4,10 +4,8 @@ import type {AxiosRequestConfig, AxiosResponse} from "axios";
 import axios from "axios";
 import {ElMessage} from "element-plus";
 import {useStorage} from "@vueuse/core";
-import {router} from "@/router";
 
 const authToken = useStorage<string>(getConfig().tokenName, null);
-
 
 // 创建axios实例（使用默认配置）
 export const axiosInstance = axios.create({
@@ -65,18 +63,13 @@ axiosInstance.interceptors.response.use(
         if (error.response?.status === 401) {
             authToken.value = null; // 清除token
 
-            // 避免在登录页面时重复重定向
-            if (router.currentRoute.value.name !== "Login") {
-                // 显示登录过期提示
-                ElMessage({
-                    message: "登录已过期，请重新登录",
-                    type: "warning",
-                    duration: 3 * 1000,
-                });
+            ElMessage({
+                message: "登录已过期，请重新登录",
+                type: "warning",
+                duration: 3 * 1000,
+            });
 
-                // 重定向到登录页面
-                await router.push("/login");
-            }
+            window.location.href='/#/login'
 
             throw error;
         }
