@@ -36,10 +36,6 @@ axiosInstance.interceptors.response.use(
         const {success, error, data} = response.data as ApiResult<any>;
         const skipErrorHandler = (response.config as any).skipErrorHandler;
 
-        if (response.headers['x-auth-token']) {
-            authToken.value = response.headers['x-auth-token'];
-        }
-
         if (!success) {
             // 如果没有跳过错误处理，则显示错误消息
             if (!skipErrorHandler) {
@@ -61,7 +57,7 @@ axiosInstance.interceptors.response.use(
 
         // 处理401未授权错误
         if (error.response?.status === 401) {
-            authToken.value = null; // 清除token
+            authToken.value = null;
 
             ElMessage({
                 message: "未登录，请登录",

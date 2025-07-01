@@ -1,24 +1,23 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
 import type {UserInfo} from "@/api/auth/types.ts";
-import {useStorage} from "@vueuse/core";
-import {getConfig} from "@/utils/config-utils.ts";
-import {getCurrentUser} from "@/api/user/user-api.ts";
 import {authApi} from "@/api/auth/auth-api.ts";
+import {getConfig} from "@/utils/config-utils.ts";
+import {useStorage} from "@vueuse/core";
+import {getCurrentUserDetail} from "@/api/user/user-api.ts";
 
 export const useAuthStore = defineStore("auth", () => {
     const userInfo = ref<UserInfo | null>(null);
+    const _token = useStorage(getConfig().tokenName, null);
 
-    const token = useStorage(getConfig().tokenName, null);
-
-    // 已认证
-    if (token.value) {
-        getCurrentUser().then(u => userInfo.value = u);
+    if (!userInfo.value) {
+        getCurrentUserDetail().then(u => userInfo.value = u)
     }
 
     const logout = async () => {
-        await authApi.logout()
-        window.location.href = '/#/'
+        await authApi.logout();
+        _token.value = null;
+        window.location.href = '/#/login'
     }
 
     const reset = () => {
