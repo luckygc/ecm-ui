@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {reactive, ref} from 'vue'
-import {useRouter} from 'vue-router'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
 import {getConfig} from "@/utils/config-utils.ts";
 import type {LoginForm} from "@/api/auth/types.ts";
@@ -8,12 +7,7 @@ import CapWrapper from "@/components/captcha/CapWrapper.vue"
 import {useRequest} from "@/hooks/use-request.ts";
 import {useAuthStore} from "@/store/modules/auth/auth-store.ts";
 
-const router = useRouter()
-
-// 表单引用
 const loginFormRef = ref<FormInstance>()
-
-const cap = ref<InstanceType<typeof CapWrapper>>();
 
 // 登录表单数据
 const loginForm = reactive<LoginForm>({
@@ -44,11 +38,11 @@ const handleLogin = async () => {
     await authStore.login(loginForm);
     ElMessage.success('登录成功');
   } catch (e) {
-    cap.value?.reset();
+    console.error(e)
   }
 }
 
-const {isFetching, execute} = useRequest(handleLogin);
+const {isFetching: isLogin, execute: login} = useRequest(handleLogin);
 
 </script>
 
@@ -66,7 +60,7 @@ const {isFetching, execute} = useRequest(handleLogin);
 
       <!-- 登录表单 -->
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form" size="large"
-               @keyup.enter="execute">
+               @keyup.enter="login">
         <el-form-item prop="username">
           <el-input v-model="loginForm.username" placeholder="请输入用户名" prefix-icon="User" clearable/>
         </el-form-item>
@@ -83,8 +77,8 @@ const {isFetching, execute} = useRequest(handleLogin);
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" class="login-button" :loading="isFetching" @click="execute">
-            {{ isFetching ? '登录中...' : '登录' }}
+          <el-button type="primary" class="login-button" :loading="isLogin" @click="login">
+            {{ isLogin ? '登录中...' : '登录' }}
           </el-button>
         </el-form-item>
       </el-form>

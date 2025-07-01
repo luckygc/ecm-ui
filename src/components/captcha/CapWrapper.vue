@@ -1,10 +1,8 @@
 <script setup lang="ts">
-
 import {nextTick, onMounted, onUnmounted, ref} from "vue";
 import type {Props} from "./types.ts";
 
 const props = defineProps<Props>();
-
 const modelValue = defineModel<string>();
 
 const capRef = ref<HTMLElement>();
@@ -52,9 +50,11 @@ defineExpose({
 
 <style scoped>
 cap-widget {
+  width: 100%;
   --cap-widget-height: 40px;
-  --cap-widget-width: 180px;
-  --cap-checkbox-size: 20px;
+  --cap-widget-width: 100%;
   --cap-border-radius: var(--el-border-radius-base);
+  --cap-checkbox-size: 20px;
+  --cap-checkbox-border-radius: var(--el-border-radius-base);
 }
 </style>
