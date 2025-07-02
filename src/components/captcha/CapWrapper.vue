@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {nextTick, onMounted, onUnmounted, ref} from "vue";
 import type {Props} from "./types.ts";
+import '@cap.js/widget/cap.min.js'
 
 const props = defineProps<Props>();
 const modelValue = defineModel<string>();
@@ -17,11 +18,11 @@ onMounted(async () => {
   capRef.value?.addEventListener("solve", handleCapSolve);
   capShadowRootRef.value = capRef.value?.shadowRoot
 
-  const captchaEl = capShadowRootRef.value?.querySelector('.captcha');
-  if (captchaEl instanceof HTMLElement) {
-    captchaEl.style.boxSizing = 'border-box';
-    captchaEl.querySelector('.credits')?.setAttribute('hidden', 'true')
-  }
+  // const captchaEl = capShadowRootRef.value?.querySelector('.captcha');
+  // if (captchaEl instanceof HTMLElement) {
+  //   captchaEl.style.boxSizing = 'border-box';
+  //   captchaEl.querySelector('.credits')?.setAttribute('hidden', 'true')
+  // }
 })
 
 const reset = () => {
@@ -53,6 +54,7 @@ cap-widget {
   width: 100%;
   --cap-widget-height: 40px;
   --cap-widget-width: 100%;
+  --cap-widget-padding: 5px 20px;
   --cap-border-radius: var(--el-border-radius-base);
   --cap-checkbox-size: 20px;
   --cap-checkbox-border-radius: var(--el-border-radius-base);

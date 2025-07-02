@@ -8,7 +8,7 @@ export const router = createRouter({
     routes,
 });
 
-const token = useStorage(getConfig().tokenKey, null);
+const token = useStorage(getConfig().storageTokenKey, null);
 
 router.beforeEach(async (to, _, next) => {
     if (to.name === 'Login') {

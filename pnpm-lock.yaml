@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@cap.js/widget':
+        specifier: ^0.1.23
+        version: 0.1.23
       '@element-plus/icons-vue':
         specifier: ^2.3.1
         version: 2.3.1(vue@3.5.17(typescript@5.8.3))
@@ -219,6 +222,9 @@ packages:
   '@babel/types@7.27.7':
     resolution: {integrity: sha512-8OLQgDScAOHXnAz2cV+RfzzNMipuLVBz2biuAJFMV9bfkNf393je3VM8CLkjQodW5+iWsSJdSgSWT6rsZoXHPw==}
     engines: {node: '>=6.9.0'}
+
+  '@cap.js/widget@0.1.23':
+    resolution: {integrity: sha512-2hYoxxxwoaa+nt8aEfce9XeLKQ7hH1rUULIESNCwDohp0qyXeeArv3Y2BB9RO73WbVGKUmJaqmFFg4cvgiPx1A==}
 
   '@ctrl/tinycolor@3.6.1':
     resolution: {integrity: sha512-SITSV6aIXsuVNV3f3O0f2n/cgyEDWoSqtZMYiAmcsYHydcKrOz3gUxB/iXd/Qf08+IZX4KpgNbvUdMBmWz+kcA==}
@@ -1945,6 +1951,8 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
+
+  '@cap.js/widget@0.1.23': {}
 
   '@ctrl/tinycolor@3.6.1': {}
 

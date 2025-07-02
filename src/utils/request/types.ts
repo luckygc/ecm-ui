@@ -7,11 +7,19 @@ export type SuccessApiResult<T> = {
 export type ErrorApiResult = {
     success: false;
     data: null;
-    error: {
-        code: string;
-        message: string;
-        detail: any;
-    };
+    error: ApiError
 };
 
 export type ApiResult<T> = SuccessApiResult<T> | ErrorApiResult;
+
+export class ApiError {
+    code: string;
+    message: string;
+    detail: any;
+
+    constructor(error: { code: string, message: string, detail?: any }) {
+        this.code = error.code;
+        this.message = error.message;
+        this.detail = error.detail;
+    }
+}

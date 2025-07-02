@@ -1,116 +1,89 @@
-import type {ApiResult} from "./types.ts";
+import {ApiError, type ApiResult} from "./types.ts";
 import {getConfig} from "@/utils/config-utils";
-import type {AxiosRequestConfig, AxiosResponse} from "axios";
-import axios from "axios";
+import axios, {type AxiosResponse, type InternalAxiosRequestConfig} from "axios";
 import {ElMessage} from "element-plus";
 import {useStorage} from "@vueuse/core";
 
-const authToken = useStorage<string>(getConfig().tokenKey, null);
+const authToken = useStorage<string>(getConfig().storageTokenKey, null);
 
-// 创建axios实例（使用默认配置）
 export const axiosInstance = axios.create({
     baseURL: getConfig().apiBaseUrl,
-    timeout: 60 * 1000,
+    timeout: getConfig().requestTimeout,
     withCredentials: false,
 });
 
 // 请求拦截器
 axiosInstance.interceptors.request.use(
-    (config) => {
-        if (authToken.value) {
-            config.headers['X-Auth-Token'] = authToken.value;
-        }
-
+    (config: InternalAxiosRequestConfig) => {
+        config.headers.set(getConfig().requestHeaderTokenKey, authToken.value, true);
         return config;
-    },
-    (error) => {
-        // 对请求错误做些什么
-        console.error("Request error:", error);
-        return Promise.reject(error);
     }
 );
 
-// 响应拦截器
-axiosInstance.interceptors.response.use(
-    (response: AxiosResponse<ApiResult<any>>) => {
-        const {success, error, data} = response.data as ApiResult<any>;
-        const skipErrorHandler = (response.config as any).skipErrorHandler;
+const defaultErrorHandle = (config: { skipDefaultErrorHandle?: boolean }, message: string) => {
+    const {skipDefaultErrorHandle} = config;
+    if (!skipDefaultErrorHandle) {
+        ElMessage.error(message);
+    }
+}
 
-        if (!success) {
-            // 如果没有跳过错误处理，则显示错误消息
-            if (!skipErrorHandler) {
-                ElMessage({
-                    message: error.message || "请求失败",
-                    type: "error",
-                    duration: 5 * 1000,
-                });
+const handleError = (error: any) => {
+    if (axios.isAxiosError(error)) {
+        if (error.code) {
+            // 网络错误 / 超时 / 取消
+            console.error('[Network Error]', error.code, error.message);
+
+            let msg;
+            switch (error.code) {
+                case 'ECONNABORTED':
+                    msg = '请求超时，请稍后重试';
+                    break;
+                case 'ERR_NETWORK':
+                    msg = '与服务器断开连接';
+                    break;
+                case 'ERR_CANCELED':
+                    msg = '请求已取消';
+                    break;
+                default:
+                    msg = `网络错误 (${error.code})`;
             }
 
-            return Promise.reject(response);
+            defaultErrorHandle(error.config || {}, msg);
+            throw new ApiError({code: error.code, message: msg});
+        } else if (error.response) {
+            // HTTP 错误
+            const status = error.response.status;
+            const apiError = error.response.data.error as ApiError;
+
+            console.error('[HTTP Error]', status, apiError);
+
+            let msg = apiError.message || `请求错误 (${status})`;
+            if (status === 401) {
+                authToken.value = null;
+                window.location.href = '/#/login'
+            }
+
+            defaultErrorHandle(error.config || {}, msg);
+            throw new ApiError(apiError);
+        }
+    }
+
+    // 非 Axios 错误
+    console.error('[Unknown Error]', error);
+    defaultErrorHandle({}, '未知错误');
+    throw new ApiError({code: 'unknown', message: '未知错误'});
+}
+
+// 响应拦截器
+axiosInstance.interceptors.response.use((response: AxiosResponse) => {
+        const {success, error, data} = response.data as ApiResult<any>;
+
+        if (!success) {
+            defaultErrorHandle(response.config, error.message ?? '未知错误')
+            throw new ApiError(error)
         } else {
             return data;
         }
     },
-    async (error) => {
-        console.error("Response error:", error);
-        const skipErrorHandler = error.config?.skipErrorHandler;
-
-        // 处理401未授权错误
-        if (error.response?.status === 401) {
-            authToken.value = null;
-
-            ElMessage({
-                message: "未登录，请登录",
-                type: "warning",
-                duration: 3 * 1000,
-            });
-
-            window.location.href = '/#/login'
-
-            throw error;
-        }
-
-        // 如果没有跳过错误处理，则显示错误消息
-        if (!skipErrorHandler) {
-            ElMessage({
-                message: error.message || "请求失败",
-                type: "error",
-                duration: 5 * 1000,
-            });
-        }
-
-        throw error;
-    }
+    handleError
 );
-
-// 封装GET请求
-export function get<T>(
-    url: string,
-    params?: any,
-    config?: AxiosRequestConfig
-): Promise<T> {
-    return axiosInstance.get(url, {params, ...config});
-}
-
-// 封装POST请求
-export function post<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-): Promise<T> {
-    return axiosInstance.post(url, data, config);
-}
-
-// 封装PUT请求
-export function put<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-): Promise<T> {
-    return axiosInstance.put(url, data, config);
-}
-
-// 封装DELETE请求
-export function del<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    return axiosInstance.delete(url, config);
-}

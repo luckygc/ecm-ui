@@ -7,15 +7,19 @@ import {useRouter} from "vue-router";
 import {getCurrentUserDetail} from "@/api/user/user-api.ts";
 
 export const useAuthStore = defineStore("auth", () => {
-    const userInfo = useSessionStorage<UserInfo>(getConfig().userInfoKey, {} as any);
+    const userInfo = useSessionStorage<UserInfo>(getConfig().storageUserInfoKey, {} as any);
 
-    const _token = useStorage<string>(getConfig().tokenKey, null);
+    const _token = useStorage<string>(getConfig().storageTokenKey, null);
     const _router = useRouter();
+
+    const refreshUserInfo = async () => {
+        userInfo.value = await getCurrentUserDetail();
+    }
 
     const login = async (loginForm: LoginForm) => {
         const {token} = await authApi.login(loginForm);
         _token.value = token;
-        userInfo.value = await getCurrentUserDetail();
+        await refreshUserInfo();
         await _router.push('/')
     }
 
@@ -25,6 +29,8 @@ export const useAuthStore = defineStore("auth", () => {
         userInfo.value = null;
         await _router.push('/login')
     }
+
+    refreshUserInfo();
 
     return {
         userInfo: userInfo,

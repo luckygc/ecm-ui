@@ -5,19 +5,24 @@ export interface AppConfig {
     // 应用名称
     appName: string;
     // token名称
-    tokenKey: string;
-    userInfoKey: string;
-    // 最大页面数量
-    maxPageCount: number
+    storageTokenKey: string;
+    storageUserInfoKey: string;
+    // 最大页面数量,超出有提示
+    maxPageCount: number;
+    // 请求超时时间 ms;
+    requestTimeout: number;
+    requestHeaderTokenKey: string;
 }
 
 // 默认配置
 const defaultConfig: AppConfig = {
     apiBaseUrl: "http://localhost:8080",
     appName: "管理系统demo",
-    tokenKey: "_token",
+    storageTokenKey: "_token",
     maxPageCount: 10,
-    userInfoKey: '_user_info'
+    storageUserInfoKey: '_user_info',
+    requestTimeout: 15 * 1500,
+    requestHeaderTokenKey: 'X-Auth-Token'
 };
 
 /**

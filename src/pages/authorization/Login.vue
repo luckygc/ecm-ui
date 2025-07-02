@@ -5,7 +5,9 @@ import {getConfig} from "@/utils/config-utils.ts";
 import type {LoginForm} from "@/api/auth/types.ts";
 import CapWrapper from "@/components/captcha/CapWrapper.vue"
 import {useRequest} from "@/hooks/use-request.ts";
-import {useAuthStore} from "@/store/modules/auth/auth-store.ts";
+import {authApi} from "@/api/auth/auth-api.ts";
+import {useStorage} from "@vueuse/core";
+import {useRouter} from "vue-router";
 
 const loginFormRef = ref<FormInstance>()
 
@@ -31,11 +33,14 @@ const loginRules: FormRules = {
   ]
 }
 
-const authStore = useAuthStore();
+const _token = useStorage<string>(getConfig().storageTokenKey,null);
+const router = useRouter();
 const handleLogin = async () => {
   try {
     await loginFormRef.value?.validate();
-    await authStore.login(loginForm);
+    const {token} = await authApi.login(loginForm);
+    _token.value = token;
+    await router.push('/')
     ElMessage.success('登录成功');
   } catch (e) {
     console.error(e)

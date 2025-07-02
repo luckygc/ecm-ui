@@ -1,5 +1,5 @@
-import {get, post} from "@/utils/request/request.ts";
-import type {LoginForm} from "./types.ts";
+import {axiosInstance} from "@/utils/request/request.ts";
+import type {LoginForm, UserInfo} from "./types.ts";
 
 /**
  * 用户登录
@@ -7,12 +7,7 @@ import type {LoginForm} from "./types.ts";
  * @returns Promise<LoginResponse>
  */
 const login = (data: LoginForm): Promise<{ token: string }> => {
-    // 创建URL编码的表单数据
-    const params = new URLSearchParams();
-    params.append("username", data.username);
-    params.append("password", data.password);
-    params.append("capToken", data.capToken);
-    return post("/login", params);
+    return axiosInstance.postForm("/login", data);
 }
 
 /**
@@ -20,15 +15,15 @@ const login = (data: LoginForm): Promise<{ token: string }> => {
  * @returns Promise<void>
  */
 const logout = (): Promise<void> => {
-    return post<void>("/logout");
+    return axiosInstance.post("/logout");
 }
 
 /**
  * 获取当前用户信息
  * @returns Promise<UserInfo>
  */
-function getCurrentUser(): Promise<any> {
-    return get<any>("/current-user");
+function getCurrentUser(): Promise<UserInfo> {
+    return axiosInstance.get("/current-user");
 }
 
 export const authApi = {
