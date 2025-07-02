@@ -7,6 +7,7 @@ import {Expand, Fold} from '@element-plus/icons-vue';
 import {ref} from "vue";
 import routeMetaUtils from '@/utils/route/route-meta-utils.ts'
 
+const route = useRoute();
 const router = useRouter();
 // 处理菜单点击事件
 const handleMenuSelect = (routeName: string) => {
@@ -14,7 +15,7 @@ const handleMenuSelect = (routeName: string) => {
 }
 
 const finalRenderRoutes = routes
-    .filter(route => routeMetaUtils.isSideBar(route) || route.name === 'Index')
+    .filter(r => routeMetaUtils.isSideBar(r) || r.name === 'Index')
     .flatMap(route => {
       if (route.path === '/') {
         return route.children;
@@ -31,18 +32,21 @@ const isCollapse = ref(false);
   <div class="sidebar-wrapper">
     <div class="menu-container">
       <el-scrollbar>
-        <ElMenu :default-active="useRoute().name as string" :collapse="isCollapse" mode="vertical"
-                @select="handleMenuSelect">
-
+        <ElMenu
+            :default-active="route.name as string"
+            :collapse="isCollapse"
+            mode="vertical"
+            @select="handleMenuSelect"
+            background-color="#545c64"
+            text-color="#fff"
+        >
           <MenuItems :routes="finalRenderRoutes"/>
         </ElMenu>
       </el-scrollbar>
     </div>
 
     <div class="btn-container">
-      <el-tooltip :content="isCollapse ? '展开菜单' : '收起菜单'">
-        <ElButton :icon="isCollapse ? Expand : Fold" @click="isCollapse = !isCollapse" text bg/>
-      </el-tooltip>
+      <ElButton :icon="isCollapse ? Expand : Fold" @click="isCollapse = !isCollapse" text bg/>
     </div>
 
   </div>
@@ -54,7 +58,7 @@ const isCollapse = ref(false);
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
+  background-color: #545c64;
   border-right: 1px solid var(--el-border-color-lighter);
 }
 
