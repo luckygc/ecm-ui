@@ -5,7 +5,7 @@ export const authRoutes: Array<RouteRecordRaw> = [
   {
     path: "/login",
     name: "Login",
-    component: () => import("@/pages/authorization/Login.vue"),
+    component: () => import("@/pages/authorization/login/Login.vue"),
     meta: {
       title: "登录",
     },
