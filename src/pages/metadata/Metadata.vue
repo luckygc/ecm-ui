@@ -8,10 +8,12 @@ onMounted(() => {
 })
 
 onActivated(()=>{
+  // 不会生效
   console.log('meatData activated')
 })
 
 onDeactivated(()=>{
+  // 不会生效
   console.log('meatData deActivated')
 })
 
