@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8"/>
@@ -6,11 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Repodar Web</title>
     <script>
-        window.CAP_CUSTOM_WASM_URL = [
-            `${window.location.origin}/libs/cap/0.0.6/cap_wasm.min.js?url`,
-            `${window.location.origin}/libs/cap/0.0.6/cap_wasm_bg.wasm?init`
-        ]
+        window.CAP_CUSTOM_WASM_URL = `${window.location.origin}/libs/cap/0.0.6/cap_wasm.min.js`;
     </script>
+    <link href="/libs/cap/0.0.6/cap_wasm.min.js" rel="prefetch" as="script"/>
+    <link href="/libs/cap/0.0.6/cap_wasm_bg.wasm" rel="prefetch" as="fetch"/>
 </head>
 <body>
 <div id="app"></div>

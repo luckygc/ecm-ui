@@ -43,9 +43,18 @@ cap-widget {
   width: 100%;
   --cap-widget-height: 40px;
   --cap-widget-width: 100%;
-  --cap-widget-padding: 5px 20px;
+  --cap-widget-padding: 1px 15px;
   --cap-border-radius: var(--el-border-radius-base);
-  --cap-checkbox-size: 20px;
+  --cap-checkbox-size: 18px;
   --cap-checkbox-border-radius: var(--el-border-radius-base);
+}
+
+cap-widget::part(label) {
+  flex: 1;
+}
+
+cap-widget::part(attribution) {
+  position: initial;
+  align-self: baseline;
 }
 </style>
