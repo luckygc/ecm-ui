@@ -23,4 +23,15 @@ export const testRoutes: Array<RouteRecordRaw> = [
       isKeepAlive: true,
     },
   },
+  {
+    path: '/test/scroll',
+    name: 'TestScroll',
+    component: () => import('~/pages/test-scroll.vue'),
+    meta: {
+      icon: 'Setting',
+      title: '滚动条测试',
+      isSideBar: true,
+      isKeepAlive: false,
+    },
+  },
 ]

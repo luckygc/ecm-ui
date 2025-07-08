@@ -3,7 +3,7 @@ import Page from '~/components/page/Page.vue'
 </script>
 
 <template>
-  <Page>
+  <Page layout="fixed">
     <el-table>
       <el-table-column label="元数据名称" prop="name" />
       <el-table-column label="元数据类型" prop="type" />

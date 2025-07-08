@@ -9,7 +9,7 @@ const randomPage = () => {
 </script>
 
 <template>
-  <Page>
+  <Page layout="fixed">
     <div class="workbench-container">
       <div class="header-section">
         <h2>工作台</h2>
@@ -33,7 +33,7 @@ const randomPage = () => {
         <div class="card">
           <h3>内容预览</h3>
           <div class="content-preview">
-            <p>这是一个测试页面，用于验证新的Grid布局和teleport toolbar功能。</p>
+            <p>这是一个测试页面，用于验证新的FixedLayout布局和背景显示效果。</p>
             <div class="demo-content">
               <div v-for="i in 20" :key="i" class="demo-item">
                 <div class="demo-icon">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
 import { onUnmounted, watch } from 'vue'
-import { router } from '~/router'
+import { router } from '~/router/router'
 import { usePageStore } from '~/store/modules/page/page-store'
 import { getConfig } from '~/utils/config-utils'
 
@@ -49,6 +49,6 @@ onUnmounted(() => {
 <style scoped>
 .page-container {
   flex: 1;
-  overflow: hidden;
+  overflow: visible;
 }
 </style>

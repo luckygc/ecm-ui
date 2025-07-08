@@ -2,7 +2,7 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { ElMenu } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
-import { routes } from '~/router/modules'
+import { routes } from '~/router/router'
 import { useLayoutStore } from '~/store/modules/layout/layout-store'
 import routeMetaUtils from '~/utils/route/route-meta-utils'
 import MenuItems from './MenuItems.vue'

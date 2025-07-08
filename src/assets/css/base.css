@@ -2,7 +2,7 @@
   box-sizing: border-box;
 }
 
-#app {
+:root {
   --layout-header-height: 50px;
   --layout-aside-width: 200px;
   --page-padding: 20px;
