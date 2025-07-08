@@ -1,28 +1,27 @@
 <script setup lang="ts">
-import { authApi } from "@/api/auth/auth-api.ts";
-import CapWrapper from "@/components/captcha/CapWrapper.vue";
-import { useRequest } from "@/hooks/use-request.ts";
-import { useLoginForm } from "@/pages/authorization/login/login-hook.ts";
-import { getConfig } from "@/utils/config-utils.ts";
-import { useStorage } from "@vueuse/core";
-import { ElMessage } from 'element-plus';
-import { useRouter } from "vue-router";
+import { useStorage } from '@vueuse/core'
+import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { authApi } from '~/api/auth/auth-api'
+import CapWrapper from '~/components/captcha/CapWrapper.vue'
+import { useRequest } from '~/hooks/use-request'
+import { useLoginForm } from '~/pages/authorization/login/login-hook'
+import { getConfig } from '~/utils/config-utils'
 
-const { loginFormRef, loginForm, loginFormRules } = useLoginForm();
+const { loginFormRef, loginForm, loginFormRules } = useLoginForm()
 
-const _token = useStorage<string>(getConfig().storageTokenKey, null);
-const router = useRouter();
+const _token = useStorage<string>(getConfig().storageTokenKey, null)
+const router = useRouter()
 
 const _login = async () => {
-  await loginFormRef.value?.validate();
-  const { token } = await authApi.login(loginForm);
-  _token.value = token;
+  await loginFormRef.value?.validate()
+  const { token } = await authApi.login(loginForm)
+  _token.value = token
   await router.push('/')
-  ElMessage.success('登录成功');
+  ElMessage.success('登录成功')
 }
 
-const { isFetching: isLogin, execute: login } = useRequest(_login);
-
+const { isFetching: isLogin, execute: login } = useRequest(_login)
 </script>
 
 <template>
@@ -31,27 +30,34 @@ const { isFetching: isLogin, execute: login } = useRequest(_login);
       <!-- Logo和标题 -->
       <div class="login-header">
         <div class="logo">
-          <img src="/logo.svg" alt="Logo" class="logo-img" />
+          <img src="/logo.svg" alt="Logo" class="logo-img">
         </div>
-        <h1 class="login-title">{{ getConfig().appName }}</h1>
-        <p class="login-subtitle">欢迎登录</p>
+        <h1 class="login-title">
+          {{ getConfig().appName }}
+        </h1>
+        <p class="login-subtitle">
+          欢迎登录
+        </p>
       </div>
 
       <!-- 登录表单 -->
-      <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules" class="login-form" size="large"
-        @keyup.enter="login">
+      <el-form
+        ref="loginFormRef" :model="loginForm" :rules="loginFormRules" class="login-form" size="large"
+        @keyup.enter="login"
+      >
         <el-form-item prop="username">
           <el-input v-model="loginForm.username" placeholder="请输入用户名" prefix-icon="User" clearable />
         </el-form-item>
 
         <el-form-item prop="password">
-          <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" show-password
-            clearable />
+          <el-input
+            v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" show-password
+            clearable
+          />
         </el-form-item>
 
         <el-form-item prop="capToken">
-          <CapWrapper ref="cap" v-model="loginForm.capToken" :cap-api-endpoint="`${getConfig().apiBaseUrl}/api/cap/`">
-          </CapWrapper>
+          <CapWrapper v-model="loginForm.capToken" :cap-api-endpoint="`${getConfig().apiBaseUrl}/api/cap/`" />
         </el-form-item>
 
         <el-form-item>
@@ -79,7 +85,8 @@ const { isFetching: isLogin, execute: login } = useRequest(_login);
   max-width: 400px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04),
     0 0 0 1px rgba(0, 0, 0, 0.05);
   padding: 40px;

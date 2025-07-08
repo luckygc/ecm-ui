@@ -1,49 +1,52 @@
 <script setup lang="ts">
-import {ArrowDown, CircleClose, FolderDelete, Refresh} from '@element-plus/icons-vue'
-import {ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs,} from 'element-plus'
-import {usePageStore} from '@/store/modules/page/page-store.ts'
-import {useRoute, useRouter} from "vue-router";
-import {useLayoutStore} from '@/store/modules/layout/layout-store.ts';
-import {watch} from 'vue';
-import routeMetaUtils from "@/utils/route/route-meta-utils.ts";
+import { ArrowDown, CircleClose, FolderDelete, Refresh } from '@element-plus/icons-vue'
+import { ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs } from 'element-plus'
+import { watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useLayoutStore } from '~/store/modules/layout/layout-store'
+import { usePageStore } from '~/store/modules/page/page-store'
+import routeMetaUtils from '~/utils/route/route-meta-utils'
 
-const pageStore = usePageStore();
-const layoutStore = useLayoutStore();
-const route = useRoute();
-const router = useRouter();
+const pageStore = usePageStore()
+const layoutStore = useLayoutStore()
+const route = useRoute()
+const router = useRouter()
 
 watch(() => pageStore.pages, (newVal) => {
   if (newVal.length === 0 && layoutStore.isPageMaximized) {
-    layoutStore.togglePageMaximized();
+    layoutStore.togglePageMaximized()
   }
 })
-
 </script>
 
 <template>
   <div class="tab-bar">
-    <ElTabs :model-value="route.fullPath" type="border-card" closable
-            @tab-click="({ paneName }) => router.push(paneName as string)"
-            @tab-remove="name => pageStore.closePage(name as string)" style="flex: 1;min-width:0">
-      <ElTabPane v-for="page in pageStore.pages" :key="page.fullPath" :label="routeMetaUtils.getTitle(page)"
-                 :name="page.fullPath">
-      </ElTabPane>
+    <ElTabs
+      :model-value="route.fullPath" type="border-card" closable
+      style="flex: 1;min-width:0"
+      @tab-click="({ paneName }) => router.push(paneName as string)" @tab-remove="name => pageStore.closePage(name as string)"
+    >
+      <ElTabPane
+        v-for="page in pageStore.pages" :key="page.fullPath" :label="routeMetaUtils.getTitle(page)"
+        :name="page.fullPath"
+      />
     </ElTabs>
 
     <!-- 操作按钮 -->
     <div class="page-actions">
       <el-tooltip content="刷新">
-        <ElButton circle text @click="pageStore.refreshCurrentPage()" :disabled="pageStore.pages.length === 0">
+        <ElButton circle text :disabled="pageStore.pages.length === 0" @click="pageStore.refreshCurrentPage()">
           <ElIcon>
-            <Refresh/>
+            <Refresh />
           </ElIcon>
         </ElButton>
       </el-tooltip>
 
       <el-tooltip :content="layoutStore.isPageMaximized ? '还原' : '最大化'">
-        <ElButton circle text @click="layoutStore.togglePageMaximized()" :disabled="pageStore.pages.length === 0"
-                  icon="FullScreen">
-        </ElButton>
+        <ElButton
+          circle text :disabled="pageStore.pages.length === 0" icon="FullScreen"
+          @click="layoutStore.togglePageMaximized()"
+        />
       </el-tooltip>
 
       <!-- 下拉操作菜单 -->
@@ -51,20 +54,20 @@ watch(() => pageStore.pages, (newVal) => {
         <ElButton text :disabled="pageStore.pages.length === 0">
           操作
           <ElIcon>
-            <ArrowDown/>
+            <ArrowDown />
           </ElIcon>
         </ElButton>
         <template #dropdown>
           <ElDropdownMenu>
             <ElDropdownItem @click="pageStore.closeOtherPage()">
               <ElIcon>
-                <CircleClose/>
+                <CircleClose />
               </ElIcon>
               <span>关闭其他</span>
             </ElDropdownItem>
             <ElDropdownItem @click="pageStore.closeAllPage()">
               <ElIcon>
-                <FolderDelete/>
+                <FolderDelete />
               </ElIcon>
               <span>关闭所有</span>
             </ElDropdownItem>
@@ -105,11 +108,11 @@ watch(() => pageStore.pages, (newVal) => {
   column-gap: 6px;
 }
 
-:deep(.el-tabs--top.el-tabs--border-card>.el-tabs__header .el-tabs__item:nth-child(2)) {
+:deep(.el-tabs--top.el-tabs--border-card > .el-tabs__header .el-tabs__item:nth-child(2)) {
   padding-left: 8px;
 }
 
-:deep(.el-tabs--top.el-tabs--border-card>.el-tabs__header .el-tabs__item:last-child) {
+:deep(.el-tabs--top.el-tabs--border-card > .el-tabs__header .el-tabs__item:last-child) {
   padding-right: 8px;
 }
 
@@ -125,17 +128,17 @@ watch(() => pageStore.pages, (newVal) => {
   line-height: 34px;
 }
 
-:deep(.el-tabs--border-card>.el-tabs__header) {
+:deep(.el-tabs--border-card > .el-tabs__header) {
   border-bottom: none;
   margin: 0;
   background-color: #fff;
 }
 
-:deep(.el-tabs--border-card>.el-tabs__content) {
+:deep(.el-tabs--border-card > .el-tabs__content) {
   display: none;
 }
 
-:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item) {
+:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item) {
   border: none;
   margin-top: 0;
   background-color: var(--el-fill-color-light);
@@ -144,27 +147,27 @@ watch(() => pageStore.pages, (newVal) => {
   font-size: var(--el-font-size-small);
 }
 
-:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:hover) {
+:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item:hover) {
   background-color: var(--active-tab-bg-color);
   color: initial;
 }
 
-:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active) {
+:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
   border-left: none;
   border-right: none;
   background-color: var(--active-tab-bg-color);
   color: var(--el-text-color-primary);
 }
 
-:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:not(.is-disabled):hover) {
+:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item:not(.is-disabled):hover) {
   color: var(--el-text-color-primary);
 }
 
-:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item:first-child) {
+:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item:first-child) {
   margin-left: 0;
 }
 
-:deep(.el-tabs--border-card>.el-tabs__header .el-tabs__item+.el-tabs__item) {
+:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item + .el-tabs__item) {
   margin-left: 0;
 }
 </style>

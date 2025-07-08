@@ -1,37 +1,18 @@
 <script setup lang="ts">
-
-import Page from "@/components/page/Page.vue";
-import {onActivated, onDeactivated, onMounted, onUnmounted} from "vue";
-
-onMounted(() => {
-  console.log('meatData mounted')
-})
-
-onActivated(()=>{
-  // 不会生效
-  console.log('meatData activated')
-})
-
-onDeactivated(()=>{
-  // 不会生效
-  console.log('meatData deActivated')
-})
-
-onUnmounted(() => {
-  console.log('meatData unmounted')
-});
+import Page from '~/components/page/Page.vue'
 </script>
 
 <template>
   <Page>
     <el-table>
-      <el-table-column label="元数据名称" prop="name"></el-table-column>
-      <el-table-column label="元数据类型" prop="type"></el-table-column>
-      <el-table-column label="元数据描述" prop="description"></el-table-column>
+      <el-table-column label="元数据名称" prop="name" />
+      <el-table-column label="元数据类型" prop="type" />
+      <el-table-column label="元数据描述" prop="description" />
     </el-table>
-    <div style="height: 1900px;background: black;">中间内容区域（很长的内容用于测试滚动）</div>
+    <div style="height: 1900px;background: black;">
+      中间内容区域（很长的内容用于测试滚动）
+    </div>
   </Page>
-
 </template>
 
 <style scoped>

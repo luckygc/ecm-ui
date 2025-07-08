@@ -1,22 +1,27 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-:root {
-    --layout-header-height: 50px;
-    --layout-aside-width: 200px;
-    --page-padding: 20px;
-    --page-toolbar-height: 50px;
-    --page-toolbar-padding: 0 20px;
-    --tab-bar-container-height: 40px;
-    --active-tab-bg-color: #e8e8e8
+#app {
+  --layout-header-height: 50px;
+  --layout-aside-width: 200px;
+  --page-padding: 20px;
+  --page-toolbar-height: 50px;
+  --page-toolbar-padding: 0 20px;
+  --tab-bar-container-height: 40px;
+  --active-tab-bg-color: #e8e8e8;
+  --layout-bg: linear-gradient(#ffffff, #f5f5f5 28%);
+  --el-menu-active-bg-color: rgba(0, 0, 0, 0.04);
+  --border-color-grey: rgba(5, 5, 5, 0.06);
+  --bg-color-white: rgba(255, 255, 255, 0.6);
 }
 
 html,
 body,
 #app {
-    overflow: hidden;
-    background-color: var(--el-bg-color-page);
-    height: 100vh;
-    width: 100vw;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
 }

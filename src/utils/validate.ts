@@ -1,16 +1,7 @@
 /**
- * 判断是否为外部链接
- * @param {string} path
- * @returns {boolean}
- */
-export function isExternal(path: string): boolean {
-  return /^(https?:|mailto:|tel:)/.test(path)
-}
-
-/**
  * 判断是否为空
  * @param {any} value
- * @returns {boolean}
+ * @returns {boolean} 是否为空
  */
 export function isEmpty(value: any): boolean {
   return (

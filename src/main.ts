@@ -1,30 +1,31 @@
-import App from "@/App.vue";
-import {router} from "@/router";
-import pinia from "@/store";
-import FcDesigner from '@form-create/designer';
-import formCreate from '@form-create/element-ui';
-import * as ElementPlusIconsVue from "@element-plus/icons-vue";
-import ElementPlus from "element-plus";
-import "element-plus/dist/index.css";
-import zhCn from "element-plus/es/locale/lang/zh-cn";
-import "@/assets/css/base.css";
-import "normalize.css";
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import formCreateDesigner from '@form-create/designer'
+import formCreateElement from '@form-create/element-ui'
+import formCreateAutoImport from '@form-create/element-ui/auto-import'
+import elementPlus from 'element-plus'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import { createApp } from 'vue'
+import App from '~/App.vue'
+import { router } from '~/router'
+import pinia from '~/store'
+import 'element-plus/dist/index.css'
 
-import {createApp} from "vue";
+import '~/assets/css/base.css'
 
-const app = createApp(App);
+const app = createApp(App)
 
 // 注册所有图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-    app.component(key, component);
+  app.component(key, component)
 }
 
-app.use(ElementPlus, {
-    locale: zhCn,
-});
-app.use(pinia);
-app.use(router);
-app.use(FcDesigner)
-app.use(formCreate);
+app.use(elementPlus, {
+  locale: zhCn,
+})
+app.use(pinia)
+app.use(router)
+app.use(formCreateDesigner)
+formCreateElement.use(formCreateAutoImport)
+app.use(formCreateElement)
 
-app.mount("#app");
+app.mount('#app')

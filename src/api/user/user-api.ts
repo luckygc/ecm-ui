@@ -1,7 +1,6 @@
-import {axiosInstance} from "@/utils/request/request.ts";
-import type {UserInfo} from "@/api/auth/types.ts";
+import type { UserInfo } from '~/api/auth/types'
+import { axiosInstance } from '~/utils/request/request'
 
 export const getCurrentUserDetail = (): Promise<UserInfo> => {
-    return axiosInstance.get('/current-user');
+  return axiosInstance.get('/current-user')
 }
-

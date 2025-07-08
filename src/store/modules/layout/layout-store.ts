@@ -1,15 +1,21 @@
-import {defineStore} from "pinia";
-import {readonly, ref} from "vue";
+import { defineStore } from 'pinia'
+import { readonly, ref } from 'vue'
 
-export const useLayoutStore = defineStore("layout", () => {
-    const isPageMaximized = ref(false);
+type LayoutType = 'grid' | 'fixed'
 
-    const togglePageMaximized = () => {
-        isPageMaximized.value = !isPageMaximized.value;
-    };
+export const useLayoutStore = defineStore('layout', () => {
+  const isPageMaximized = ref(false)
+  const isSideBarCollapsed = ref(false)
+  const layoutType = ref<LayoutType>('grid')
 
-    return {
-        isPageMaximized: readonly(isPageMaximized),
-        togglePageMaximized,
-    };
-});
+  const togglePageMaximized = () => {
+    isPageMaximized.value = !isPageMaximized.value
+  }
+
+  return {
+    isPageMaximized: readonly(isPageMaximized),
+    isSideBarCollapsed,
+    layoutType,
+    togglePageMaximized,
+  }
+})

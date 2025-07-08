@@ -1,29 +1,11 @@
 <script setup lang="ts">
-import {useRouter} from "vue-router";
-import Page from "@/components/page/Page.vue";
-import {onActivated, onDeactivated, onMounted, onUnmounted} from "vue";
+import { useRouter } from 'vue-router'
+import Page from '~/components/page/Page.vue'
 
-const router = useRouter();
+const router = useRouter()
 const randomPage = () => {
   router.push(`/workbench?a=${Math.random()}`)
 }
-
-onMounted(() => {
-  console.log('workbench mounted')
-})
-
-onActivated(() => {
-  console.log('workbench activated')
-})
-
-onDeactivated(() => {
-  console.log('workbench deActivated')
-})
-
-onUnmounted(() => {
-  console.log('workbench unmounted')
-});
-
 </script>
 
 <template>
@@ -31,7 +13,9 @@ onUnmounted(() => {
     <div class="workbench-container">
       <div class="header-section">
         <h2>工作台</h2>
-        <p class="subtitle">欢迎使用文档和记录仓库管理系统</p>
+        <p class="subtitle">
+          欢迎使用文档和记录仓库管理系统
+        </p>
       </div>
 
       <div class="content-section">
@@ -42,7 +26,7 @@ onUnmounted(() => {
               <span class="icon">🔄</span>
               <span>随机跳转测试</span>
             </button>
-            <input type="text" placeholder="搜索内容..." class="search-input"/>
+            <input type="text" placeholder="搜索内容..." class="search-input">
           </div>
         </div>
 
@@ -52,10 +36,16 @@ onUnmounted(() => {
             <p>这是一个测试页面，用于验证新的Grid布局和teleport toolbar功能。</p>
             <div class="demo-content">
               <div v-for="i in 20" :key="i" class="demo-item">
-                <div class="demo-icon">📄</div>
+                <div class="demo-icon">
+                  📄
+                </div>
                 <div class="demo-text">
-                  <div class="demo-title">示例文档 {{ i }}</div>
-                  <div class="demo-desc">这是一个示例文档的描述信息</div>
+                  <div class="demo-title">
+                    示例文档 {{ i }}
+                  </div>
+                  <div class="demo-desc">
+                    这是一个示例文档的描述信息
+                  </div>
                 </div>
               </div>
             </div>
@@ -64,16 +54,24 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <template #toolbar>
+    <template #tool-bar>
       <div class="toolbar-content">
         <div class="toolbar-left">
           <span class="toolbar-label">页面操作：</span>
-          <button class="toolbar-btn">保存</button>
-          <button class="toolbar-btn">预览</button>
+          <button class="toolbar-btn">
+            保存
+          </button>
+          <button class="toolbar-btn">
+            预览
+          </button>
         </div>
         <div class="toolbar-right">
-          <button class="toolbar-btn primary">发布</button>
-          <button class="toolbar-btn">更多操作</button>
+          <button class="toolbar-btn primary">
+            发布
+          </button>
+          <button class="toolbar-btn">
+            更多操作
+          </button>
         </div>
       </div>
     </template>

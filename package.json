@@ -1,15 +1,23 @@
 {
-  "name": "repodar-web",
+  "name": "ecm-ui",
   "type": "module",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "pnpm@10.12.4",
+  "description": "ecm前端",
+  "author": "luckygc",
+  "license": "Apache-2.0",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "typecheck": "tsc --noEmit",
+    "prepare": "simple-git-hooks"
   },
   "dependencies": {
-    "@cap.js/widget": "^0.1.25",
+    "@cap.js/widget": "0.1.25",
     "@element-plus/icons-vue": "^2.3.1",
     "@form-create/designer": "^3.2.11",
     "@form-create/element-ui": "^3.2.26",
@@ -17,19 +25,27 @@
     "@vueuse/integrations": "^13.5.0",
     "axios": "^1.10.0",
     "element-plus": "^2.10.2",
-    "normalize.css": "^8.0.1",
     "pinia": "^3.0.3",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^4.16.2",
     "@types/node": "^22.16.0",
     "@vitejs/plugin-vue": "^5.2.4",
-    "@vue/tsconfig": "^0.7.0",
+    "eslint-plugin-format": "^1.0.1",
+    "lint-staged": "^16.1.2",
     "sass": "^1.89.2",
+    "simple-git-hooks": "^2.13.0",
     "typescript": "~5.8.3",
     "vite": "^6.3.5",
     "vite-plugin-vue-devtools": "^7.7.7",
     "vue-tsc": "^2.2.12"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
   }
 }
