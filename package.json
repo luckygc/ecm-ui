@@ -14,7 +14,6 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "typecheck": "tsc --noEmit",
-    "prepare": "simple-git-hooks"
   },
   "dependencies": {
     "@cap.js/widget": "0.1.25",
@@ -34,9 +33,7 @@
     "@types/node": "^22.16.1",
     "@vitejs/plugin-vue": "^5.2.4",
     "eslint-plugin-format": "^1.0.1",
-    "lint-staged": "^16.1.2",
     "sass-embedded": "^1.89.2",
-    "simple-git-hooks": "^2.13.0",
     "typescript": "~5.8.3",
     "unplugin-auto-import": "^19.3.0",
     "unplugin-element-plus": "^0.10.0",
@@ -44,11 +41,5 @@
     "vite": "^7.0.3",
     "vite-plugin-vue-devtools": "^7.7.7",
     "vue-tsc": "^2.2.12"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
-  },
-  "lint-staged": {
-    "*": "eslint --fix"
   }
 }
