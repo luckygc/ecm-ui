@@ -22,14 +22,14 @@ axiosInstance.interceptors.request.use(
   },
 )
 
-const defaultErrorHandle = (config: { skipDefaultErrorHandle?: boolean }, message: string) => {
+function defaultErrorHandle(config: { skipDefaultErrorHandle?: boolean }, message: string) {
   const { skipDefaultErrorHandle } = config
   if (!skipDefaultErrorHandle) {
     ElMessage.error(message)
   }
 }
 
-const handleError = (error: any) => {
+function handleError(error: any) {
   if (axios.isAxiosError(error)) {
     if (error.code) {
       // 网络错误 / 超时 / 取消

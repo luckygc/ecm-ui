@@ -60,7 +60,7 @@ async function handleLogout() {
         circle
         text
         size="large"
-        @click="layoutStore.isSideBarCollapsed = !layoutStore.isSideBarCollapsed"
+        @click="layoutStore.toggleASideCollapsed"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
           <path
@@ -118,6 +118,7 @@ async function handleLogout() {
 .navbar-container {
   display: flex;
   align-items: center;
+  position: relative;
   height: 100%;
   gap: 16px;
   padding: 0 16px;

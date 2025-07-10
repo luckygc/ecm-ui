@@ -2,7 +2,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import type { LoginForm } from '~/api/auth/types'
 import { reactive, ref } from 'vue'
 
-export const useLoginForm = () => {
+export function useLoginForm() {
   const loginFormRef = ref<FormInstance>()
 
   // 登录表单数据

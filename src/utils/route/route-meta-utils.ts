@@ -23,23 +23,23 @@ function getValue<V, D extends V = V>(route: MetaObj, key: string, defaultValue?
   return undefined
 }
 
-const getBooleanValue = (route: MetaObj, key: string): boolean => {
+function getBooleanValue(route: MetaObj, key: string): boolean {
   return getValue(route, key, false)
 }
 
-export const getIcon = (route: MetaObj): string | undefined => {
+export function getIcon(route: MetaObj): string | undefined {
   return getValue(route, 'icon')
 }
 
-export const getTitle = (route: MetaObj): string => {
+export function getTitle(route: MetaObj): string {
   return getValue(route, 'title', '未命名页面')
 }
 
-export const isKeepAlive = (route: MetaObj): route is { meta: { isKeepAlive: true } } => {
+export function isKeepAlive(route: MetaObj): route is { meta: { isKeepAlive: true } } {
   return getBooleanValue(route, 'isKeepAlive')
 }
 
-export const isSideBar = (route: MetaObj): boolean => {
+export function isSideBar(route: MetaObj): boolean {
   return getBooleanValue(route, 'isSideBar')
 }
 

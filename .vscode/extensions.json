@@ -1,7 +1,6 @@
 {
   "recommendations": [
     "antfu.iconify",
-    "antfu.vite",
     "vue.volar",
     "dbaeumer.vscode-eslint",
     "EditorConfig.EditorConfig"

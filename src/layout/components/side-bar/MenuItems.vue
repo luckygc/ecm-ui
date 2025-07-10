@@ -9,11 +9,11 @@ interface Props {
 
 defineProps<Props>()
 
-const shouldRenderMenuItem = (route: RouteRecordRaw) => {
+function shouldRenderMenuItem(route: RouteRecordRaw) {
   return routeMetaUtils.isSideBar(route) && (!route.children || route.children.length === 0)
 }
 
-const shouldRenderSubMenu = (route: RouteRecordRaw) => {
+function shouldRenderSubMenu(route: RouteRecordRaw) {
   return routeMetaUtils.isSideBar(route) && route.children && route.children.length > 0
 }
 </script>
@@ -21,7 +21,7 @@ const shouldRenderSubMenu = (route: RouteRecordRaw) => {
 <template>
   <template v-for="route in routes" :key="route.name">
     <!-- 没有子菜单或子菜单为空的菜单项 -->
-    <ElMenuItem v-if="shouldRenderMenuItem(route)" :index="String(route.name)">
+    <ElMenuItem v-if="shouldRenderMenuItem(route)" :index="route.path">
       <ElIcon v-if="routeMetaUtils.getIcon(route)">
         <component :is="routeMetaUtils.getIcon(route)" />
       </ElIcon>
@@ -31,7 +31,7 @@ const shouldRenderSubMenu = (route: RouteRecordRaw) => {
     </ElMenuItem>
 
     <!-- 有子菜单的菜单项 -->
-    <ElSubMenu v-else-if="shouldRenderSubMenu(route)" :index="String(route.name)">
+    <ElSubMenu v-else-if="shouldRenderSubMenu(route)" :index="route.path">
       <template #title>
         <ElIcon v-if="routeMetaUtils.getIcon(route)">
           <component :is="routeMetaUtils.getIcon(route)" />

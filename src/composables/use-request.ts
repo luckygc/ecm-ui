@@ -1,6 +1,6 @@
 import { readonly, ref } from 'vue'
 
-export const useRequest = <T, E = any>(req: () => Promise<T>) => {
+export function useRequest<T, E = any>(req: () => Promise<T>) {
   const data = ref<T | null>(null)
   const isFetching = ref(false)
   const error = ref<E>()

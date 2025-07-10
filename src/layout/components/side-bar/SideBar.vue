@@ -1,71 +1,57 @@
 <script setup lang="ts">
 import type { RouteRecordRaw } from 'vue-router'
 import { ElMenu } from 'element-plus'
-import { useRoute, useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { routes } from '~/router/router'
 import { useLayoutStore } from '~/store/modules/layout/layout-store'
-import routeMetaUtils from '~/utils/route/route-meta-utils'
 import MenuItems from './MenuItems.vue'
 
 const route = useRoute()
-const router = useRouter()
 
 const layoutStore = useLayoutStore()
-// 处理菜单点击事件
-const handleMenuSelect = (routeName: string) => {
-  router.push({ name: routeName })
-}
+
+const sideBarClass = computed(() => ({
+  'ecm-side-bar': true,
+  'ecm-side-bar--collapse': layoutStore.isASideCollapsed,
+}))
 
 const finalRenderRoutes = routes
-  .filter(r => routeMetaUtils.isSideBar(r) || r.name === 'Index')
-  .flatMap((route) => {
-    if (route.path === '/') {
-      return route.children
-    }
-
-    return route
-  }) as RouteRecordRaw[]
+  .filter(r => r.name === 'Index')
+  .flatMap(r => r.children) as RouteRecordRaw[]
 </script>
 
 <template>
-  <div class="sidebar-wrapper">
-    <div class="menu-container">
-      <el-scrollbar>
-        <ElMenu
-          :default-active="route.name as string" :collapse="layoutStore.isSideBarCollapsed" mode="vertical"
-          @select="handleMenuSelect"
-        >
-          <MenuItems :routes="finalRenderRoutes" />
-        </ElMenu>
-      </el-scrollbar>
-    </div>
+  <div :class="sideBarClass">
+    <ElMenu router :default-active="route.path" :collapse="layoutStore.isASideCollapsed" mode="vertical">
+      <MenuItems :routes="finalRenderRoutes" />
+    </ElMenu>
   </div>
 </template>
 
-<style scoped>
-.sidebar-wrapper {
+<style>
+.ecm-side-bar {
   position: relative;
   height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid var(--border-color-grey);
+  width: var(--ecm-aside-width);
+  border-right: 1px solid rgba(5, 5, 5, 0.06);
   background-color: transparent;
+  transition: width var(--el-transition-duration);
+  --el-menu-bg-color: transparent;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.sidebar-wrapper:not(:has(.el-menu--collapse)) .el-menu {
-  width: var(--layout-aside-width);
+.ecm-side-bar--collapse {
+  width: var(--ecm-aside-collapse-width);
 }
 
-.el-menu {
-  flex: 1;
+.ecm-side-bar:not(:has(.el-menu--collapse)) .el-menu {
+  width: var(--ecm-aside-width);
+}
+
+.ecm-side-bar .el-menu {
   border-right: none;
   background-color: transparent;
-  --el-transition-duration: var(--el-transition-duration-fast);
-}
-
-.menu-container {
-  flex: 1;
-  overflow: hidden;
 }
 </style>

@@ -11,14 +11,11 @@ type Page = Pick<RouteLocationNormalizedLoadedGeneric, 'fullPath' | 'meta'> & {
   componentKey: string
 }
 
-const buildComponentKey = (fullPath: string) => {
+function buildComponentKey(fullPath: string) {
   return `${fullPath}_${Date.now()}`
 }
 
-const wrapComponent = (
-  component: Component,
-  componentName: string,
-): Component => {
+function wrapComponent(component: Component, componentName: string): Component {
   return markRaw(
     defineComponent({
       name: componentName,
@@ -29,7 +26,7 @@ const wrapComponent = (
   )
 }
 
-const storeSetup = () => {
+function storeSetup() {
   // 页面
   const _pageMap = shallowRef(new Map<string, Page>())
   // 页面过渡

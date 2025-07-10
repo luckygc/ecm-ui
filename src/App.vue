@@ -1,7 +1,10 @@
 <script setup lang="ts">
-// App.vue 是应用的根组件
+import { ElConfigProvider } from 'element-plus'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
 </script>
 
 <template>
-  <router-view />
+  <ElConfigProvider :locale="zhCn">
+    <router-view />
+  </ElConfigProvider>
 </template>

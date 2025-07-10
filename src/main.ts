@@ -8,9 +8,7 @@ import { createApp } from 'vue'
 import App from '~/App.vue'
 import { router } from '~/router/router'
 import pinia from '~/store'
-import 'element-plus/dist/index.css'
-
-import '~/assets/css/base.css'
+import '~/styles/base.scss'
 
 const app = createApp(App)
 
@@ -22,10 +20,12 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(elementPlus, {
   locale: zhCn,
 })
-app.use(pinia)
-app.use(router)
+
 app.use(formCreateDesigner)
 formCreateElement.use(formCreateAutoImport)
 app.use(formCreateElement)
+
+app.use(pinia)
+app.use(router)
 
 app.mount('#app')

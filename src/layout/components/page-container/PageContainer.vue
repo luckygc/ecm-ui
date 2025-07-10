@@ -18,37 +18,28 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="page-container">
-    <!-- 页面内容 -->
-    <router-view v-slot="{ Component, route }">
-      <transition
-        v-if="Component" name="el-fade-in-linear" mode="out-in"
-        :duration="pageStore.pageTransitionDuration"
-      >
-        <keep-alive :include="pageStore.keepAliveInclude" :max="15">
-          <component
-            :is="pageStore.createOrGetPage(Component, route).component"
-            :key="pageStore.createOrGetPage(Component, route).componentKey"
-          />
-        </keep-alive>
-      </transition>
-      <el-result v-else :title="`欢迎使用${getConfig().appName}`" style="height: 100%;">
-        <template #icon>
-          <span />
-        </template>
-        <template #extra>
-          <el-button type="primary" @click="router.push('/workbench')">
-            前往工作台
-          </el-button>
-        </template>
-      </el-result>
-    </router-view>
-  </div>
+  <!-- 页面内容 -->
+  <router-view v-slot="{ Component, route }">
+    <transition
+      v-if="Component" name="el-fade-in-linear" mode="out-in"
+      :duration="pageStore.pageTransitionDuration"
+    >
+      <keep-alive :include="pageStore.keepAliveInclude" :max="15">
+        <component
+          :is="pageStore.createOrGetPage(Component, route).component"
+          :key="pageStore.createOrGetPage(Component, route).componentKey"
+        />
+      </keep-alive>
+    </transition>
+    <el-result v-else :title="`欢迎使用${getConfig().appName}`" style="height: 100%;">
+      <template #icon>
+        <span />
+      </template>
+      <template #extra>
+        <el-button type="primary" @click="router.push('/workbench')">
+          前往工作台
+        </el-button>
+      </template>
+    </el-result>
+  </router-view>
 </template>
-
-<style scoped>
-.page-container {
-  flex: 1;
-  overflow: visible;
-}
-</style>

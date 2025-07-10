@@ -1,14 +1,11 @@
 import antfu from '@antfu/eslint-config'
 
 export default antfu({
-  lessOpinionated: true,
-  formatters: {
-    css: true,
-    html: true,
-    markdown: 'prettier',
-  },
+  formatters: true,
+  vue: true,
   rules: {
-    'ts/method-signature-style': 'off',
+    // 'ts/method-signature-style': 'off',
     'no-console': ['warn', { allow: ['warn', 'error', 'debug'] }],
   },
+  ignores: ['src/types/axios.d.ts'],
 })

@@ -1,7 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { useStorage } from '@vueuse/core'
 import { createRouter, createWebHashHistory } from 'vue-router'
-import FixedLayout from '~/layout/FixedLayout.vue'
+import LayoutContainer from '~/layout/LayoutContainer.vue'
 import { getConfig } from '~/utils/config-utils'
 import { authRoutes } from './modules/auth-routes'
 import { errorRoutes } from './modules/error-routes'
@@ -12,7 +12,7 @@ import { testRoutes } from './modules/test-routes'
 export const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    component: FixedLayout,
+    component: LayoutContainer,
     name: 'Index',
     meta: { title: '首页' },
     children: [

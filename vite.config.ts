@@ -1,5 +1,9 @@
 import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
+import AutoImport from 'unplugin-auto-import/vite'
+import ElementPlus from 'unplugin-element-plus/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
 import VueDevTools from 'vite-plugin-vue-devtools'
 
@@ -14,8 +18,18 @@ export default defineConfig(() => {
           },
         },
       }),
+      AutoImport({
+        imports: ['vue', 'vue-router', 'pinia'],
+        resolvers: [ElementPlusResolver()],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver()],
+      }),
+      ElementPlus({
+        useSource: true,
+      }),
       VueDevTools({
-        launchEditor: 'webstorm',
+        launchEditor: 'cursor',
       }),
     ],
     resolve: {
@@ -23,7 +37,18 @@ export default defineConfig(() => {
         '~': resolve(__dirname, 'src'),
       },
     },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',
+          additionalData: `
+            @use "~/styles/element/index.scss" as *;
+          `,
+        },
+      },
+    },
     build: {
+      target: 'baseline-widely-available',
       outDir: 'dist',
       sourcemap: true,
       rollupOptions: {

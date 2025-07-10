@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router'
 import Page from '~/components/page/Page.vue'
 
 const router = useRouter()
-const randomPage = () => {
+function randomPage() {
   router.push(`/workbench?a=${Math.random()}`)
 }
 </script>

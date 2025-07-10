@@ -20,7 +20,7 @@ onMounted(async () => {
   capEl.value?.addEventListener('solve', handleCapSolve)
 })
 
-const reset = () => {
+function reset() {
   (capEl.value as any)?.reset()
   modelValue.value = ''
 }

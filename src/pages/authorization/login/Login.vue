@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { authApi } from '~/api/auth/auth-api'
 import CapWrapper from '~/components/captcha/CapWrapper.vue'
-import { useRequest } from '~/hooks/use-request'
+import { useRequest } from '~/composables/use-request'
 import { useLoginForm } from '~/pages/authorization/login/login-hook'
 import { getConfig } from '~/utils/config-utils'
 
@@ -13,7 +13,7 @@ const { loginFormRef, loginForm, loginFormRules } = useLoginForm()
 const _token = useStorage<string>(getConfig().storageTokenKey, null)
 const router = useRouter()
 
-const _login = async () => {
+async function _login() {
   await loginFormRef.value?.validate()
   const { token } = await authApi.login(loginForm)
   _token.value = token

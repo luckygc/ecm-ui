@@ -6,7 +6,7 @@ import { axiosInstance } from '~/utils/request/request'
  * @param data 登录表单数据
  * @returns Promise<LoginResponse>
  */
-const login = (data: LoginForm): Promise<{ token: string }> => {
+function login(data: LoginForm): Promise<{ token: string }> {
   return axiosInstance.postForm('/login', data)
 }
 
@@ -14,7 +14,7 @@ const login = (data: LoginForm): Promise<{ token: string }> => {
  * 用户登出
  * @returns Promise<void>
  */
-const logout = (): Promise<void> => {
+function logout(): Promise<void> {
   return axiosInstance.post('/logout')
 }
 
