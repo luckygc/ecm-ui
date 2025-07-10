@@ -23,7 +23,9 @@ export default defineConfig(() => {
         resolvers: [ElementPlusResolver()],
       }),
       Components({
-        resolvers: [ElementPlusResolver()],
+        resolvers: [ElementPlusResolver({
+          importStyle: 'sass',
+        })],
       }),
       ElementPlus({
         useSource: true,
