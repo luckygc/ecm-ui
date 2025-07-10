@@ -43,7 +43,7 @@ export function isSideBar(route: MetaObj): boolean {
   return getBooleanValue(route, 'isSideBar')
 }
 
-export function a() {
+export function ab() {
   return 1
 }
 
