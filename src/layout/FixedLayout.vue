@@ -54,17 +54,6 @@ const siderClass = computed(() => ({
 .ecm-layout {
   height: 100%;
   width: 100%;
-}
-
-.ecm-layout-bg {
-  pointer-events: none;
-  position: fixed;
-  overflow: hidden;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  z-index: 0;
-  height: 100%;
-  width: 100%;
   background: linear-gradient(#ffffff, #f5f5f5 28%);
 }
 

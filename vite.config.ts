@@ -44,7 +44,7 @@ export default defineConfig(() => {
         scss: {
           api: 'modern-compiler',
           additionalData: `
-            @use "~/styles/element/index.scss" as *;
+            @use "~/styles/element/element.scss" as *;
           `,
         },
       },
