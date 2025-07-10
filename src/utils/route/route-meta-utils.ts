@@ -43,10 +43,6 @@ export function isSideBar(route: MetaObj): boolean {
   return getBooleanValue(route, 'isSideBar')
 }
 
-export function ab() {
-  return 1
-}
-
 export default {
   getTitle,
   getIcon,
