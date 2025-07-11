@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ArrowDown, CircleClose, FolderDelete, Refresh } from '@element-plus/icons-vue'
-import { ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTabPane, ElTabs } from 'element-plus'
 import { watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLayoutStore } from '~/store/modules/layout/layout-store'
@@ -20,11 +19,11 @@ watch(() => pageStore.pages, (newVal) => {
 </script>
 
 <template>
-  <div class="tab-bar">
+  <div class="ecm-tab-bar">
     <ElTabs
-      :model-value="route.fullPath" type="border-card" closable
+      :model-value="route.fullPath" type="card" closable
       style="flex: 1;min-width:0"
-      @tab-click="({ paneName }) => router.push(paneName as string)" @tab-remove="name => pageStore.closePage(name as string)"
+      @tab-click="({ paneName }) => router.push(String(paneName))" @tab-remove="name => pageStore.closePage(String(name))"
     >
       <ElTabPane
         v-for="page in pageStore.pages" :key="page.fullPath" :label="routeMetaUtils.getTitle(page)"
@@ -33,7 +32,7 @@ watch(() => pageStore.pages, (newVal) => {
     </ElTabs>
 
     <!-- 操作按钮 -->
-    <div class="page-actions">
+    <div class="ecm-tab-bar__actions">
       <el-tooltip content="刷新">
         <ElButton circle text :disabled="pageStore.pages.length === 0" @click="pageStore.refreshCurrentPage()">
           <ElIcon>
@@ -52,7 +51,6 @@ watch(() => pageStore.pages, (newVal) => {
       <!-- 下拉操作菜单 -->
       <ElDropdown trigger="click">
         <ElButton text :disabled="pageStore.pages.length === 0">
-          操作
           <ElIcon>
             <ArrowDown />
           </ElIcon>
@@ -78,96 +76,34 @@ watch(() => pageStore.pages, (newVal) => {
   </div>
 </template>
 
-<style scoped>
-.tab-bar {
+<style>
+.ecm-tab-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
-  width: 100%;
-  padding: 0 10px;
-  background-color: #fff;
-  border-bottom: 1px solid var(--el-border-color-lighter);
+  padding: 10px;
+  height: var(--ecm-tab-bar-height);
+  background-color: transparent;
+  /* border-bottom: 1px solid var(--el-border-color-lighter); */
 }
 
-.page-actions {
+.ecm-tab-bar__actions {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-.el-tabs {
-  --el-tabs-header-height: 30px;
+.ecm-tab-bar .el-tabs {
+  flex: 1;
+  min-width: 0;
+  --el-tabs-header-height: 32px;
 }
 
-:deep(.el-tabs--border-card) {
-  border: none;
-}
-
-:deep(.el-tabs__nav) {
-  column-gap: 6px;
-}
-
-:deep(.el-tabs--top.el-tabs--border-card > .el-tabs__header .el-tabs__item:nth-child(2)) {
-  padding-left: 8px;
-}
-
-:deep(.el-tabs--top.el-tabs--border-card > .el-tabs__header .el-tabs__item:last-child) {
-  padding-right: 8px;
-}
-
-:deep(.el-tabs__nav-wrap) {
-  margin-bottom: 0;
-}
-
-:deep(.el-tabs__nav-next) {
-  line-height: 34px;
-}
-
-:deep(.el-tabs__nav-prev) {
-  line-height: 34px;
-}
-
-:deep(.el-tabs--border-card > .el-tabs__header) {
-  border-bottom: none;
+.ecm-tab-bar .el-tabs__header {
   margin: 0;
-  background-color: #fff;
 }
 
-:deep(.el-tabs--border-card > .el-tabs__content) {
-  display: none;
-}
-
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item) {
-  border: none;
-  margin-top: 0;
-  background-color: var(--el-fill-color-light);
-  transition: none;
-  padding: 0 8px;
-  font-size: var(--el-font-size-small);
-}
-
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item:hover) {
-  background-color: var(--active-tab-bg-color);
-  color: initial;
-}
-
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
-  border-left: none;
-  border-right: none;
-  background-color: var(--active-tab-bg-color);
-  color: var(--el-text-color-primary);
-}
-
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item:not(.is-disabled):hover) {
-  color: var(--el-text-color-primary);
-}
-
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item:first-child) {
-  margin-left: 0;
-}
-
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item + .el-tabs__item) {
-  margin-left: 0;
+.ecm-tab-bar .el-tabs--card > .el-tabs__header {
+  border-bottom: none;
 }
 </style>

@@ -1,60 +1,47 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { useCssVar } from '@vueuse/core'
 import { useLayoutStore } from '~/store/modules/layout/layout-store'
 import NavBar from './components/nav-bar/NavBar.vue'
 import PageContainer from './components/page-container/PageContainer.vue'
 import SideBar from './components/side-bar/SideBar.vue'
+import TabBar from './components/tab-bar/TabBar.vue'
 
 const layoutStore = useLayoutStore()
+const layoutRef = useTemplateRef('layout')
 
-const asiderSpacerClass = computed(() => ({
-  'ecm-layout__aside-spacer': true,
-  'ecm-layout__aside-spacer--collapse': layoutStore.isASideCollapsed,
-}))
+const asideWidthCssVar = useCssVar('--ecm-aside-width', layoutRef)
 
-const siderClass = computed(() => ({
-  'ecm-layout__aside': true,
-  'ecm-layout__aside--collapse': layoutStore.isASideCollapsed,
-}))
+watch(() => layoutStore.isAsideCollapsed, (newValue) => {
+  asideWidthCssVar.value = newValue ? 'calc(var(--el-menu-icon-width) + var(--el-menu-base-level-padding) * 2)' : undefined
+})
 </script>
 
 <template>
-  <div class="ecm-layout-container">
-    <div class="ecm-layout">
-      <div class="ecm-layout__bg" />
-      <header class="ecm-layout__header">
-        <NavBar />
-      </header>
+  <div ref="layout" class="ecm-layout">
+    <div class="ecm-layout__bg" />
 
-      <div class="ecm-layout__header-spacer" />
+    <div class="ecm-layout__header-spacer" />
 
-      <header class="ecm-layout__header">
-        <NavBar />
-      </header>
+    <header class="ecm-layout__header">
+      <NavBar />
+      <TabBar style="margin-left: var(--ecm-aside-width)" />
+    </header>
 
-      <div :class="asiderSpacerClass" />
+    <div class="ecm-layout__aside-spacer" />
 
-      <aside :class="siderClass">
-        <SideBar />
-        <!-- <ElButton circle plain :icon="layoutStore.isASideCollapsed ? 'ArrowRight' : 'ArrowLeft'"
-          style="position: absolute;top: 50px;right: -16px;" @click="layoutStore.toggleASideCollapsed" /> -->
-      </aside>
+    <aside class="ecm-layout__aside">
+      <SideBar />
+    </aside>
 
-      <main class="ecm-layout__main">
-        <div class="ecm-layout__main__page-container">
-          <PageContainer />
-        </div>
-      </main>
-    </div>
+    <main class="ecm-layout__main">
+      <PageContainer />
+    </main>
   </div>
 </template>
 
 <style>
 #app {
   overflow: auto;
-}
-
-.ecm-layout-container {
 }
 
 .ecm-layout {
@@ -92,16 +79,13 @@ const siderClass = computed(() => ({
   background-color: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(8px);
   transition: background-color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  border-bottom: 1px solid var(--ecm-border-color);
 }
 
 .ecm-layout__aside-spacer {
   grid-area: aside;
   width: var(--ecm-aside-width);
   transition: width var(--el-transition-duration);
-}
-
-.ecm-layout__aside-spacer--collapse {
-  width: var(--ecm-aside-collapse-width);
 }
 
 .ecm-layout__aside {
@@ -114,18 +98,12 @@ const siderClass = computed(() => ({
   height: calc(100% - var(--ecm-header-height));
   transition: width var(--el-transition-duration);
   background-color: transparent;
-}
-
-.ecm-layout__aside--collapse {
-  width: var(--ecm-aside-collapse-width);
+  border-right: 1px solid var(--ecm-border-color);
 }
 
 .ecm-layout__main {
   position: relative;
   width: 100%;
   padding: 20px;
-}
-
-.ecm-layout__container__content {
 }
 </style>

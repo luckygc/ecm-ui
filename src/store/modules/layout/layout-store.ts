@@ -11,13 +11,13 @@ const layoutCompoentMap = {
 
 export const useLayoutStore = defineStore('layout', () => {
   const isPageMaximized = ref(false)
-  const isASideCollapsed = ref(false)
+  const isAsideCollapsed = ref(false)
   const layoutType = ref<LayoutType>('fixed')
 
   const layoutComponent = computed(() => layoutCompoentMap[layoutType.value])
 
-  const toggleASideCollapsed = () => {
-    isASideCollapsed.value = !isASideCollapsed.value
+  const toggleAsideCollapsed = () => {
+    isAsideCollapsed.value = !isAsideCollapsed.value
   }
 
   const togglePageMaximized = () => {
@@ -28,8 +28,8 @@ export const useLayoutStore = defineStore('layout', () => {
     layoutType,
     layoutComponent,
     isPageMaximized: readonly(isPageMaximized),
-    isASideCollapsed: readonly(isASideCollapsed),
+    isAsideCollapsed: readonly(isAsideCollapsed),
     togglePageMaximized,
-    toggleASideCollapsed,
+    toggleAsideCollapsed,
   }
 })

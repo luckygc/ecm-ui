@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import type { RouteRecordRaw } from 'vue-router'
-import { ElMenu } from 'element-plus'
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 import { routes } from '~/router/router'
 import { useLayoutStore } from '~/store/modules/layout/layout-store'
 import MenuItems from './MenuItems.vue'
@@ -13,7 +10,7 @@ const layoutStore = useLayoutStore()
 
 const sideBarClass = computed(() => ({
   'ecm-side-bar': true,
-  'ecm-side-bar--collapse': layoutStore.isASideCollapsed,
+  'ecm-side-bar--collapse': layoutStore.isAsideCollapsed,
 }))
 
 const finalRenderRoutes = routes
@@ -23,7 +20,7 @@ const finalRenderRoutes = routes
 
 <template>
   <div :class="sideBarClass">
-    <ElMenu router :default-active="route.path" :collapse="layoutStore.isASideCollapsed" mode="vertical">
+    <ElMenu router :default-active="route.path" :collapse="layoutStore.isAsideCollapsed" mode="vertical">
       <MenuItems :routes="finalRenderRoutes" />
     </ElMenu>
   </div>
@@ -34,7 +31,6 @@ const finalRenderRoutes = routes
   position: relative;
   height: 100%;
   width: var(--ecm-aside-width);
-  border-right: 1px solid rgba(5, 5, 5, 0.06);
   background-color: transparent;
   transition: width var(--el-transition-duration);
   --el-menu-bg-color: transparent;
