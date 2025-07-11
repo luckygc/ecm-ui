@@ -18,6 +18,11 @@ function randomPage() {
         </p>
       </div>
 
+      <ElButton>test</ElButton>
+      <ElButton type="primary">
+        test
+      </ElButton>
+
       <div class="content-section">
         <div class="card">
           <h3>快速操作</h3>

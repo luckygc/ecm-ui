@@ -55,21 +55,13 @@ async function handleLogout() {
 
 <template>
   <div class="navbar-container">
-    <div>
-      <ElButton
-        circle
-        text
-        size="large"
-        @click="layoutStore.toggleASideCollapsed"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
-          <path
-            stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="#333"
-            d="M7.95 11.95h32M7.95 23.95h32M7.95 35.95h32" data-follow-stroke="#333"
-          />
-        </svg>
-      </ElButton>
-    </div>
+
+    <ElButton circle text size="large" @click="layoutStore.toggleASideCollapsed">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
+        <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="#333"
+          d="M7.95 11.95h32M7.95 23.95h32M7.95 35.95h32" data-follow-stroke="#333" />
+      </svg>
+    </ElButton>
 
     <div class="logo-area">
       {{ getConfig().appName }}
@@ -118,20 +110,21 @@ async function handleLogout() {
 .navbar-container {
   display: flex;
   align-items: center;
-  position: relative;
   height: 100%;
-  gap: 16px;
   padding: 0 16px;
-  border-bottom: 1px solid var(--border-color-grey);
+  border-bottom: 1px solid rgba(5, 5, 5, 0.06);
   background-color: transparent;
 }
 
 .logo-area {
-  font-size: 18px;
+  height: 32px;
+  margin-block: 0;
+  margin-inline: 0;
+  margin-inline-start: 8px;
   font-weight: 600;
-  color: var(--el-color-primary);
-  padding: 8px 12px;
-  border-radius: 6px;
+  color: rgba(0, 0, 0, 0.88);
+  font-size: 18px;
+  line-height: 32px;
 }
 
 .user-info {
