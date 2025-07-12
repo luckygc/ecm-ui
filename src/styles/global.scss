@@ -9,12 +9,12 @@ body,
 }
 
 #app {
-  --ecm-nav-bar-height: 48px;
-  --ecm-tab-bar-height: 40px;
-  --ecm-header-height: calc(var(--ecm-nav-bar-height) + var(--ecm-tab-bar-height));
+  --ecm-header-height: 48px;
   --ecm-header-z-index: 100;
   --ecm-aside-width: 200px;
   --ecm-aside-z-index: 100;
+  --ecm-tab-bar-height: 40px;
+  --ecm-tab-bar-z-index: 100;
   --ecm-border-color: rgba(5, 5, 5, 0.06);
   --bg-color-white: rgba(255, 255, 255, 0.6);
   --el-transition-duration: var(--el-transition-duration-fast);

@@ -4,11 +4,8 @@ import { onUnmounted, watch } from 'vue'
 import { router } from '~/router/router'
 import { usePageStore } from '~/store/modules/page/page-store'
 import { getConfig } from '~/utils/config-utils'
-import routeMetaUtils from '~/utils/route/route-meta-utils'
 
 const pageStore = usePageStore()
-
-const route = useRoute()
 
 watch(() => pageStore.pages, (newVal, oldVal) => {
   if (newVal.length > oldVal.length && newVal.length > getConfig().maxPageCount) {

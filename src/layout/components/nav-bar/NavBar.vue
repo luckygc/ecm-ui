@@ -105,7 +105,7 @@ async function handleLogout() {
   display: flex;
   align-items: center;
   padding: 8px 16px;
-  height: var(--ecm-nav-bar-height);
+  height: 100%;
   background-color: transparent;
   column-gap: 10px;
 }
