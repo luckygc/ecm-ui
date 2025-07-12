@@ -12,7 +12,9 @@ import {
 import { useAuthStore } from '~/store/modules/auth/auth-store'
 import { useLayoutStore } from '~/store/modules/layout/layout-store'
 import { getConfig } from '~/utils/config-utils'
+import routeMetaUtils from '~/utils/route/route-meta-utils'
 
+const route = useRoute()
 const authStore = useAuthStore()
 const layoutStore = useLayoutStore()
 
@@ -63,6 +65,14 @@ async function handleLogout() {
       {{ getConfig().appName }}
     </div>
 
+    <ElBreadcrumb>
+      <ElBreadcrumbItem v-for="_route in route.matched" :key="_route.name">
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <div>{{ routeMetaUtils.getTitle(_route) }}</div>
+        </div>
+      </ElBreadcrumbItem>
+    </ElBreadcrumb>
+
     <div style="flex: 1;" />
 
     <ElDropdown trigger="click" @command="handleCommand">
@@ -91,27 +101,19 @@ async function handleLogout() {
 </template>
 
 <style scoped>
-.el-breadcrumb__separator {
-  font-weight: normal;
-}
-
 .ecm-nav-bar {
   display: flex;
   align-items: center;
   padding: 8px 16px;
   height: var(--ecm-nav-bar-height);
   background-color: transparent;
+  column-gap: 10px;
 }
 
 .logo-area {
-  height: 32px;
-  margin-block: 0;
-  margin-inline: 0;
-  margin-inline-start: 8px;
   font-weight: 600;
   color: rgba(0, 0, 0, 0.88);
   font-size: 18px;
-  line-height: 32px;
 }
 
 .user-info {

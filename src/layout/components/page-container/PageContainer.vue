@@ -22,13 +22,6 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <ElBreadcrumb>
-    <ElBreadcrumbItem v-for="_route in route.matched" :key="_route.name">
-      <div style="display: flex; align-items: center; gap: 4px;">
-        <div>{{ routeMetaUtils.getTitle(_route) }}</div>
-      </div>
-    </ElBreadcrumbItem>
-  </ElBreadcrumb>
   <!-- 页面内容 -->
   <router-view v-slot="{ Component, route }">
     <transition
