@@ -42,9 +42,9 @@ watch(() => layoutStore.isPageMaximized, (newValue) => {
       >
     </div>
 
-    <div v-show="!layoutStore.isPageMaximized" class="ecm-layout__header-spacer" />
+    <div class="ecm-layout__header-spacer" />
 
-    <header v-show="!layoutStore.isPageMaximized" class="ecm-layout__header">
+    <header class="ecm-layout__header">
       <NavBar />
     </header>
 
