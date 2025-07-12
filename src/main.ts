@@ -6,6 +6,10 @@ import { createApp } from 'vue'
 import App from '~/App.vue'
 import { router } from '~/router/router'
 import pinia from '~/store'
+import 'sanitize.css'
+import 'sanitize.css/forms.css'
+import 'sanitize.css/typography.css'
+import 'sanitize.css/assets.css'
 import '~/styles/global.scss'
 
 const app = createApp(App)
